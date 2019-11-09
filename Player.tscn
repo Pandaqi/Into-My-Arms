@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Textures/player_spritesheet.png" type="Texture" id=1]
+[ext_resource path="res://Scripts/Player.gd" type="Script" id=2]
+[ext_resource path="res://Animations/Rotate Player.tres" type="Animation" id=3]
+
+[node name="Player" type="Sprite" groups=[
+"Players",
+"Obstacles",
+]]
+position = Vector2( 385.421, 156.29 )
+texture = ExtResource( 1 )
+offset = Vector2( 0, -44 )
+hframes = 4
+script = ExtResource( 2 )
+CUR_HEIGHT = 3
+
+[node name="Tween" type="Tween" parent="."]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+"anims/Rotate Player" = ExtResource( 3 )
+[connection signal="tween_completed" from="Tween" to="." method="_on_Tween_tween_completed"]
