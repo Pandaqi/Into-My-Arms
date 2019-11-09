@@ -1,8 +1,76 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=15 format=2]
 
-[ext_resource path="res://TilesetLALA.tres" type="TileSet" id=1]
-[ext_resource path="res://Player.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Scripts/Camera.gd" type="Script" id=3]
+[ext_resource path="res://TilesetBLUP.tres" type="TileSet" id=1]
+[ext_resource path="res://Player1.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Player2.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Scripts/Camera.gd" type="Script" id=4]
+[ext_resource path="res://Textures/light2.png" type="Texture" id=5]
+[ext_resource path="res://Textures/New_Normal_Map.png" type="Texture" id=7]
+[ext_resource path="res://Textures/tileset.png" type="Texture" id=8]
+[ext_resource path="res://Shaders/WallTile.shader" type="Shader" id=9]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+
+void light() {
+	// the tile half size in pixels
+	vec2 tile_vec = vec2(64, 32);
+	
+	// compute a 3D postion fot thelight
+	vec3 light_3d = vec3(-LIGHT_VEC.x, LIGHT_HEIGHT, LIGHT_VEC.y);
+	
+	//rotate the normal map to the same coordinates as the pseudo 3d ponit
+	//this could be optimized
+	float r = asin(tile_vec.y/tile_vec.x);
+	mat3 rot_mat = mat3( vec3(1,0,0), vec3(0,cos(r),-sin(r)), vec3(0,sin(r),cos(r)));
+	vec3 n =  rot_mat * NORMAL;
+	n.y=-n.y;
+	
+	//compute diffuse light
+	float dp = max(dot(normalize(n),-normalize(light_3d)),0);
+	LIGHT=vec4(vec3(dp),1.0) * texture(TEXTURE, UV) * LIGHT_COLOR * 3.0;
+}
+"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+
+[sub_resource type="ShaderMaterial" id=3]
+shader = ExtResource( 9 )
+
+[sub_resource type="OccluderPolygon2D" id=4]
+closed = false
+polygon = PoolVector2Array( -64, 0, 0, 32, 64, 0 )
+
+[sub_resource type="TileSet" id=5]
+0/name = "Sprite"
+0/texture = ExtResource( 8 )
+0/normal_map = ExtResource( 7 )
+0/tex_offset = Vector2( -64, -96 )
+0/material = SubResource( 2 )
+0/modulate = Color( 1, 1, 1, 1 )
+0/region = Rect2( 0, 0, 128, 128 )
+0/tile_mode = 0
+0/occluder_offset = Vector2( 0, 0 )
+0/navigation_offset = Vector2( 0, 0 )
+0/shapes = [  ]
+0/z_index = 0
+1/name = "Sprite2"
+1/texture = ExtResource( 8 )
+1/normal_map = ExtResource( 7 )
+1/tex_offset = Vector2( -64, -96 )
+1/material = SubResource( 3 )
+1/modulate = Color( 0.521569, 1, 0, 1 )
+1/region = Rect2( 0, 0, 128, 128 )
+1/tile_mode = 0
+1/occluder_offset = Vector2( 0, 0 )
+1/occluder = SubResource( 4 )
+1/navigation_offset = Vector2( 0, 0 )
+1/shapes = [  ]
+1/z_index = 0
+
+[sub_resource type="ShaderMaterial" id=7]
+shader = ExtResource( 9 )
 
 [node name="Node2D" type="Node2D"]
 
@@ -15,7 +83,7 @@ cell_size = Vector2( 128, 64 )
 cell_tile_origin = 1
 cell_y_sort = true
 format = 1
-tile_data = PoolIntArray( -65529, 0, 0, -65528, 0, 0, -65527, 0, 0, 7, 0, 0, 8, 0, 0, 9, 0, 0, 65543, 0, 0, 65544, 0, 0, 65545, 0, 0 )
+tile_data = PoolIntArray( -131066, 0, 0, -131065, 0, 0, -131064, 0, 0, -65530, 0, 0, -65529, 0, 0, -65528, 0, 0, 6, 0, 0, 7, 0, 0, 8, 0, 0, 65542, 0, 0, 65543, 0, 0, 65544, 0, 0 )
 
 [node name="Level1" type="TileMap" parent="." groups=[
 "TileMaps",
@@ -26,19 +94,49 @@ cell_size = Vector2( 128, 64 )
 cell_tile_origin = 1
 cell_y_sort = true
 format = 1
-tile_data = PoolIntArray( -131066, 1, 0, -131065, 1, 0, 7, 1, 0, 8, 1, 0 )
+tile_data = PoolIntArray( -131065, 1, 0, 7, 1, 0 )
 
 [node name="Player" parent="Level1" instance=ExtResource( 2 )]
-position = Vector2( 448.888, 191.197 )
-CUR_HEIGHT = 1
+position = Vector2( 321.652, 191.253 )
 
-[node name="Player2" parent="Level1" instance=ExtResource( 2 )]
-position = Vector2( 578.528, 252.139 )
-CUR_HEIGHT = 1
-PLAYER_NUM = 1
+[node name="Player2" parent="Level1" instance=ExtResource( 3 )]
+position = Vector2( 448.85, 124.836 )
+
+[node name="Level2" type="TileMap" parent="." groups=[
+"TileMaps",
+]]
+position = Vector2( 0, -1 )
+mode = 1
+tile_set = ExtResource( 1 )
+cell_size = Vector2( 128, 64 )
+cell_tile_origin = 1
+cell_y_sort = true
+format = 1
+
+[node name="EmptyTilemap" type="TileMap" parent="." groups=[
+"TileMaps",
+]]
+mode = 1
+tile_set = SubResource( 5 )
+cell_size = Vector2( 128, 64 )
+cell_tile_origin = 1
+cell_y_sort = true
+format = 1
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( 501.44, 269.359 )
 current = true
 zoom = Vector2( 2, 2 )
-script = ExtResource( 3 )
+script = ExtResource( 4 )
+
+[node name="Sprite" type="Sprite" parent="."]
+material = SubResource( 7 )
+position = Vector2( 669.694, 303.222 )
+texture = ExtResource( 8 )
+
+[node name="Light2D" type="Light2D" parent="."]
+position = Vector2( 673.165, 283.458 )
+scale = Vector2( 0.965543, 1.33692 )
+texture = ExtResource( 5 )
+color = Color( 0.0117647, 0.396078, 1, 1 )
+shadow_enabled = true

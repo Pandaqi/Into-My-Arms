@@ -19,7 +19,7 @@ extends Sprite
 # Also keep track of our current POSITION
 var FORWARD_DIR = 0
 var TILEMAP_POS = Vector3.ZERO
-export (int) var CUR_HEIGHT = 1
+var CUR_HEIGHT = 1
 
 export (int) var PLAYER_NUM = 0
 
@@ -41,6 +41,10 @@ func _ready():
 	
 	# and snap it to the position we found
 	set_position( tilemap.map_to_world(TILEMAP_POS) + player_offset )
+	
+	# grab height from our tilemap
+	# tilemaps are named "LevelX" => we only want the X, parsed as an int
+	CUR_HEIGHT = int( tilemap.get_name().substr(5,1) )
 	
 	# intialize a faster speed for animations
 	# $AnimationPlayer.set_speed_scale(2.5)
