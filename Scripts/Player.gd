@@ -86,6 +86,17 @@ func initialize(grid):
 	
 	# save ourselves into the general GRID variable
 	update_position_in_grid(Vector3(TILEMAP_POS.x, CUR_HEIGHT, TILEMAP_POS.y))
+	
+	# and set the correct z_index value
+	update_z_index()
+
+func update_z_index():
+	var pos_3d = Vector3(TILEMAP_POS.x, CUR_HEIGHT, TILEMAP_POS.y)
+	
+	# NOTE: By rounding/ceiling the Z here, moving in FRONT of stuff looks great, but moving behind stuff is weird
+	# Essentially, I need a way to differentiate between these situations?
+	# TO DO: See if I can convert isometric to 3D coordinates within tilemap, so things should just work
+	z_index = pos_3d.x + 3*pos_3d.y + pos_3d.z
 
 func update_position_in_grid(new_position, old_position = null):
 	# remove ourselves from the OLD position
@@ -100,12 +111,8 @@ func v3_to_index(v3):
 	return str(int(round(v3.x))) + "," + str(int(round(v3.y))) + "," + str(int(round(v3.z)))
 
 func _process(delta):
-	var pos_3d = Vector3(TILEMAP_POS.x, CUR_HEIGHT, TILEMAP_POS.y)
-	
-	# NOTE: By rounding/ceiling the Z here, moving in FRONT of stuff looks great, but moving behind stuff is weird
-	# Essentially, I need a way to differentiate between these situations?
-	# TO DO: See if I can convert isometric to 3D coordinates within tilemap, so things should just work
-	z_index = pos_3d.x + 3*pos_3d.y + pos_3d.z
+	# update player index (based on position) to get correct depth perception
+	update_z_index()
 	
 	# check what this player can see
 	# (if we can see the other player, it's GAME OVER)
@@ -130,8 +137,17 @@ func _process(delta):
 			var other_player = (PLAYER_NUM + 1) % 2
 			if val_below.get_meta("cell_type") == -(other_player+1):
 				if last_move_backward and fall_counter >= 1:
-					get_node("/root/Node2D").end_level(true)
+					# hide this sprite
+					self.hide()
+					
+					# display the "holding in arms" sprite
+					# (on the OTHER object, as that is the one standing on the ground, catching you)
+					val_below.display_holding_sprite()
+					
+					# tell the main node to end the level
+					get_node("/root/Node2D").end_level(true, get_position(), self )
 			
+			# in any case, if there's an object below us, reset gravity
 			apply_gravity = false
 			fall_counter = 0
 
@@ -186,8 +202,11 @@ func determine_fov():
 			
 			var other_player = (PLAYER_NUM + 1) % 2
 			if val.get_meta("cell_type") == -(other_player+1):
-				get_node("/root/Node2D").end_level(false)
-				break
+				# I also check if both players aren't moving, 
+				# otherwise the check happens too quickly (before you actually see the other player!)
+				if not val.is_moving and not is_moving:
+					get_node("/root/Node2D").end_level(false, null, self)
+					break
 			
 			# as long as the object we see isn't see ourselves
 			# break out of the loop (and draw view line)
@@ -267,6 +286,10 @@ func move_down():
 								tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
 	TILEMAP_POS = new_tilemap_position
 	CUR_HEIGHT -= 1
+	
+	# if we have a negative height, we're below level bounds, and have thus lost the level
+	if CUR_HEIGHT < 0:
+		get_node("/root/Node2D").end_level(false, null, self)
 	
 	update_position_in_grid(Vector3(TILEMAP_POS.x, CUR_HEIGHT, TILEMAP_POS.y), 
 							Vector3(old_tilemap_position.x, CUR_HEIGHT+1, old_tilemap_position.y))
@@ -352,3 +375,11 @@ func _on_Tween_tween_completed(object, key):
 	if key == ":position":
 		# ... reset movement variable
 		is_moving = false
+
+func display_holding_sprite():
+	# make the sprite visible
+	var hia = get_node("HoldingInArms")
+	hia.set_visible(true)
+	
+	# but "hide" ourselves
+	self.self_modulate.a = 0.0

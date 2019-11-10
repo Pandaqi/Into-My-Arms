@@ -86,6 +86,14 @@ func _ready():
 	
 	for y in range(NUM_LEVELS):
 		get_node("Level" + str(y)).queue_free()
+	
+	###
+	# Lastly, pause the tree
+	#
+	# Why? Because we want to create a zooming in effect, as if we "move to the new level"
+	###
+	get_node("PauseScreen").move_camera_start()
+
 
 func window_resize():
 	var new_size = get_viewport().size
@@ -97,15 +105,24 @@ func window_resize():
 	var preferred_y = base_zoom.y * (base_dim.y / new_size.y)
 	var final_zoom = max(preferred_x, preferred_y)
 	
+	# EXPERIMENT: see if setting zoom to an integer works better for visual effects
+	#final_zoom = round(final_zoom)
+	
 	$Camera.set_zoom(Vector2(final_zoom, final_zoom))
 	
 	# Update player control anchoring positions
 	$GUI/Player1Controls.set_position(Vector2(0, new_size.y))
 	$GUI/Player2Controls.set_position(Vector2(new_size.x, new_size.y))
 
-func end_level(did_we_win):
+func end_level(did_we_win, pos, obj):
+	# transform position to CanvasLayer position
+	pos = 0.5 * get_node("Camera").get_viewport().size 
+	
+	# NOTE: Transforming coordinates isn't really necessary => camera average position, and players will be at the same position anyway!
+	# + (pos - get_node("Camera").get_position() )
+	
 	# hand all the information (and control) over to the pause screen
-	get_node("PauseScreen").display_screen(did_we_win)
+	get_node("PauseScreen").display_screen(did_we_win, pos, obj)
 
 func project_to_iso(x, y, z):
 	return Vector2(x - y, (x / 2) + (y / 2) - z)

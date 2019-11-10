@@ -19,6 +19,10 @@ config/name="Into My Arms"
 run/main_scene="res://Main.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+Global="*res://Scripts/Global.gd"
+
 [display]
 
 window/size/width=512
@@ -71,4 +75,6 @@ backward1={
 
 [rendering]
 
+quality/filters/use_nearest_mipmap_filter=true
+quality/filters/msaa=2
 environment/default_environment="res://default_env.tres"
