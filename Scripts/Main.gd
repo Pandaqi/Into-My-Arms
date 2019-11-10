@@ -54,14 +54,17 @@ func _ready():
 		for cell in used_cells:
 			var cell_type = cur_tilemap.get_cell(cell.x, cell.y)
 			
-			# save it in the grid
-			GRID[v3_to_index(Vector3(cell.x, y, cell.y))] = cell_type
-			
-			# also instantiate the correct scene
+			# instantiate the correct scene
 			# and add that to the world
 			var new_block = TILE_SCENES[cell_type].instance()
 			new_block.set_position( cur_tilemap.map_to_world(Vector2(cell.x,cell.y)) + tile_offset )
 			
+			# set cell type as metadata
+			new_block.set_meta("cell_type", cell_type)
+			
+			# set correct z-index
+			# cell.x and cell.y are coordinates within the isometric map
+			# to convert them to (fake) 3D coordinates, we only need to add the height
 			new_block.z_index = (cell.x + y) + y + (cell.y + y)
 			
 			# modulate this block in accordance with height
@@ -69,6 +72,9 @@ func _ready():
 			new_block.modulate = Color(height_col_diff, height_col_diff, height_col_diff)
 			
 			add_child(new_block)
+			
+			# finally, save the object in the grid
+			GRID[v3_to_index(Vector3(cell.x, y, cell.y))] = new_block
 	
 	###
 	# Once we have the grid ...
@@ -96,6 +102,10 @@ func window_resize():
 	# Update player control anchoring positions
 	$GUI/Player1Controls.set_position(Vector2(0, new_size.y))
 	$GUI/Player2Controls.set_position(Vector2(new_size.x, new_size.y))
+
+func end_level(did_we_win):
+	# hand all the information (and control) over to the pause screen
+	get_node("PauseScreen").display_screen(did_we_win)
 
 func project_to_iso(x, y, z):
 	return Vector2(x - y, (x / 2) + (y / 2) - z)

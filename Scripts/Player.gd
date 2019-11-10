@@ -40,10 +40,10 @@ var is_rotating = false
 
 # Nodes we'll need often
 onready var tween = get_node("Tween")
+onready var view_drawer = get_node("/root/Node2D/PlayerView" + str(PLAYER_NUM))
 var tilemap
 
-# For checking/remembering what we're seeing
-var VIEW_POINT = null
+var previous_blocking_objects = []
 
 func _ready():
 	tilemap = get_parent()
@@ -78,6 +78,9 @@ func initialize(grid):
 	# (the others will soon be removed, after this function is called)
 	tilemap = get_node("/root/Node2D/EmptyTilemap")
 	
+	# give ourselves the right metadata
+	set_meta("cell_type", -(PLAYER_NUM+1) )
+	
 	# and keep a reference to the main grid for the game
 	GRID = grid
 	
@@ -91,7 +94,7 @@ func update_position_in_grid(new_position, old_position = null):
 	
 	# save our player number in the GRID
 	# (negative values are for obstacles, positive values for tilemap tiles)
-	GRID[v3_to_index(new_position)] = -(PLAYER_NUM+1)
+	GRID[v3_to_index(new_position)] = self
 
 func v3_to_index(v3):
 	return str(int(round(v3.x))) + "," + str(int(round(v3.y))) + "," + str(int(round(v3.z)))
@@ -108,6 +111,9 @@ func _process(delta):
 	# (if we can see the other player, it's GAME OVER)
 	determine_fov()
 	
+	# check if there's something blocking the view towards this player
+	check_blocking_objects()
+	
 	# as long as we're moving, all other movements aren't even considered
 	if not is_moving:
 	
@@ -122,9 +128,9 @@ func _process(delta):
 			# if we satisfied the "leap of faith" win condition, we win!
 			var val_below = GRID[v3_to_index(pos_3d_below)]
 			var other_player = (PLAYER_NUM + 1) % 2
-			if val_below == -(other_player+1):
+			if val_below.get_meta("cell_type") == -(other_player+1):
 				if last_move_backward and fall_counter >= 1:
-					print("YOU WIN!")
+					get_node("/root/Node2D").end_level(true)
 			
 			apply_gravity = false
 			fall_counter = 0
@@ -142,6 +148,26 @@ func _process(delta):
 				elif Input.is_action_pressed( get_action("backward") ):
 					move_forward(-1)
 
+func check_blocking_objects():
+	for obj in previous_blocking_objects:
+		obj.modulate.a = 1.0
+	
+	previous_blocking_objects.clear()
+	
+	# an object can only block player view if it's at these positions (always  at CUR_HEIGHT+1
+	var block_positions = [Vector2(0,-1), Vector2(-1,0), Vector2(0,0)]
+	for pos in block_positions:
+		var cell = Vector3(TILEMAP_POS.x + pos.x, CUR_HEIGHT+1, TILEMAP_POS.y + pos.y)
+		
+		# if this object exists ...
+		if GRID.has(v3_to_index(cell)):
+			var cur_obj = GRID[v3_to_index(cell)]
+			
+			# hide it, and remember we hid it
+			cur_obj.modulate.a = 0.5
+			previous_blocking_objects.append(cur_obj)
+		
+		
 func determine_fov():
 	# get forward direction vector
 	var dir = get_dir_vector()
@@ -152,21 +178,24 @@ func determine_fov():
 	var step_counter = 1
 	
 	while not found_something:
-		var next_cell = Vector3(TILEMAP_POS.x + step_counter * dir.x, CUR_HEIGHT, TILEMAP_POS.y + step_counter * dir.y)
+		var next_cell = Vector3(round(TILEMAP_POS.x) + step_counter * dir.x, round(CUR_HEIGHT), round(TILEMAP_POS.y) + step_counter * dir.y)
 		
 		if GRID.has(v3_to_index(next_cell)):
 			# if it's the other player, we LOSE
 			var val = GRID[v3_to_index(next_cell)]
 			
 			var other_player = (PLAYER_NUM + 1) % 2
-			if val == -(other_player+1):
-				print("YOU LOSE")
+			if val.get_meta("cell_type") == -(other_player+1):
+				get_node("/root/Node2D").end_level(false)
 				break
 			
-			# save that we found something and WHERE we found it
-			found_something = true
-			VIEW_POINT = tilemap.map_to_world(Vector2(next_cell.x, next_cell.z))
-			break
+			# as long as the object we see isn't see ourselves
+			# break out of the loop (and draw view line)
+			elif val.get_meta("cell_type") != -(PLAYER_NUM + 1):
+				# save that we found something and WHERE we found it
+				found_something = true
+				view_drawer.create_view_line( get_position(), tilemap.map_to_world(Vector2(next_cell.x, next_cell.z)) + Vector2(0,32) )
+				break
 		
 		if step_counter >= max_steps:
 			break
@@ -174,13 +203,7 @@ func determine_fov():
 		step_counter += 1
 	
 	if not found_something:
-		VIEW_POINT = null
-	
-	update()
-
-func _draw():
-	if VIEW_POINT != null:
-		draw_line( Vector2.ZERO, VIEW_POINT - get_position(), Color(255, 0, 0), 1)
+		view_drawer.create_view_line(null, null)
 
 func get_action(action_name):
 	return action_name + str(PLAYER_NUM)

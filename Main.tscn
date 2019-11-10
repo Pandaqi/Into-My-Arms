@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://TilesetBLUP.tres" type="TileSet" id=1]
 [ext_resource path="res://Player1.tscn" type="PackedScene" id=2]
@@ -13,12 +13,39 @@
 [ext_resource path="res://Textures/Forward_2.png" type="Texture" id=11]
 [ext_resource path="res://Textures/Rotate Left.png" type="Texture" id=12]
 [ext_resource path="res://Scripts/GUI.gd" type="Script" id=13]
+[ext_resource path="res://Scripts/PlayerViewDrawer.gd" type="Script" id=14]
+[ext_resource path="res://Scripts/PauseScreen.gd" type="Script" id=15]
+[ext_resource path="res://Fonts/BasicFont.tres" type="DynamicFont" id=16]
+[ext_resource path="res://Textures/holding_in_arms.png" type="Texture" id=17]
+[ext_resource path="res://Textures/game_win_screen.png" type="Texture" id=18]
 
-[sub_resource type="ShaderMaterial" id=6]
+[sub_resource type="Environment" id=2]
+background_mode = 4
+background_color = Color( 0.556863, 0.760784, 0.909804, 1 )
+tonemap_mode = 2
+tonemap_exposure = 0.75
+glow_enabled = true
+
+[sub_resource type="Gradient" id=3]
+colors = PoolColorArray( 0.0303497, 0.0606934, 0.199219, 1, 0.308167, 0.708009, 0.773438, 1 )
+
+[sub_resource type="GradientTexture" id=4]
+gradient = SubResource( 3 )
+
+[sub_resource type="ShaderMaterial" id=1]
 shader = ExtResource( 9 )
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource( 6 )
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 2 )
+
+[node name="Background" type="Sprite" parent="."]
+position = Vector2( -12.6523, 110.257 )
+rotation = -1.57079
+scale = Vector2( 0.48017, 1293.35 )
+texture = SubResource( 4 )
 
 [node name="Level0" type="TileMap" parent="." groups=[
 "TileMaps",
@@ -29,7 +56,7 @@ cell_size = Vector2( 128, 64 )
 cell_tile_origin = 1
 cell_y_sort = true
 format = 1
-tile_data = PoolIntArray( 65536, 0, 0, 65537, 0, 0, 65538, 0, 0, 65539, 0, 0, 131072, 0, 0, 131073, 0, 0, 131074, 0, 0, 131075, 0, 0, 196608, 0, 0, 196609, 0, 0, 196610, 0, 0, 196611, 0, 0, 262144, 0, 0, 262145, 0, 0, 262146, 0, 0, 262147, 0, 0 )
+tile_data = PoolIntArray( 65538, 0, 0, 65539, 0, 0, 131074, 0, 0, 131075, 0, 0, 196610, 0, 0, 196611, 0, 0, 262146, 0, 0, 262147, 0, 0 )
 
 [node name="Level1" type="TileMap" parent="." groups=[
 "TileMaps",
@@ -40,10 +67,10 @@ cell_size = Vector2( 128, 64 )
 cell_tile_origin = 1
 cell_y_sort = true
 format = 1
-tile_data = PoolIntArray( 0, 0, 0, 1, 0, 0, 2, 0, 0, 131073, 0, 0 )
+tile_data = PoolIntArray( 1, 0, 0, 2, 0, 0 )
 
 [node name="Player" parent="Level1" instance=ExtResource( 2 )]
-position = Vector2( -127.314, 95.2932 )
+position = Vector2( -62.3815, 128.329 )
 
 [node name="Level2" type="TileMap" parent="." groups=[
 "TileMaps",
@@ -55,7 +82,7 @@ cell_size = Vector2( 128, 64 )
 cell_tile_origin = 1
 cell_y_sort = true
 format = 1
-tile_data = PoolIntArray( -1, 0, 0, -65536, 0, 0, -65535, 0, 0, 0, 0, 0, 65536, 0, 0 )
+tile_data = PoolIntArray( -65536, 0, 0, -65535, 0, 0 )
 
 [node name="Level3" type="TileMap" parent="." groups=[
 "TileMaps",
@@ -85,7 +112,7 @@ zoom = Vector2( 2, 2 )
 script = ExtResource( 4 )
 
 [node name="Sprite" type="Sprite" parent="."]
-material = SubResource( 6 )
+material = SubResource( 1 )
 position = Vector2( 669.694, 303.222 )
 texture = ExtResource( 8 )
 
@@ -95,6 +122,8 @@ scale = Vector2( 0.965543, 1.33692 )
 texture = ExtResource( 5 )
 color = Color( 0.0117647, 0.396078, 1, 1 )
 shadow_enabled = true
+
+[node name="PlayerOverlays" type="CanvasLayer" parent="."]
 
 [node name="GUI" type="CanvasLayer" parent="."]
 script = ExtResource( 13 )
@@ -195,6 +224,105 @@ margin_top = -88.2615
 margin_right = 197.195
 margin_bottom = 167.739
 texture_normal = ExtResource( 10 )
+
+[node name="PauseScreen" type="CanvasLayer" parent="."]
+pause_mode = 2
+script = ExtResource( 15 )
+
+[node name="Control" type="Control" parent="PauseScreen"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="PauseScreen/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.125, 0.120768, 0.115723, 0.784314 )
+
+[node name="MarginContainer" type="MarginContainer" parent="PauseScreen/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_right = 50
+custom_constants/margin_top = 50
+custom_constants/margin_left = 50
+custom_constants/margin_bottom = 50
+
+[node name="ColorRect" type="ColorRect" parent="PauseScreen/Control/MarginContainer"]
+margin_left = 50.0
+margin_top = 50.0
+margin_right = 462.0
+margin_bottom = 238.0
+color = Color( 0.886275, 0.643137, 0.643137, 1 )
+
+[node name="CenterContainer" type="CenterContainer" parent="PauseScreen/Control/MarginContainer/ColorRect"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PauseScreen/Control/MarginContainer/ColorRect/CenterContainer"]
+margin_left = 123.0
+margin_top = 47.0
+margin_right = 288.0
+margin_bottom = 140.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ResultText" type="Label" parent="PauseScreen/Control/MarginContainer/ColorRect/CenterContainer/VBoxContainer"]
+margin_right = 165.0
+margin_bottom = 21.0
+custom_fonts/font = ExtResource( 16 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "YOU SOLVED THE PUZZLE!"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Next" type="Button" parent="PauseScreen/Control/MarginContainer/ColorRect/CenterContainer/VBoxContainer"]
+margin_top = 25.0
+margin_right = 165.0
+margin_bottom = 45.0
+text = "Next Level"
+
+[node name="Retry" type="Button" parent="PauseScreen/Control/MarginContainer/ColorRect/CenterContainer/VBoxContainer"]
+margin_top = 49.0
+margin_right = 165.0
+margin_bottom = 69.0
+text = "Retry"
+
+[node name="Menu" type="Button" parent="PauseScreen/Control/MarginContainer/ColorRect/CenterContainer/VBoxContainer"]
+margin_top = 73.0
+margin_right = 165.0
+margin_bottom = 93.0
+text = "Back to Menu"
+
+[node name="PlayerView0" type="Node2D" parent="."]
+modulate = Color( 3, 3, 3, 1 )
+position = Vector2( 0, -1 )
+z_index = 1000
+script = ExtResource( 14 )
+
+[node name="PlayerView1" type="Node2D" parent="."]
+position = Vector2( 0, -1 )
+z_index = 1000
+script = ExtResource( 14 )
+
+[node name="Sprite2" type="Sprite" parent="."]
+position = Vector2( 73.9239, 128.212 )
+texture = ExtResource( 17 )
+centered = false
+offset = Vector2( -84, -120 )
+
+[node name="Sprite3" type="Sprite" parent="."]
+position = Vector2( 75.1407, 104.544 )
+scale = Vector2( 3.04188, 3.04188 )
+texture = ExtResource( 18 )
 [connection signal="pressed" from="GUI/Player1Controls/Left1" to="GUI" method="_on_Left1_pressed"]
 [connection signal="pressed" from="GUI/Player1Controls/Forward1" to="GUI" method="_on_Forward1_pressed"]
 [connection signal="pressed" from="GUI/Player1Controls/Reverse1" to="GUI" method="_on_Reverse1_pressed"]
@@ -203,3 +331,6 @@ texture_normal = ExtResource( 10 )
 [connection signal="pressed" from="GUI/Player2Controls/Forward2" to="GUI" method="_on_Forward2_pressed"]
 [connection signal="pressed" from="GUI/Player2Controls/Reverse2" to="GUI" method="_on_Reverse2_pressed"]
 [connection signal="pressed" from="GUI/Player2Controls/Right2" to="GUI" method="_on_Right2_pressed"]
+[connection signal="pressed" from="PauseScreen/Control/MarginContainer/ColorRect/CenterContainer/VBoxContainer/Next" to="PauseScreen" method="_on_Next_pressed"]
+[connection signal="pressed" from="PauseScreen/Control/MarginContainer/ColorRect/CenterContainer/VBoxContainer/Retry" to="PauseScreen" method="_on_Retry_pressed"]
+[connection signal="pressed" from="PauseScreen/Control/MarginContainer/ColorRect/CenterContainer/VBoxContainer/Menu" to="PauseScreen" method="_on_Menu_pressed"]
