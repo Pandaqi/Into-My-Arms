@@ -5,15 +5,14 @@
 [ext_resource path="res://Animations/Rotate Player.tres" type="Animation" id=3]
 
 [node name="Player" type="Sprite" groups=[
-"Players",
 "Obstacles",
+"Players",
 ]]
 position = Vector2( 385.421, 156.29 )
 texture = ExtResource( 1 )
 offset = Vector2( 0, -32 )
 hframes = 4
 script = ExtResource( 2 )
-CUR_HEIGHT = 3
 
 [node name="Tween" type="Tween" parent="."]
 

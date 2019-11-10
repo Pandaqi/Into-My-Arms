@@ -1,0 +1,33 @@
+extends CanvasLayer
+
+onready var players = get_tree().get_nodes_in_group("Players")
+
+###
+# Button signals for player 1 (rotate and move)
+###
+func _on_Left1_pressed():
+	players[0].rotate(-1)
+
+func _on_Forward1_pressed():
+	players[0].move_forward(1)
+
+func _on_Reverse1_pressed():
+	players[0].move_forward(-1)
+
+func _on_Right1_pressed():
+	players[0].rotate(1)
+
+###
+# Button signals for player 2 (rotate and move)
+###
+func _on_Left2_pressed():
+	players[1].rotate(-1)
+
+func _on_Forward2_pressed():
+	players[1].move_forward(1)
+
+func _on_Reverse2_pressed():
+	players[1].move_forward(-1)
+
+func _on_Right2_pressed():
+	players[1].rotate(1)

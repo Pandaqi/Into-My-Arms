@@ -5,74 +5,20 @@
 [ext_resource path="res://Player2.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Scripts/Camera.gd" type="Script" id=4]
 [ext_resource path="res://Textures/light2.png" type="Texture" id=5]
-[ext_resource path="res://Textures/New_Normal_Map.png" type="Texture" id=7]
+[ext_resource path="res://Scripts/Main.gd" type="Script" id=6]
+[ext_resource path="res://Textures/Forward.png" type="Texture" id=7]
 [ext_resource path="res://Textures/tileset.png" type="Texture" id=8]
 [ext_resource path="res://Shaders/WallTile.shader" type="Shader" id=9]
+[ext_resource path="res://Textures/Rotate Right.png" type="Texture" id=10]
+[ext_resource path="res://Textures/Forward_2.png" type="Texture" id=11]
+[ext_resource path="res://Textures/Rotate Left.png" type="Texture" id=12]
+[ext_resource path="res://Scripts/GUI.gd" type="Script" id=13]
 
-[sub_resource type="Shader" id=1]
-code = "shader_type canvas_item;
-
-void light() {
-	// the tile half size in pixels
-	vec2 tile_vec = vec2(64, 32);
-	
-	// compute a 3D postion fot thelight
-	vec3 light_3d = vec3(-LIGHT_VEC.x, LIGHT_HEIGHT, LIGHT_VEC.y);
-	
-	//rotate the normal map to the same coordinates as the pseudo 3d ponit
-	//this could be optimized
-	float r = asin(tile_vec.y/tile_vec.x);
-	mat3 rot_mat = mat3( vec3(1,0,0), vec3(0,cos(r),-sin(r)), vec3(0,sin(r),cos(r)));
-	vec3 n =  rot_mat * NORMAL;
-	n.y=-n.y;
-	
-	//compute diffuse light
-	float dp = max(dot(normalize(n),-normalize(light_3d)),0);
-	LIGHT=vec4(vec3(dp),1.0) * texture(TEXTURE, UV) * LIGHT_COLOR * 3.0;
-}
-"
-
-[sub_resource type="ShaderMaterial" id=2]
-shader = SubResource( 1 )
-
-[sub_resource type="ShaderMaterial" id=3]
-shader = ExtResource( 9 )
-
-[sub_resource type="OccluderPolygon2D" id=4]
-closed = false
-polygon = PoolVector2Array( -64, 0, 0, 32, 64, 0 )
-
-[sub_resource type="TileSet" id=5]
-0/name = "Sprite"
-0/texture = ExtResource( 8 )
-0/normal_map = ExtResource( 7 )
-0/tex_offset = Vector2( -64, -96 )
-0/material = SubResource( 2 )
-0/modulate = Color( 1, 1, 1, 1 )
-0/region = Rect2( 0, 0, 128, 128 )
-0/tile_mode = 0
-0/occluder_offset = Vector2( 0, 0 )
-0/navigation_offset = Vector2( 0, 0 )
-0/shapes = [  ]
-0/z_index = 0
-1/name = "Sprite2"
-1/texture = ExtResource( 8 )
-1/normal_map = ExtResource( 7 )
-1/tex_offset = Vector2( -64, -96 )
-1/material = SubResource( 3 )
-1/modulate = Color( 0.521569, 1, 0, 1 )
-1/region = Rect2( 0, 0, 128, 128 )
-1/tile_mode = 0
-1/occluder_offset = Vector2( 0, 0 )
-1/occluder = SubResource( 4 )
-1/navigation_offset = Vector2( 0, 0 )
-1/shapes = [  ]
-1/z_index = 0
-
-[sub_resource type="ShaderMaterial" id=7]
+[sub_resource type="ShaderMaterial" id=6]
 shader = ExtResource( 9 )
 
 [node name="Node2D" type="Node2D"]
+script = ExtResource( 6 )
 
 [node name="Level0" type="TileMap" parent="." groups=[
 "TileMaps",
@@ -83,7 +29,7 @@ cell_size = Vector2( 128, 64 )
 cell_tile_origin = 1
 cell_y_sort = true
 format = 1
-tile_data = PoolIntArray( -131066, 0, 0, -131065, 0, 0, -131064, 0, 0, -65530, 0, 0, -65529, 0, 0, -65528, 0, 0, 6, 0, 0, 7, 0, 0, 8, 0, 0, 65542, 0, 0, 65543, 0, 0, 65544, 0, 0 )
+tile_data = PoolIntArray( 65536, 0, 0, 65537, 0, 0, 65538, 0, 0, 65539, 0, 0, 131072, 0, 0, 131073, 0, 0, 131074, 0, 0, 131075, 0, 0, 196608, 0, 0, 196609, 0, 0, 196610, 0, 0, 196611, 0, 0, 262144, 0, 0, 262145, 0, 0, 262146, 0, 0, 262147, 0, 0 )
 
 [node name="Level1" type="TileMap" parent="." groups=[
 "TileMaps",
@@ -94,13 +40,10 @@ cell_size = Vector2( 128, 64 )
 cell_tile_origin = 1
 cell_y_sort = true
 format = 1
-tile_data = PoolIntArray( -131065, 1, 0, 7, 1, 0 )
+tile_data = PoolIntArray( 0, 0, 0, 1, 0, 0, 2, 0, 0, 131073, 0, 0 )
 
 [node name="Player" parent="Level1" instance=ExtResource( 2 )]
-position = Vector2( 321.652, 191.253 )
-
-[node name="Player2" parent="Level1" instance=ExtResource( 3 )]
-position = Vector2( 448.85, 124.836 )
+position = Vector2( -127.314, 95.2932 )
 
 [node name="Level2" type="TileMap" parent="." groups=[
 "TileMaps",
@@ -112,25 +55,37 @@ cell_size = Vector2( 128, 64 )
 cell_tile_origin = 1
 cell_y_sort = true
 format = 1
+tile_data = PoolIntArray( -1, 0, 0, -65536, 0, 0, -65535, 0, 0, 0, 0, 0, 65536, 0, 0 )
 
-[node name="EmptyTilemap" type="TileMap" parent="." groups=[
+[node name="Level3" type="TileMap" parent="." groups=[
 "TileMaps",
 ]]
 mode = 1
-tile_set = SubResource( 5 )
+tile_set = ExtResource( 1 )
 cell_size = Vector2( 128, 64 )
 cell_tile_origin = 1
 cell_y_sort = true
 format = 1
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2( 501.44, 269.359 )
+[node name="Player2" parent="Level3" instance=ExtResource( 3 )]
+position = Vector2( 124.098, -38.4243 )
+
+[node name="EmptyTilemap" type="TileMap" parent="."]
+mode = 1
+tile_set = ExtResource( 1 )
+cell_size = Vector2( 128, 64 )
+cell_tile_origin = 1
+cell_y_sort = true
+format = 1
+
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2( 5.2005, 81.434 )
 current = true
 zoom = Vector2( 2, 2 )
 script = ExtResource( 4 )
 
 [node name="Sprite" type="Sprite" parent="."]
-material = SubResource( 7 )
+material = SubResource( 6 )
 position = Vector2( 669.694, 303.222 )
 texture = ExtResource( 8 )
 
@@ -140,3 +95,111 @@ scale = Vector2( 0.965543, 1.33692 )
 texture = ExtResource( 5 )
 color = Color( 0.0117647, 0.396078, 1, 1 )
 shadow_enabled = true
+
+[node name="GUI" type="CanvasLayer" parent="."]
+script = ExtResource( 13 )
+
+[node name="Control" type="Control" parent="GUI"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Player1Controls" type="Node2D" parent="GUI"]
+position = Vector2( 0.0613708, 285.711 )
+
+[node name="Left1" type="TextureButton" parent="GUI/Player1Controls"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 16.7877
+margin_top = -89.9342
+margin_right = 272.788
+margin_bottom = 166.066
+texture_normal = ExtResource( 12 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Forward1" type="TextureButton" parent="GUI/Player1Controls"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 68.35
+margin_top = -122.311
+margin_right = 325.35
+margin_bottom = 133.689
+texture_normal = ExtResource( 11 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Reverse1" type="TextureButton" parent="GUI/Player1Controls"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 68.35
+margin_top = -61.1552
+margin_right = 324.35
+margin_bottom = 194.845
+texture_normal = ExtResource( 7 )
+
+[node name="Right1" type="TextureButton" parent="GUI/Player1Controls"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 124.86
+margin_top = -88.2615
+margin_right = 381.86
+margin_bottom = 167.739
+texture_normal = ExtResource( 10 )
+
+[node name="Player2Controls" type="Node2D" parent="GUI"]
+position = Vector2( 507.29, 282.113 )
+
+[node name="Left2" type="TextureButton" parent="GUI/Player2Controls"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -167.877
+margin_top = -89.9342
+margin_right = 88.1227
+margin_bottom = 166.066
+texture_normal = ExtResource( 12 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Forward2" type="TextureButton" parent="GUI/Player2Controls"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -116.315
+margin_top = -122.311
+margin_right = 140.685
+margin_bottom = 133.689
+texture_normal = ExtResource( 11 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Reverse2" type="TextureButton" parent="GUI/Player2Controls"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -116.315
+margin_top = -61.1552
+margin_right = 139.685
+margin_bottom = 194.845
+texture_normal = ExtResource( 7 )
+
+[node name="Right2" type="TextureButton" parent="GUI/Player2Controls"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -59.8051
+margin_top = -88.2615
+margin_right = 197.195
+margin_bottom = 167.739
+texture_normal = ExtResource( 10 )
+[connection signal="pressed" from="GUI/Player1Controls/Left1" to="GUI" method="_on_Left1_pressed"]
+[connection signal="pressed" from="GUI/Player1Controls/Forward1" to="GUI" method="_on_Forward1_pressed"]
+[connection signal="pressed" from="GUI/Player1Controls/Reverse1" to="GUI" method="_on_Reverse1_pressed"]
+[connection signal="pressed" from="GUI/Player1Controls/Right1" to="GUI" method="_on_Right1_pressed"]
+[connection signal="pressed" from="GUI/Player2Controls/Left2" to="GUI" method="_on_Left2_pressed"]
+[connection signal="pressed" from="GUI/Player2Controls/Forward2" to="GUI" method="_on_Forward2_pressed"]
+[connection signal="pressed" from="GUI/Player2Controls/Reverse2" to="GUI" method="_on_Reverse2_pressed"]
+[connection signal="pressed" from="GUI/Player2Controls/Right2" to="GUI" method="_on_Right2_pressed"]
