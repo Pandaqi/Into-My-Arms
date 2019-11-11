@@ -7,17 +7,10 @@ func _ready():
 	# Here we turn certain tutorial/interface parts on/off
 	# based on the PLATFORM/OS on which the game is running
 	###
-	var platform = OS.get_name()
-	
 	# We ONLY want to see the mobile controls on actual mobile screens
-	if platform != "Android":
-		$Player1Controls.hide()
-		$Player2Controls.hide()
-	
-	# But if we're on mobile, we DON't want to see the keyboard controls!
-	else:
-		get_node("/root/Node2D/Player1ControlInstructions").hide()
-		get_node("/root/Node2D/Player2ControlInstructions").hide()
+	if Global.get_device() != "Android":
+		$Player1Controls.queue_free()
+		$Player2Controls.queue_free()
 
 ###
 # Button signals for player 1 (rotate and move)

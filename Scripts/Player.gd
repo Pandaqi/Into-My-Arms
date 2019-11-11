@@ -45,6 +45,8 @@ var tilemap
 
 var previous_blocking_objects = []
 
+var blink_timer = null
+
 func _ready():
 	tilemap = get_parent()
 	
@@ -63,6 +65,19 @@ func _ready():
 	
 	# intialize a faster speed for animations
 	$AnimationPlayer.set_speed_scale(2.0)
+	
+	# color the sprite (player 1 and 2 have distinct colors)
+	var player_colors = [Color(1.0, 83/255.0, 83/255.0), Color(193/255.0, 83/255.0, 1.0)]
+	modulate = player_colors[PLAYER_NUM]
+	
+	# start blink timer
+	blink_timer = Timer.new()
+	add_child(blink_timer)
+	
+	blink_timer.connect("timeout", self, "blink") 
+	blink_timer.set_one_shot(false)
+	blink_timer.set_wait_time(rand_range(3,8))
+	blink_timer.start()
 
 func initialize(grid):
 	# get root node
@@ -93,10 +108,12 @@ func initialize(grid):
 func update_z_index():
 	var pos_3d = Vector3(TILEMAP_POS.x, CUR_HEIGHT, TILEMAP_POS.y)
 	
+	print(int(PLAYER_NUM), " -> ", pos_3d)
+	
 	# NOTE: By rounding/ceiling the Z here, moving in FRONT of stuff looks great, but moving behind stuff is weird
 	# Essentially, I need a way to differentiate between these situations?
 	# TO DO: See if I can convert isometric to 3D coordinates within tilemap, so things should just work
-	z_index = pos_3d.x + 3*pos_3d.y + pos_3d.z
+	z_index = ceil( pos_3d.x + 3*pos_3d.y + pos_3d.z )
 
 func update_position_in_grid(new_position, old_position = null):
 	# remove ourselves from the OLD position
@@ -110,19 +127,23 @@ func update_position_in_grid(new_position, old_position = null):
 func v3_to_index(v3):
 	return str(int(round(v3.x))) + "," + str(int(round(v3.y))) + "," + str(int(round(v3.z)))
 
-func _process(delta):
-	# update player index (based on position) to get correct depth perception
-	update_z_index()
+func blink():
+	$AnimationPlayerEyes.play("Player Blink")
 	
+	blink_timer.set_wait_time(rand_range(3,8))
+
+func _process(delta):
 	# check what this player can see
 	# (if we can see the other player, it's GAME OVER)
 	determine_fov()
 	
-	# check if there's something blocking the view towards this player
-	check_blocking_objects()
+	# if we're moving ...
+	if is_moving:
+		# update player index (based on position) to get correct depth perception
+		update_z_index()
 	
-	# as long as we're moving, all other movements aren't even considered
-	if not is_moving:
+	# only consider other movements (forward/backward/gravity) if we're not moving
+	else:
 	
 		# check if we should fall down because of gravity
 		var pos_3d_below = Vector3(TILEMAP_POS.x + 1, CUR_HEIGHT - 1, TILEMAP_POS.y + 1)
@@ -257,6 +278,22 @@ func rotation_finished(arg):
 		# pause the animation
 		# (just stopping it with stop() would reset it every time)
 		$AnimationPlayer.stop(false)
+		
+		# ensure we have the right frame
+		# TO DO: If I ever make a more detailed rotating animation, we need to update this line of code
+		frame = arg
+		
+		# also update eyes
+		if arg == 0:
+			$Eyes.set_visible(true)
+			$Eyes.scale.x = 1
+			$Eyes.set_position(Vector2(26, -36))
+		elif arg == 1:
+			$Eyes.set_visible(true)
+			$Eyes.scale.x = -1
+			$Eyes.set_position(Vector2(-26, -36))
+		else:
+			$Eyes.set_visible(false)
 	
 	# remember we're done rotating
 	is_rotating = false
@@ -265,6 +302,11 @@ func rotation_finished(arg):
 	FORWARD_DIR = arg
 
 func move_down():
+	# if we have a negative height, we're below level bounds, and have thus lost the level
+	if (CUR_HEIGHT - 1) < 0:
+		get_node("/root/Node2D").end_level(false, null, self)
+		return
+	
 	print("Moving down?? Player num: ", PLAYER_NUM)
 	
 	# increase fall counter
@@ -286,10 +328,6 @@ func move_down():
 								tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
 	TILEMAP_POS = new_tilemap_position
 	CUR_HEIGHT -= 1
-	
-	# if we have a negative height, we're below level bounds, and have thus lost the level
-	if CUR_HEIGHT < 0:
-		get_node("/root/Node2D").end_level(false, null, self)
 	
 	update_position_in_grid(Vector3(TILEMAP_POS.x, CUR_HEIGHT, TILEMAP_POS.y), 
 							Vector3(old_tilemap_position.x, CUR_HEIGHT+1, old_tilemap_position.y))
@@ -375,6 +413,14 @@ func _on_Tween_tween_completed(object, key):
 	if key == ":position":
 		# ... reset movement variable
 		is_moving = false
+		
+		# do final update to z_index
+		update_z_index()
+		
+		print("Player ", str(PLAYER_NUM), " has z_index ", str(z_index))
+		
+		# check if there's something blocking the view towards this player
+		check_blocking_objects()
 
 func display_holding_sprite():
 	# make the sprite visible

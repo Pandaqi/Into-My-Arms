@@ -1,10 +1,7 @@
 extends Node
 
 var prev_camera_pos = null
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
+var is_retry = false
 
 func set_prev_camera_pos(pos):
 	prev_camera_pos = pos
@@ -12,6 +9,13 @@ func set_prev_camera_pos(pos):
 func get_prev_camera_pos():
 	return prev_camera_pos
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+func set_retry(val):
+	print(val)
+	is_retry = val
+
+func is_retry():
+	return is_retry
+
+func get_device():
+	return "Android"
+	#return OS.get_name()

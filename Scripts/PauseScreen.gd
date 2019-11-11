@@ -1,11 +1,19 @@
 extends CanvasLayer
 
-onready var win_screen = $Control/HBoxContainer/WinScreen/CenterContainer/VBoxContainer
-onready var lose_screen = $Control/HBoxContainer/LoseScreen/CenterContainer/VBoxContainer
+onready var container = $Control/VBoxContainer
+
+var gamewin_texts = ["You solved the puzzle!", 
+					 "Yes! You had faith!", 
+					 "May the faith be with you",
+					 "Congratulations on being smart!",
+					 "That was a nice, soft landing",
+					 "Problem solved!"]
 
 var gameover_texts = ["Oh ye of little faith ...", 
 					  "Try again, I have faith in you!",
-					  "Game over, but there's no limit on trying again"]
+					  "Game over, but there's no limit on trying again",
+					  "You lost this time. But next time ...",
+					  "Maybe try something else?"]
 
 var win = false
 var level_start = true
@@ -15,37 +23,11 @@ func display_options():
 	# NOTE: This is called when the "death/win" animation is finished!
 	# display the option screen (next level, retry, back to menu, etc.)
 	get_node("Control").set_visible(true)
-	
-	# calculate proper font size, based on screen resolution
-	var vp_size = get_viewport().size
-	
-	var base_dim = Vector2(512, 288)
-	var preferred_x = vp_size.x / base_dim.x
-	var preferred_y = vp_size.y / base_dim.y
-	var font_size = round( min(preferred_x, preferred_y) ) * 16
-	var path = "res://Fonts/BasicFont" + str(font_size) + ".tres"
-	
-	if win:
-		get_node("Control/HBoxContainer/LoseScreen").modulate.a = 0.0
-		
-		for child in win_screen.get_children():
-			child.add_font_override("font", load(path))
-		
-		for child in lose_screen.get_children():
-			if child is Button: child.disabled = true
-		
-	else:
-		get_node("Control/HBoxContainer/WinScreen").modulate.a = 0.0
-		
-		for child in lose_screen.get_children():
-			child.add_font_override("font", load(path))
-		
-		for child in win_screen.get_children():
-			if child is Button: child.disabled = true
-	
+
 	# just to keep it clean, also hide the rest of the GUI
-	get_node("/root/Node2D/GUI/Player1Controls").set_visible(false)
-	get_node("/root/Node2D/GUI/Player2Controls").set_visible(false)
+	if Global.get_device() == "Android":
+		get_node("/root/Node2D/GUI/Player1Controls").set_visible(false)
+		get_node("/root/Node2D/GUI/Player2Controls").set_visible(false)
 
 #
 # @parameter did_we_win => true if the player won, false if they lost
@@ -86,7 +68,8 @@ func display_screen(did_we_win, pos, obj):
 		tw.start()
 
 		# set the right text
-		win_screen.get_node("ResultText").set_text("You solved the puzzle!")
+		var rand_text = gamewin_texts[ randi() % gamewin_texts.size() ]
+		container.get_node("ResultText").set_text(rand_text)
 	
 	# if the player lost ...
 	else:
@@ -103,15 +86,26 @@ func display_screen(did_we_win, pos, obj):
 		
 		# set the right text
 		var rand_text = gameover_texts[ randi() % gameover_texts.size() ]
-		lose_screen.get_node("ResultText").set_text(rand_text)
+		container.get_node("ResultText").set_text(rand_text)
 
 func move_camera_start():
+	var camera = get_node("/root/Node2D/Camera")
+	
+	# on a retry, just position camera immediately, no tweening
+	if Global.is_retry():
+		camera.offset = Vector2(0,0)
+		tw.interpolate_property(camera, "offset",
+							null, Vector2(0,0),
+							0.1, Tween.TRANS_LINEAR, Tween.EASE_OUT)
+		return
+	
 	get_tree().paused = true
 	
 	# tween OFFSET and POSITION
 	# (camera might end with a different position in the previous level)
-	var camera = get_node("/root/Node2D/Camera")
-	var vp_size = get_viewport().size
+	
+	var vp_size = get_viewport().size * camera.get_zoom().x
+	
 	tw.interpolate_property(camera, "offset",
 							Vector2(-vp_size.x,0), Vector2(0,0),
 							1.0, Tween.TRANS_LINEAR, Tween.EASE_OUT)
@@ -124,15 +118,17 @@ func move_camera_start():
 
 func move_camera_end():
 	var camera = get_node("/root/Node2D/Camera")
-	var vp_size = get_viewport().size
+	var vp_size = get_viewport().size * camera.get_zoom().x
 	tw.interpolate_property(camera, "offset",
 							Vector2(0,0), Vector2(vp_size.x,0),
 							1.0, Tween.TRANS_LINEAR, Tween.EASE_OUT)
 	
 	tw.start()
-	
 
 func _on_Next_pressed():
+	# remember this is a new level, not a retry
+	Global.set_retry(false)
+	
 	# disable cutout
 	get_node("HeartCutout").set_visible(false)
 	
@@ -143,6 +139,9 @@ func _on_Next_pressed():
 	move_camera_end()
 
 func _on_Retry_pressed():
+	# remember this is a retry, not a new level
+	Global.set_retry(true)
+	
 	# reload the current scene
 	get_tree().paused = false
 	get_tree().reload_current_scene()

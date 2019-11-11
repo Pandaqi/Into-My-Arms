@@ -1,22 +1,20 @@
-[gd_scene load_steps=21 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://TilesetBLUP.tres" type="TileSet" id=1]
-[ext_resource path="res://Player1.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Player2.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Player.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scripts/Camera.gd" type="Script" id=4]
 [ext_resource path="res://Fonts/BasicFont16.tres" type="DynamicFont" id=5]
 [ext_resource path="res://Scripts/Main.gd" type="Script" id=6]
-[ext_resource path="res://Textures/Forward.png" type="Texture" id=7]
+[ext_resource path="res://Scripts/Level1-Tutorial.gd" type="Script" id=7]
 [ext_resource path="res://Textures/player_2_controls.png" type="Texture" id=8]
 [ext_resource path="res://Textures/player_1_controls.png" type="Texture" id=9]
-[ext_resource path="res://Textures/Rotate Right.png" type="Texture" id=10]
-[ext_resource path="res://Textures/Forward_2.png" type="Texture" id=11]
-[ext_resource path="res://Textures/Rotate Left.png" type="Texture" id=12]
 [ext_resource path="res://Scripts/GUI.gd" type="Script" id=13]
 [ext_resource path="res://Scripts/PlayerViewDrawer.gd" type="Script" id=14]
 [ext_resource path="res://Scripts/PauseScreen.gd" type="Script" id=15]
+[ext_resource path="res://Fonts/BasicFont32.tres" type="DynamicFont" id=16]
 [ext_resource path="res://Effects/WinParticleEffect.tscn" type="PackedScene" id=17]
 [ext_resource path="res://Textures/game_win_screen.png" type="Texture" id=18]
+[ext_resource path="res://Textures/mobile_buttons.png" type="Texture" id=20]
 
 [sub_resource type="Environment" id=1]
 background_mode = 4
@@ -40,7 +38,7 @@ environment = SubResource( 1 )
 [node name="Background" type="Sprite" parent="."]
 position = Vector2( 17.2547, 110.257 )
 rotation = -1.57079
-scale = Vector2( 0.75, 4500 )
+scale = Vector2( 0.75, 5000 )
 texture = SubResource( 3 )
 region_rect = Rect2( 0, 0, 100, 1000 )
 
@@ -67,6 +65,7 @@ format = 1
 tile_data = PoolIntArray( 1, 0, 0, 2, 0, 0 )
 
 [node name="Player" parent="Level1" instance=ExtResource( 2 )]
+modulate = Color( 1, 0.32549, 0.32549, 1 )
 position = Vector2( -62.3815, 128.329 )
 
 [node name="Level2" type="TileMap" parent="." groups=[
@@ -91,8 +90,10 @@ cell_tile_origin = 1
 cell_y_sort = true
 format = 1
 
-[node name="Player2" parent="Level3" instance=ExtResource( 3 )]
-position = Vector2( 124.098, -38.4243 )
+[node name="Player2" parent="Level3" instance=ExtResource( 2 )]
+modulate = Color( 0.756863, 0.32549, 1, 1 )
+position = Vector2( 128.833, -34.7928 )
+PLAYER_NUM = 1
 
 [node name="EmptyTilemap" type="TileMap" parent="."]
 mode = 1
@@ -114,20 +115,29 @@ script = ExtResource( 4 )
 layer = 4
 script = ExtResource( 13 )
 
-[node name="Player1Controls" type="Node2D" parent="GUI"]
+[node name="Player1Controls" type="Node2D" parent="GUI" groups=[
+"ResizableNodes",
+]]
+modulate = Color( 1, 0.419608, 0.419608, 1 )
 position = Vector2( 0.0613708, 285.711 )
 
 [node name="Left1" type="TextureButton" parent="GUI/Player1Controls"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 16.7877
 margin_top = -89.9342
 margin_right = 272.788
 margin_bottom = 166.066
-texture_normal = ExtResource( 12 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Sprite" type="Sprite" parent="GUI/Player1Controls/Left1"]
+position = Vector2( 14.464, 0 )
+scale = Vector2( 0.25, 0.25 )
+texture = ExtResource( 20 )
+centered = false
+vframes = 2
+hframes = 4
 
 [node name="Forward1" type="TextureButton" parent="GUI/Player1Controls"]
 anchor_right = 1.0
@@ -136,10 +146,17 @@ margin_left = 68.35
 margin_top = -122.311
 margin_right = 325.35
 margin_bottom = 133.689
-texture_normal = ExtResource( 11 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Sprite2" type="Sprite" parent="GUI/Player1Controls/Forward1"]
+scale = Vector2( 0.25, 0.25 )
+texture = ExtResource( 20 )
+centered = false
+vframes = 2
+hframes = 4
+frame = 2
 
 [node name="Reverse1" type="TextureButton" parent="GUI/Player1Controls"]
 anchor_right = 1.0
@@ -148,7 +165,17 @@ margin_left = 68.35
 margin_top = -61.1552
 margin_right = 324.35
 margin_bottom = 194.845
-texture_normal = ExtResource( 7 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Sprite3" type="Sprite" parent="GUI/Player1Controls/Reverse1"]
+scale = Vector2( 0.25, 0.25 )
+texture = ExtResource( 20 )
+centered = false
+vframes = 2
+hframes = 4
+frame = 3
 
 [node name="Right1" type="TextureButton" parent="GUI/Player1Controls"]
 anchor_right = 1.0
@@ -157,9 +184,22 @@ margin_left = 124.86
 margin_top = -88.2615
 margin_right = 381.86
 margin_bottom = 167.739
-texture_normal = ExtResource( 10 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="Player2Controls" type="Node2D" parent="GUI"]
+[node name="Sprite4" type="Sprite" parent="GUI/Player1Controls/Right1"]
+scale = Vector2( 0.25, 0.25 )
+texture = ExtResource( 20 )
+centered = false
+vframes = 2
+hframes = 4
+frame = 1
+
+[node name="Player2Controls" type="Node2D" parent="GUI" groups=[
+"ResizableNodes",
+]]
+modulate = Color( 0.623529, 0.392157, 1, 1 )
 position = Vector2( 507.29, 282.113 )
 
 [node name="Left2" type="TextureButton" parent="GUI/Player2Controls"]
@@ -169,10 +209,16 @@ margin_left = -167.877
 margin_top = -89.9342
 margin_right = 88.1227
 margin_bottom = 166.066
-texture_normal = ExtResource( 12 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Sprite2" type="Sprite" parent="GUI/Player2Controls/Left2"]
+scale = Vector2( 0.25, 0.25 )
+texture = ExtResource( 20 )
+centered = false
+vframes = 2
+hframes = 4
 
 [node name="Forward2" type="TextureButton" parent="GUI/Player2Controls"]
 anchor_right = 1.0
@@ -181,10 +227,17 @@ margin_left = -116.315
 margin_top = -122.311
 margin_right = 140.685
 margin_bottom = 133.689
-texture_normal = ExtResource( 11 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Sprite3" type="Sprite" parent="GUI/Player2Controls/Forward2"]
+scale = Vector2( 0.25, 0.25 )
+texture = ExtResource( 20 )
+centered = false
+vframes = 2
+hframes = 4
+frame = 2
 
 [node name="Reverse2" type="TextureButton" parent="GUI/Player2Controls"]
 anchor_right = 1.0
@@ -193,7 +246,17 @@ margin_left = -116.315
 margin_top = -61.1552
 margin_right = 139.685
 margin_bottom = 194.845
-texture_normal = ExtResource( 7 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Sprite4" type="Sprite" parent="GUI/Player2Controls/Reverse2"]
+scale = Vector2( 0.25, 0.25 )
+texture = ExtResource( 20 )
+centered = false
+vframes = 2
+hframes = 4
+frame = 3
 
 [node name="Right2" type="TextureButton" parent="GUI/Player2Controls"]
 anchor_right = 1.0
@@ -202,7 +265,17 @@ margin_left = -59.8051
 margin_top = -88.2615
 margin_right = 197.195
 margin_bottom = 167.739
-texture_normal = ExtResource( 10 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Sprite5" type="Sprite" parent="GUI/Player2Controls/Right2"]
+scale = Vector2( 0.25, 0.25 )
+texture = ExtResource( 20 )
+centered = false
+vframes = 2
+hframes = 4
+frame = 1
 
 [node name="PauseScreen" type="CanvasLayer" parent="."]
 pause_mode = 2
@@ -216,7 +289,7 @@ scale = Vector2( 3, 3 )
 texture = ExtResource( 18 )
 
 [node name="WinParticleEffect" parent="PauseScreen" instance=ExtResource( 17 )]
-amount = 50
+position = Vector2( 0, -1 )
 
 [node name="Control" type="Control" parent="PauseScreen"]
 visible = false
@@ -227,47 +300,20 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PauseScreen/Control"]
+[node name="VBoxContainer" type="VBoxContainer" parent="PauseScreen/Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LoseScreen" type="MarginContainer" parent="PauseScreen/Control/HBoxContainer"]
-margin_right = 254.0
-margin_bottom = 288.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-custom_constants/margin_right = 25
-custom_constants/margin_top = 25
-custom_constants/margin_left = 25
-custom_constants/margin_bottom = 25
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="CenterContainer" type="CenterContainer" parent="PauseScreen/Control/HBoxContainer/LoseScreen"]
-margin_left = 25.0
-margin_top = 25.0
-margin_right = 229.0
-margin_bottom = 263.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="VBoxContainer" type="VBoxContainer" parent="PauseScreen/Control/HBoxContainer/LoseScreen/CenterContainer"]
-margin_left = 52.0
-margin_top = 84.0
-margin_right = 151.0
-margin_bottom = 153.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="ResultText" type="Label" parent="PauseScreen/Control/HBoxContainer/LoseScreen/CenterContainer/VBoxContainer"]
-margin_right = 99.0
-margin_bottom = 21.0
+[node name="ResultText" type="Label" parent="PauseScreen/Control/VBoxContainer" groups=[
+"ResizableNodes",
+]]
+margin_top = 36.0
+margin_right = 512.0
+margin_bottom = 57.0
+size_flags_vertical = 6
 custom_fonts/font = ExtResource( 5 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Ouch, you lost"
@@ -276,78 +322,84 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Retry" type="Button" parent="PauseScreen/Control/HBoxContainer/LoseScreen/CenterContainer/VBoxContainer"]
-margin_top = 25.0
-margin_right = 99.0
-margin_bottom = 45.0
-text = "Retry"
+[node name="HBoxContainer" type="HBoxContainer" parent="PauseScreen/Control/VBoxContainer"]
+margin_top = 97.0
+margin_right = 512.0
+margin_bottom = 190.0
+size_flags_vertical = 3
 
-[node name="Menu" type="Button" parent="PauseScreen/Control/HBoxContainer/LoseScreen/CenterContainer/VBoxContainer"]
-margin_top = 49.0
-margin_right = 99.0
-margin_bottom = 69.0
-text = "Back to Menu"
+[node name="CenterContainer" type="CenterContainer" parent="PauseScreen/Control/VBoxContainer/HBoxContainer"]
+margin_right = 168.0
+margin_bottom = 93.0
+size_flags_horizontal = 3
 
-[node name="WinScreen" type="MarginContainer" parent="PauseScreen/Control/HBoxContainer"]
-margin_left = 258.0
+[node name="Menu" type="TextureButton" parent="PauseScreen/Control/VBoxContainer/HBoxContainer/CenterContainer" groups=[
+"ResizableNodes",
+]]
+margin_left = 56.0
+margin_top = 18.0
+margin_right = 112.0
+margin_bottom = 74.0
+rect_min_size = Vector2( 56, 56 )
+size_flags_horizontal = 3
+
+[node name="Sprite" type="Sprite" parent="PauseScreen/Control/VBoxContainer/HBoxContainer/CenterContainer/Menu"]
+texture = ExtResource( 20 )
+centered = false
+vframes = 2
+hframes = 4
+frame = 5
+
+[node name="MarginContainer" type="MarginContainer" parent="PauseScreen/Control/VBoxContainer/HBoxContainer"]
+margin_left = 172.0
+margin_right = 340.0
+margin_bottom = 93.0
+size_flags_horizontal = 3
+
+[node name="CenterContainer2" type="CenterContainer" parent="PauseScreen/Control/VBoxContainer/HBoxContainer"]
+margin_left = 344.0
+margin_right = 512.0
+margin_bottom = 93.0
+size_flags_horizontal = 3
+
+[node name="Next" type="TextureButton" parent="PauseScreen/Control/VBoxContainer/HBoxContainer/CenterContainer2" groups=[
+"ResizableNodes",
+]]
+margin_left = 56.0
+margin_top = 18.0
+margin_right = 112.0
+margin_bottom = 74.0
+rect_min_size = Vector2( 56, 56 )
+size_flags_horizontal = 3
+
+[node name="Sprite" type="Sprite" parent="PauseScreen/Control/VBoxContainer/HBoxContainer/CenterContainer2/Next"]
+texture = ExtResource( 20 )
+centered = false
+vframes = 2
+hframes = 4
+frame = 4
+
+[node name="CenterContainer" type="CenterContainer" parent="PauseScreen/Control/VBoxContainer"]
+margin_top = 194.0
 margin_right = 512.0
 margin_bottom = 288.0
-size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_constants/margin_right = 25
-custom_constants/margin_top = 25
-custom_constants/margin_left = 25
-custom_constants/margin_bottom = 25
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="CenterContainer" type="CenterContainer" parent="PauseScreen/Control/HBoxContainer/WinScreen"]
-margin_left = 25.0
-margin_top = 25.0
-margin_right = 229.0
-margin_bottom = 263.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="Retry" type="TextureButton" parent="PauseScreen/Control/VBoxContainer/CenterContainer" groups=[
+"ResizableNodes",
+]]
+margin_left = 228.0
+margin_top = 19.0
+margin_right = 284.0
+margin_bottom = 75.0
+rect_min_size = Vector2( 56, 56 )
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PauseScreen/Control/HBoxContainer/WinScreen/CenterContainer"]
-margin_left = 38.0
-margin_top = 72.0
-margin_right = 165.0
-margin_bottom = 165.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="ResultText" type="Label" parent="PauseScreen/Control/HBoxContainer/WinScreen/CenterContainer/VBoxContainer"]
-margin_right = 127.0
-margin_bottom = 21.0
-custom_fonts/font = ExtResource( 5 )
-custom_colors/font_color = Color( 1, 0.87451, 0.87451, 1 )
-text = "You solved the puzzle!"
-align = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Next" type="Button" parent="PauseScreen/Control/HBoxContainer/WinScreen/CenterContainer/VBoxContainer"]
-margin_top = 25.0
-margin_right = 127.0
-margin_bottom = 45.0
-text = "Next Level"
-
-[node name="Retry" type="Button" parent="PauseScreen/Control/HBoxContainer/WinScreen/CenterContainer/VBoxContainer"]
-margin_top = 49.0
-margin_right = 127.0
-margin_bottom = 69.0
-text = "Retry"
-
-[node name="Menu" type="Button" parent="PauseScreen/Control/HBoxContainer/WinScreen/CenterContainer/VBoxContainer"]
-margin_top = 73.0
-margin_right = 127.0
-margin_bottom = 93.0
-text = "Back to Menu"
+[node name="Sprite" type="Sprite" parent="PauseScreen/Control/VBoxContainer/CenterContainer/Retry"]
+texture = ExtResource( 20 )
+centered = false
+vframes = 2
+hframes = 4
+frame = 6
 
 [node name="Tween" type="Tween" parent="PauseScreen"]
 
@@ -362,36 +414,41 @@ position = Vector2( 0, -1 )
 z_index = 1000
 script = ExtResource( 14 )
 
-[node name="Instructions-Rule1" type="Label" parent="."]
-margin_left = -231.541
-margin_top = -136.492
-margin_right = -46.5413
-margin_bottom = -53.4918
-custom_fonts/font = ExtResource( 5 )
+[node name="Tutorial" type="Node2D" parent="."]
+script = ExtResource( 7 )
+
+[node name="Instructions-Rule1" type="RichTextLabel" parent="Tutorial"]
+margin_left = -415.0
+margin_top = -165.0
+margin_right = -74.0
+margin_bottom = -71.0
+custom_fonts/normal_font = ExtResource( 16 )
+bbcode_enabled = true
+bbcode_text = "[color=#FFAAAA]Rule #1:[/color] Players are NEVER allowed to see each other"
 text = "Rule #1: Players are NEVER allowed to see each other"
-autowrap = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Instructions-Rule2" type="Label" parent="."]
-margin_left = 221.512
-margin_top = 97.5014
-margin_right = 460.512
-margin_bottom = 180.501
-custom_fonts/font = ExtResource( 5 )
+[node name="Instructions-Rule2" type="RichTextLabel" parent="Tutorial"]
+margin_left = 214.069
+margin_top = 56.0
+margin_right = 550.069
+margin_bottom = 245.0
+custom_fonts/normal_font = ExtResource( 16 )
+bbcode_enabled = true
+bbcode_text = "[color=#FFAAAA]Rule #2:[/color] To win, one player must step backwards from a height, and fall on top of the other player (\"in their arms\")"
 text = "Rule #2: To win, one player must step backwards from a height, and fall on top of the other player (\"in their arms\")"
-autowrap = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Player1ControlInstructions" type="Sprite" parent="."]
+[node name="Player1ControlInstructions" type="Sprite" parent="Tutorial"]
 position = Vector2( -261.489, 85.4738 )
 scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 9 )
 
-[node name="Player2ControlInstructions" type="Sprite" parent="."]
+[node name="Player2ControlInstructions" type="Sprite" parent="Tutorial"]
 position = Vector2( 340.613, -65.0704 )
 scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 8 )
@@ -403,9 +460,7 @@ texture = ExtResource( 8 )
 [connection signal="pressed" from="GUI/Player2Controls/Forward2" to="GUI" method="_on_Forward2_pressed"]
 [connection signal="pressed" from="GUI/Player2Controls/Reverse2" to="GUI" method="_on_Reverse2_pressed"]
 [connection signal="pressed" from="GUI/Player2Controls/Right2" to="GUI" method="_on_Right2_pressed"]
-[connection signal="pressed" from="PauseScreen/Control/HBoxContainer/LoseScreen/CenterContainer/VBoxContainer/Retry" to="PauseScreen" method="_on_Retry_pressed"]
-[connection signal="pressed" from="PauseScreen/Control/HBoxContainer/LoseScreen/CenterContainer/VBoxContainer/Menu" to="PauseScreen" method="_on_Menu_pressed"]
-[connection signal="pressed" from="PauseScreen/Control/HBoxContainer/WinScreen/CenterContainer/VBoxContainer/Next" to="PauseScreen" method="_on_Next_pressed"]
-[connection signal="pressed" from="PauseScreen/Control/HBoxContainer/WinScreen/CenterContainer/VBoxContainer/Retry" to="PauseScreen" method="_on_Retry_pressed"]
-[connection signal="pressed" from="PauseScreen/Control/HBoxContainer/WinScreen/CenterContainer/VBoxContainer/Menu" to="PauseScreen" method="_on_Menu_pressed"]
+[connection signal="pressed" from="PauseScreen/Control/VBoxContainer/HBoxContainer/CenterContainer/Menu" to="PauseScreen" method="_on_Menu_pressed"]
+[connection signal="pressed" from="PauseScreen/Control/VBoxContainer/HBoxContainer/CenterContainer2/Next" to="PauseScreen" method="_on_Next_pressed"]
+[connection signal="pressed" from="PauseScreen/Control/VBoxContainer/CenterContainer/Retry" to="PauseScreen" method="_on_Retry_pressed"]
 [connection signal="tween_completed" from="PauseScreen/Tween" to="PauseScreen" method="_on_Tween_tween_completed"]

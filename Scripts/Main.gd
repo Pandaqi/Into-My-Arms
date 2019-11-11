@@ -91,6 +91,7 @@ func _ready():
 	# Lastly, pause the tree
 	#
 	# Why? Because we want to create a zooming in effect, as if we "move to the new level"
+	# We do NOT use this zooming effect on a level retry, as that would just annoy the player
 	###
 	get_node("PauseScreen").move_camera_start()
 
@@ -106,13 +107,40 @@ func window_resize():
 	var final_zoom = max(preferred_x, preferred_y)
 	
 	# EXPERIMENT: see if setting zoom to an integer works better for visual effects
-	#final_zoom = round(final_zoom)
+	final_zoom = ceil(final_zoom)
 	
 	$Camera.set_zoom(Vector2(final_zoom, final_zoom))
 	
-	# Update player control anchoring positions
-	$GUI/Player1Controls.set_position(Vector2(0, new_size.y))
-	$GUI/Player2Controls.set_position(Vector2(new_size.x, new_size.y))
+	# Get the correct font size, based on screen resolution
+	var preferred_font_x = new_size.x / base_dim.x
+	var preferred_font_y = new_size.y / base_dim.y
+	var scale_level = round( min(preferred_font_x, preferred_font_y) )
+	var font_size = scale_level * 16
+	var path = "res://Fonts/BasicFont" + str(font_size) + ".tres"
+	
+	# Update all controls to the correct positions
+	for node in get_tree().get_nodes_in_group("ResizableNodes"):
+		if node is Label:
+			node.add_font_override("font", load(path))
+		
+		# container nodes will always start at scale (1,1) and just use the scale level
+		elif node is Node2D:
+			node.set_scale( scale_level * Vector2(1,1) )
+		
+		elif node is TextureButton:
+			# scale minimum size of button (otherwise, button isn't clickable and doesn't center align)
+			node.rect_min_size = Vector2(56, 56) * scale_level
+
+			# scale sprite(s) that are children
+			# I make all buttons 4X the (56, 56) size to support all resolutions (and keep power of 2 scales)
+			for child in node.get_children():
+				if child is Sprite:
+					child.set_scale( scale_level * Vector2(0.25,0.25) )
+
+	# Update player control anchoring positions (only on mobile)
+	if Global.get_device() == "Android":
+		$GUI/Player1Controls.set_position(Vector2(0, new_size.y))
+		$GUI/Player2Controls.set_position(Vector2(new_size.x, new_size.y))
 
 func end_level(did_we_win, pos, obj):
 	# transform position to CanvasLayer position

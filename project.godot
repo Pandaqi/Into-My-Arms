@@ -29,6 +29,7 @@ window/size/width=512
 window/size/height=288
 window/size/test_width=1024
 window/size/test_height=576
+window/dpi/allow_hidpi=true
 
 [input]
 
@@ -75,6 +76,8 @@ backward1={
 
 [rendering]
 
+quality/driver/driver_name="GLES2"
+vram_compression/import_etc=true
 quality/filters/use_nearest_mipmap_filter=true
 quality/filters/msaa=2
 environment/default_environment="res://default_env.tres"
