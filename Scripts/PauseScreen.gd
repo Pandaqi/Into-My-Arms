@@ -38,6 +38,42 @@ func display_screen(did_we_win, pos, obj):
 	# pause the game
 	get_tree().paused = true
 	
+	###
+	# LEVEL FALLING AWAY ANIMATION
+	#
+	# By making the level blocks fall away when you lose, I solve several visual problems
+	# And of course it looks nice
+	###
+	
+	# quickly save player positions
+	# (more efficient for checking if a tile is below them => might make this even more general though)
+	var player_pos_below = []
+	for player in get_tree().get_nodes_in_group("Players"):
+		player_pos_below.append( Vector3(player.TILEMAP_POS.x + 1, player.CUR_HEIGHT - 1, player.TILEMAP_POS.y + 1) )
+	
+	# loop through all level tiles
+	for tile in get_tree().get_nodes_in_group("LevelTiles"):
+		# check if player is standing on top of this
+		var pos_3d = tile.get_meta("pos_3d")
+		if pos_3d == player_pos_below[0] or pos_3d == player_pos_below[1]:
+			continue
+		
+		# get their HEIGHT
+		var temp_height = pos_3d.y
+		
+		# make it fall down, but DELAY it based on height
+		# also add some randomness to the delay (otherwise tiles fall down as one giant block)
+		var delay = temp_height * 0.3 + rand_range(0.0, 0.3)
+		var end_pos = tile.get_position() + Vector2(0, 1000)
+		tw.interpolate_property(tile, "position",
+								null, end_pos,
+								1.0, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR,
+								delay)
+		
+		tw.start()
+	
+	
+	
 	# remember if we won (for use in other functions)
 	win = did_we_win
 
@@ -75,10 +111,9 @@ func display_screen(did_we_win, pos, obj):
 	else:
 		# display exclamation mark
 		# (and tween it => when tween is done, display game over menu)
-		var sea = obj.get_node("SeeingEachOther")
-		sea.set_visible(true)
+		var seo = obj.display_exclamation_mark()
 		
-		tw.interpolate_property(sea, "scale",
+		tw.interpolate_property(seo, "scale",
 												Vector2(0,0), Vector2(1,1),
 												1.0, Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 		
@@ -87,11 +122,18 @@ func display_screen(did_we_win, pos, obj):
 		# set the right text
 		var rand_text = gameover_texts[ randi() % gameover_texts.size() ]
 		container.get_node("ResultText").set_text(rand_text)
+		
+		# hide and disable next level button
+		container.get_node("HBoxContainer/CenterContainer2/Next").modulate.a = 0.0
+		container.get_node("HBoxContainer/CenterContainer2/Next").disabled = true
+		
 
 func move_camera_start():
-	var camera = get_node("/root/Node2D/Camera")
+	# make sure the pause screen isn't visible
+	$Control.hide()
 	
 	# on a retry, just position camera immediately, no tweening
+	var camera = get_node("/root/Node2D/Camera")
 	if Global.is_retry():
 		camera.offset = Vector2(0,0)
 		tw.interpolate_property(camera, "offset",
@@ -147,8 +189,8 @@ func _on_Retry_pressed():
 	get_tree().reload_current_scene()
 
 func _on_Menu_pressed():
-	print("TO DO: Go back to main menu")
-	pass # Replace with function body.
+	get_tree().paused = false
+	get_tree().change_scene("res://MainMenu.tscn")
 
 func _on_Tween_tween_completed(object, key):
 	# offset only changes at start/end of level

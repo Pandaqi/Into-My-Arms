@@ -1,20 +1,23 @@
-[gd_scene load_steps=19 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://TilesetBLUP.tres" type="TileSet" id=1]
 [ext_resource path="res://Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Shaders/BackgroundGradient.shader" type="Shader" id=3]
 [ext_resource path="res://Scripts/Camera.gd" type="Script" id=4]
 [ext_resource path="res://Fonts/BasicFont16.tres" type="DynamicFont" id=5]
 [ext_resource path="res://Scripts/Main.gd" type="Script" id=6]
-[ext_resource path="res://Scripts/Level1-Tutorial.gd" type="Script" id=7]
-[ext_resource path="res://Textures/player_2_controls.png" type="Texture" id=8]
-[ext_resource path="res://Textures/player_1_controls.png" type="Texture" id=9]
+[ext_resource path="res://ScaleManager.tscn" type="PackedScene" id=10]
 [ext_resource path="res://Scripts/GUI.gd" type="Script" id=13]
 [ext_resource path="res://Scripts/PlayerViewDrawer.gd" type="Script" id=14]
 [ext_resource path="res://Scripts/PauseScreen.gd" type="Script" id=15]
-[ext_resource path="res://Fonts/BasicFont32.tres" type="DynamicFont" id=16]
 [ext_resource path="res://Effects/WinParticleEffect.tscn" type="PackedScene" id=17]
 [ext_resource path="res://Textures/game_win_screen.png" type="Texture" id=18]
 [ext_resource path="res://Textures/mobile_buttons.png" type="Texture" id=20]
+
+[sub_resource type="ShaderMaterial" id=3]
+shader = ExtResource( 3 )
+shader_param/grad_bottom = Vector3( 0.2, 0.2, 1 )
+shader_param/grad_top = Vector3( 0, 0.6, 1 )
 
 [sub_resource type="Environment" id=1]
 background_mode = 4
@@ -23,24 +26,31 @@ tonemap_mode = 2
 tonemap_exposure = 0.75
 glow_enabled = true
 
-[sub_resource type="Gradient" id=2]
-colors = PoolColorArray( 0.0303497, 0.0606934, 0.199219, 1, 0.308167, 0.708009, 0.773438, 1 )
-
-[sub_resource type="GradientTexture" id=3]
-gradient = SubResource( 2 )
-
 [node name="Node2D" type="Node2D"]
 script = ExtResource( 6 )
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="Background" type="CanvasLayer" parent="."]
+layer = -5
+
+[node name="Control" type="Control" parent="Background"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="Background/Control"]
+material = SubResource( 3 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Background"]
 environment = SubResource( 1 )
 
-[node name="Background" type="Sprite" parent="."]
-position = Vector2( 17.2547, 110.257 )
-rotation = -1.57079
-scale = Vector2( 0.75, 5000 )
-texture = SubResource( 3 )
-region_rect = Rect2( 0, 0, 100, 1000 )
+[node name="ScaleManager" parent="." instance=ExtResource( 10 )]
 
 [node name="Level0" type="TileMap" parent="." groups=[
 "TileMaps",
@@ -132,11 +142,11 @@ __meta__ = {
 }
 
 [node name="Sprite" type="Sprite" parent="GUI/Player1Controls/Left1"]
-position = Vector2( 14.464, 0 )
+position = Vector2( 9.80213, 0 )
 scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 20 )
 centered = false
-vframes = 2
+vframes = 3
 hframes = 4
 
 [node name="Forward1" type="TextureButton" parent="GUI/Player1Controls"]
@@ -151,10 +161,11 @@ __meta__ = {
 }
 
 [node name="Sprite2" type="Sprite" parent="GUI/Player1Controls/Forward1"]
+position = Vector2( -4.66187, 0 )
 scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 20 )
 centered = false
-vframes = 2
+vframes = 3
 hframes = 4
 frame = 2
 
@@ -170,10 +181,11 @@ __meta__ = {
 }
 
 [node name="Sprite3" type="Sprite" parent="GUI/Player1Controls/Reverse1"]
+position = Vector2( -4.66187, 0 )
 scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 20 )
 centered = false
-vframes = 2
+vframes = 3
 hframes = 4
 frame = 3
 
@@ -189,10 +201,11 @@ __meta__ = {
 }
 
 [node name="Sprite4" type="Sprite" parent="GUI/Player1Controls/Right1"]
+position = Vector2( -4.66187, 0 )
 scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 20 )
 centered = false
-vframes = 2
+vframes = 3
 hframes = 4
 frame = 1
 
@@ -217,7 +230,7 @@ __meta__ = {
 scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 20 )
 centered = false
-vframes = 2
+vframes = 3
 hframes = 4
 
 [node name="Forward2" type="TextureButton" parent="GUI/Player2Controls"]
@@ -235,7 +248,7 @@ __meta__ = {
 scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 20 )
 centered = false
-vframes = 2
+vframes = 3
 hframes = 4
 frame = 2
 
@@ -254,7 +267,7 @@ __meta__ = {
 scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 20 )
 centered = false
-vframes = 2
+vframes = 3
 hframes = 4
 frame = 3
 
@@ -273,7 +286,7 @@ __meta__ = {
 scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 20 )
 centered = false
-vframes = 2
+vframes = 3
 hframes = 4
 frame = 1
 
@@ -344,9 +357,10 @@ rect_min_size = Vector2( 56, 56 )
 size_flags_horizontal = 3
 
 [node name="Sprite" type="Sprite" parent="PauseScreen/Control/VBoxContainer/HBoxContainer/CenterContainer/Menu"]
+scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 20 )
 centered = false
-vframes = 2
+vframes = 3
 hframes = 4
 frame = 5
 
@@ -373,9 +387,10 @@ rect_min_size = Vector2( 56, 56 )
 size_flags_horizontal = 3
 
 [node name="Sprite" type="Sprite" parent="PauseScreen/Control/VBoxContainer/HBoxContainer/CenterContainer2/Next"]
+scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 20 )
 centered = false
-vframes = 2
+vframes = 3
 hframes = 4
 frame = 4
 
@@ -395,9 +410,10 @@ margin_bottom = 75.0
 rect_min_size = Vector2( 56, 56 )
 
 [node name="Sprite" type="Sprite" parent="PauseScreen/Control/VBoxContainer/CenterContainer/Retry"]
+scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 20 )
 centered = false
-vframes = 2
+vframes = 3
 hframes = 4
 frame = 6
 
@@ -413,45 +429,6 @@ script = ExtResource( 14 )
 position = Vector2( 0, -1 )
 z_index = 1000
 script = ExtResource( 14 )
-
-[node name="Tutorial" type="Node2D" parent="."]
-script = ExtResource( 7 )
-
-[node name="Instructions-Rule1" type="RichTextLabel" parent="Tutorial"]
-margin_left = -415.0
-margin_top = -165.0
-margin_right = -74.0
-margin_bottom = -71.0
-custom_fonts/normal_font = ExtResource( 16 )
-bbcode_enabled = true
-bbcode_text = "[color=#FFAAAA]Rule #1:[/color] Players are NEVER allowed to see each other"
-text = "Rule #1: Players are NEVER allowed to see each other"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Instructions-Rule2" type="RichTextLabel" parent="Tutorial"]
-margin_left = 214.069
-margin_top = 56.0
-margin_right = 550.069
-margin_bottom = 245.0
-custom_fonts/normal_font = ExtResource( 16 )
-bbcode_enabled = true
-bbcode_text = "[color=#FFAAAA]Rule #2:[/color] To win, one player must step backwards from a height, and fall on top of the other player (\"in their arms\")"
-text = "Rule #2: To win, one player must step backwards from a height, and fall on top of the other player (\"in their arms\")"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Player1ControlInstructions" type="Sprite" parent="Tutorial"]
-position = Vector2( -261.489, 85.4738 )
-scale = Vector2( 0.5, 0.5 )
-texture = ExtResource( 9 )
-
-[node name="Player2ControlInstructions" type="Sprite" parent="Tutorial"]
-position = Vector2( 340.613, -65.0704 )
-scale = Vector2( 0.5, 0.5 )
-texture = ExtResource( 8 )
 [connection signal="pressed" from="GUI/Player1Controls/Left1" to="GUI" method="_on_Left1_pressed"]
 [connection signal="pressed" from="GUI/Player1Controls/Forward1" to="GUI" method="_on_Forward1_pressed"]
 [connection signal="pressed" from="GUI/Player1Controls/Reverse1" to="GUI" method="_on_Reverse1_pressed"]

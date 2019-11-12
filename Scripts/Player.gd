@@ -47,6 +47,9 @@ var previous_blocking_objects = []
 
 var blink_timer = null
 
+var fall_tween_duration = 0.3
+var move_tween_duration = 0.3
+
 func _ready():
 	tilemap = get_parent()
 	
@@ -109,11 +112,21 @@ func update_z_index():
 	var pos_3d = Vector3(TILEMAP_POS.x, CUR_HEIGHT, TILEMAP_POS.y)
 	
 	print(int(PLAYER_NUM), " -> ", pos_3d)
+
+#	# to deal with rounding errors in TILEMAP_POS
+#	if (abs(pos_3d.x - round(pos_3d.x)) < 0.1):
+#		pos_3d.x = round(pos_3d.x)
+#
+#	if (abs(pos_3d.z - round(pos_3d.z)) < 0.1):
+#		pos_3d.z = round(pos_3d.z)
 	
 	# NOTE: By rounding/ceiling the Z here, moving in FRONT of stuff looks great, but moving behind stuff is weird
 	# Essentially, I need a way to differentiate between these situations?
 	# TO DO: See if I can convert isometric to 3D coordinates within tilemap, so things should just work
-	z_index = ceil( pos_3d.x + 3*pos_3d.y + pos_3d.z )
+	z_index = round(pos_3d.x + 3*pos_3d.y + pos_3d.z)
+#
+#	if is_moving:
+#		z_index += 1.0
 
 func update_position_in_grid(new_position, old_position = null):
 	# remove ourselves from the OLD position
@@ -171,19 +184,9 @@ func _process(delta):
 			# in any case, if there's an object below us, reset gravity
 			apply_gravity = false
 			fall_counter = 0
-
+		
 		if apply_gravity:
 			move_down()
-	
-		# if we're not falling due to gravity ...
-		else:
-			# ... and we're rotating, allow player input
-			if not is_rotating:
-			
-				if Input.is_action_pressed( get_action("forward") ):
-					move_forward(1)
-				elif Input.is_action_pressed( get_action("backward") ):
-					move_forward(-1)
 
 func check_blocking_objects():
 	for obj in previous_blocking_objects:
@@ -254,6 +257,12 @@ func _input(ev):
 			rotate(-1)
 		elif ev.is_action_released( get_action("right") ):
 			rotate(1)
+	
+	if not is_rotating and not is_moving:
+		if ev.is_action_released( get_action("forward") ):
+			move_forward(1)
+		elif ev.is_action_pressed( get_action("backward") ):
+			move_forward(-1)
 
 func rotate(rotate_dir):
 	if is_rotating:
@@ -294,12 +303,12 @@ func rotation_finished(arg):
 			$Eyes.set_position(Vector2(-26, -36))
 		else:
 			$Eyes.set_visible(false)
-	
-	# remember we're done rotating
-	is_rotating = false
-	
-	# set the forward direction from the argument passed in
-	FORWARD_DIR = arg
+		
+		# remember we're done rotating
+		is_rotating = false
+		
+		# set the forward direction from the argument passed in
+		FORWARD_DIR = arg
 
 func move_down():
 	# if we have a negative height, we're below level bounds, and have thus lost the level
@@ -322,10 +331,10 @@ func move_down():
 	
 	# now create a tween to move to our destination
 	# (the tween object has a signal that's fired when we REACH the destination)
-	var tween_duration = 0.5
 	tween.interpolate_property(self, "position", 
 								null, cell_pos, 
-								tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
+								fall_tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
+	
 	TILEMAP_POS = new_tilemap_position
 	CUR_HEIGHT -= 1
 	
@@ -395,15 +404,14 @@ func move_forward(forward):
 	
 	# now create a tween to move to our destination
 	# (the tween object has a signal that's fired when we REACH the destination)
-	var tween_duration = 0.5
 	tween.interpolate_property(self, "position", 
 								null, cell_pos, 
-								tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
+								move_tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
 
 	# update the actual tilemap position (via a tween)
 	tween.interpolate_property(self, "TILEMAP_POS", 
 							   null, temp_pos,
-							tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
+							move_tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
 
 	# start the tween
 	tween.start()
@@ -429,3 +437,11 @@ func display_holding_sprite():
 	
 	# but "hide" ourselves
 	self.self_modulate.a = 0.0
+
+func display_exclamation_mark():
+	var seo = get_node("SeeingEachOther")
+	seo.set_visible(true)
+	
+	seo.z_index = TILEMAP_POS.x + (CUR_HEIGHT + 1) * 3.0 + TILEMAP_POS.y
+	
+	return seo

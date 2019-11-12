@@ -3,6 +3,52 @@ extends Node
 var prev_camera_pos = null
 var is_retry = false
 
+var cur_level = 0
+
+# Checks if a save file exists
+# If not => creates one
+# If so => grab current level
+func check_save_file():
+	var check_file = File.new()
+	if not check_file.file_exists("user://savegame.save"):
+		var new_game_dict = { "cur_level": 0 }
+		
+		cur_level = 0
+		
+		var write_save_game = File.new()
+		write_save_game.open("user://savegame.save", File.WRITE)
+		write_save_game.store_line(to_json(new_game_dict))
+		write_save_game.close()
+	else:
+		# Retrieves our current level (for starting the game from the main screen)
+		var save_game = File.new()
+		save_game.open("user://savegame.save", File.READ)
+		var content = parse_json(save_game.get_as_text())
+		save_game.close()
+		
+		cur_level = content.cur_level
+
+func get_cur_level():
+	return cur_level
+
+# Saves your progress
+# If you finished a new level, unlocks the next level
+func save_progress(level_num):
+	# load old data
+	var save_game = File.new()
+	save_game.open("user://savegame.save", File.READ)
+	var content = parse_json(save_game.get_as_text())
+	save_game.close()
+	
+	# increment level counter (if we just finished our current level)
+	if level_num == content["cur_level"]:
+		content["cur_level"] += 1
+	
+	var write_save_game = File.new()
+	write_save_game.open("user://savegame.save", File.WRITE)
+	write_save_game.store_line(to_json(content))
+	write_save_game.close()
+
 func set_prev_camera_pos(pos):
 	prev_camera_pos = pos
 

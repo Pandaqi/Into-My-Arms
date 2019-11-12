@@ -14,17 +14,6 @@ func v3_to_index(v3):
 
 func _ready():
 	###
-	# Attach resize signal to main node
-	# 
-	# This is needed to make the camera zoom and control size correct for different screen sizes
-	# (Tried it with controls and stretch settings, but that gave no satisfactory results) 
-	###
-	get_tree().get_root().connect("size_changed", self, "window_resize")
-	
-	# call it once, to automatically set the right settings for the current size
-	window_resize()
-
-	###
 	# Preload all the tiles we need
 	###
 	for tile in TILE_DICT:
@@ -59,8 +48,9 @@ func _ready():
 			var new_block = TILE_SCENES[cell_type].instance()
 			new_block.set_position( cur_tilemap.map_to_world(Vector2(cell.x,cell.y)) + tile_offset )
 			
-			# set cell type as metadata
+			# set cell type and block height as metadata
 			new_block.set_meta("cell_type", cell_type)
+			new_block.set_meta("pos_3d", Vector3(cell.x, y, cell.y) )
 			
 			# set correct z-index
 			# cell.x and cell.y are coordinates within the isometric map
@@ -71,6 +61,7 @@ func _ready():
 			var height_col_diff = ((y+1.0) / NUM_LEVELS)
 			new_block.modulate = Color(height_col_diff, height_col_diff, height_col_diff)
 			
+			# add block to the world
 			add_child(new_block)
 			
 			# finally, save the object in the grid
@@ -94,53 +85,6 @@ func _ready():
 	# We do NOT use this zooming effect on a level retry, as that would just annoy the player
 	###
 	get_node("PauseScreen").move_camera_start()
-
-
-func window_resize():
-	var new_size = get_viewport().size
-	
-	# Update camera zoom
-	var base_dim = Vector2(512, 288)
-	var base_zoom = Vector2(2,2)
-	var preferred_x = base_zoom.x * (base_dim.x / new_size.x)
-	var preferred_y = base_zoom.y * (base_dim.y / new_size.y)
-	var final_zoom = max(preferred_x, preferred_y)
-	
-	# EXPERIMENT: see if setting zoom to an integer works better for visual effects
-	final_zoom = ceil(final_zoom)
-	
-	$Camera.set_zoom(Vector2(final_zoom, final_zoom))
-	
-	# Get the correct font size, based on screen resolution
-	var preferred_font_x = new_size.x / base_dim.x
-	var preferred_font_y = new_size.y / base_dim.y
-	var scale_level = round( min(preferred_font_x, preferred_font_y) )
-	var font_size = scale_level * 16
-	var path = "res://Fonts/BasicFont" + str(font_size) + ".tres"
-	
-	# Update all controls to the correct positions
-	for node in get_tree().get_nodes_in_group("ResizableNodes"):
-		if node is Label:
-			node.add_font_override("font", load(path))
-		
-		# container nodes will always start at scale (1,1) and just use the scale level
-		elif node is Node2D:
-			node.set_scale( scale_level * Vector2(1,1) )
-		
-		elif node is TextureButton:
-			# scale minimum size of button (otherwise, button isn't clickable and doesn't center align)
-			node.rect_min_size = Vector2(56, 56) * scale_level
-
-			# scale sprite(s) that are children
-			# I make all buttons 4X the (56, 56) size to support all resolutions (and keep power of 2 scales)
-			for child in node.get_children():
-				if child is Sprite:
-					child.set_scale( scale_level * Vector2(0.25,0.25) )
-
-	# Update player control anchoring positions (only on mobile)
-	if Global.get_device() == "Android":
-		$GUI/Player1Controls.set_position(Vector2(0, new_size.y))
-		$GUI/Player2Controls.set_position(Vector2(new_size.x, new_size.y))
 
 func end_level(did_we_win, pos, obj):
 	# transform position to CanvasLayer position
