@@ -63,7 +63,7 @@ func _ready():
 	TILEMAP_POS.z = int( tilemap.get_name().substr(5,1) )
 	
 	# intialize a faster speed for animations
-	$AnimationPlayer.set_speed_scale(2.0)
+	$AnimationPlayer.set_speed_scale(1.0)
 	
 	# color the sprite (player 1 and 2 have distinct colors)
 	var player_colors = [Color(1.0, 83/255.0, 83/255.0), Color(193/255.0, 83/255.0, 1.0)]
@@ -122,6 +122,8 @@ func blink():
 	blink_timer.set_wait_time(rand_range(3,8))
 
 func _process(delta):
+	$PosLabel.set_text(str(TILEMAP_POS))
+	
 	# if we're NOT moving ...
 	if not is_moving:
 		# check what this player can see
@@ -306,17 +308,13 @@ func move_down():
 								null, cell_pos, 
 								fall_tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
 	
-	TILEMAP_POS = new_tilemap_position
 	update_position_in_grid(new_tilemap_position, old_tilemap_position)
 
-#	tween.interpolate_property(self, "TILEMAP_POS", 
-#								null, new_tilemap_position, 
-#								tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
-#
-#	tween.interpolate_property(self, "CUR_HEIGHT", 
-#								null, (CUR_HEIGHT - 1), 
-#								tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
-#
+	tween.interpolate_property(self, "TILEMAP_POS", 
+								null, new_tilemap_position, 
+								fall_tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
+
+
 	tween.start()
 
 func get_dir_vector():
@@ -377,16 +375,25 @@ func move_forward(forward):
 	# update the actual tilemap position (via a tween)
 	tween.interpolate_property(self, "TILEMAP_POS", 
 							   null, temp_pos,
-							move_tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
+								move_tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
 
 	# start the tween
 	tween.start()
 
 func _on_Tween_tween_completed(object, key):
 	# if this was a position tween ... (aka movement)
-	if key == ":position":
+	# NOTE: Previously, I checked the ":position" property => DON'T DO THIS
+	#       It caused slight imprecisions in TILEMAP_POS, because position tween ended _before_ the TILEMAP_POS
+	#		These imprecisions caused huge depth sorting issues over time.
+	if key == ":TILEMAP_POS":
 		# ... reset movement variable
 		is_moving = false
+		
+		# update bounds one last time
+		update_bounds()
+		
+		# update depth sort one last time
+		get_node("/root/Node2D").update_depth_sort = true
 
 		# check if there's something blocking the view towards this player
 		check_blocking_objects()

@@ -48,6 +48,9 @@ func save_progress(level_num):
 	write_save_game.open("user://savegame.save", File.WRITE)
 	write_save_game.store_line(to_json(content))
 	write_save_game.close()
+	
+	# update the cur level counter here
+	cur_level += 1
 
 func set_prev_camera_pos(pos):
 	prev_camera_pos = pos

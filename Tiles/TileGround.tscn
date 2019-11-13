@@ -15,6 +15,7 @@ offset = Vector2( -64, -96 )
 script = ExtResource( 3 )
 
 [node name="DepthLabel" type="Label" parent="."]
+visible = false
 margin_left = -32.7631
 margin_top = -62.4251
 margin_right = 36.2369

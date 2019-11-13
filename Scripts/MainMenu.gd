@@ -4,9 +4,11 @@ onready var tw = $Tween
 onready var cur_active_screen = $Play
 
 func _ready():
-	pass
-	# check the save file => creates one if needed
-	
+	# check if save file exists
+	# => if so, get current level from it
+	# => if not, create it
+	Global.check_save_file()
+
 	# start fullscreen
 	#OS.window_fullscreen = true
 

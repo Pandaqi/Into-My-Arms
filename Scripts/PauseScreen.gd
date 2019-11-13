@@ -87,16 +87,9 @@ func display_screen(did_we_win, pos, obj):
 		# use heart cutout animation (make visible, set position to point at player)
 		var hc = get_node("HeartCutout")
 		hc.set_visible(true)
-		hc.set_position(pos)
 		
-		var cur_camera_zoom = get_node("/root/Node2D/Camera").get_zoom()
-		var start_scale = 10.0 / cur_camera_zoom.x * Vector2(1,1)
-		var end_scale = 3.0 / cur_camera_zoom.x * Vector2(1,1)
-		
-		tw.interpolate_property(hc, "scale",
-								start_scale, end_scale,
-								1.0, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
-		
+		$AnimationPlayer.play("Heart Cutout")
+
 		tw.interpolate_property(hc, "modulate",
 								Color(1.0, 0.5, 0.5), Color(0.2, 0.0, 0.0),
 								1.0, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
@@ -171,6 +164,9 @@ func _on_Next_pressed():
 	# remember this is a new level, not a retry
 	Global.set_retry(false)
 	
+	# remember we made progress
+	Global.save_progress(get_node("/root/Node2D").cur_level)
+	
 	# disable cutout
 	get_node("HeartCutout").set_visible(false)
 	
@@ -208,10 +204,8 @@ func _on_Tween_tween_completed(object, key):
 			Global.set_prev_camera_pos( get_node("/root/Node2D/Camera").get_position() )
 			
 			# load next level
-			print("TO DO: Actually load next level, instead of reloading current")
-			
-			get_tree().reload_current_scene()
+			get_tree().change_scene("res://Levels/Level" + str(Global.get_cur_level()) + ".tscn")
 	
-	# scale changes on game win/loss
-	elif key == ":scale":
+	# modulate/scale changes on game win/loss
+	elif key == ":modulate" or key == ":scale":
 		display_options()

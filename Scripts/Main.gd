@@ -11,6 +11,7 @@ var SORT_DEPTH = 0
 var ALL_SPRITES = []
 
 var update_depth_sort = false
+export (int) var cur_level = 0
 
 # Converts vector3 to a string-version that is better for dictionaries
 # (Plain vector3s give precision errors)

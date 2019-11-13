@@ -45,6 +45,21 @@ texture = ExtResource( 6 )
 hframes = 2
 
 [node name="DepthLabel" type="Label" parent="."]
+visible = false
+margin_left = -17.4585
+margin_top = -62.1521
+margin_right = 22.5415
+margin_bottom = 0.84787
+custom_fonts/font = ExtResource( 8 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "0"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PosLabel" type="Label" parent="."]
+visible = false
 margin_left = -17.4585
 margin_top = -62.1521
 margin_right = 22.5415

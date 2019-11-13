@@ -1,17 +1,17 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://TilesetBLUP.tres" type="TileSet" id=1]
-[ext_resource path="res://Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Textures/game_win_heart.png" type="Texture" id=2]
 [ext_resource path="res://Shaders/BackgroundGradient.shader" type="Shader" id=3]
 [ext_resource path="res://Scripts/Camera.gd" type="Script" id=4]
 [ext_resource path="res://Fonts/BasicFont16.tres" type="DynamicFont" id=5]
 [ext_resource path="res://Scripts/Main.gd" type="Script" id=6]
+[ext_resource path="res://Animations/Heart Cutout.tres" type="Animation" id=7]
 [ext_resource path="res://ScaleManager.tscn" type="PackedScene" id=10]
 [ext_resource path="res://Scripts/GUI.gd" type="Script" id=13]
 [ext_resource path="res://Scripts/PlayerViewDrawer.gd" type="Script" id=14]
 [ext_resource path="res://Scripts/PauseScreen.gd" type="Script" id=15]
 [ext_resource path="res://Effects/WinParticleEffect.tscn" type="PackedScene" id=17]
-[ext_resource path="res://Textures/game_win_screen.png" type="Texture" id=18]
 [ext_resource path="res://Textures/mobile_buttons.png" type="Texture" id=20]
 
 [sub_resource type="ShaderMaterial" id=1]
@@ -25,6 +25,43 @@ background_color = Color( 0.556863, 0.760784, 0.909804, 1 )
 tonemap_mode = 2
 tonemap_exposure = 0.75
 glow_enabled = true
+
+[sub_resource type="Shader" id=3]
+code = "shader_type canvas_item;
+
+uniform sampler2D heart_tex;
+uniform float scale_factor = 0.5;
+
+void fragment() {
+	float scale_factor_y = scale_factor + sin(TIME*4.0)*0.05;
+	float scale_factor_x = scale_factor_y * 0.5;
+//
+	float x = min( max( (UV.x - 0.5 + 0.5*scale_factor_x)*(1.0/scale_factor_x), 0.0), 1.0);
+	float y = min( max( (UV.y - 0.5 + 0.5*scale_factor_y)*(1.0/scale_factor_y), 0.0), 1.0);
+	
+//  LOGIC FLOW THAT HELPED ME FIGURE OUT HOW TO CENTER/SCALE THE HEART PROPERLY
+//	float x = UV.x;
+//	if(x < 0.5 - 0.5*scale_factor_x || x > 0.5 + 0.5*scale_factor_x) {
+//		x = 0.0;
+//	} else {
+//		x = (UV.x - 0.5 + 0.5*scale_factor_x)*(1.0/scale_factor_x);
+//	}
+//////
+//	float y = UV.y;
+//	if(y < 0.25 || y > 0.75) {
+//		y = 0.0;
+//	} else {
+//		y = (UV.y - 0.25)*2.0;
+//	}
+	
+	// SET COLOR, but with the heart cut out
+	COLOR = vec4(1.0, 1.0, 1.0, 1.0 - texture(heart_tex, vec2(x,y)).a);
+}"
+
+[sub_resource type="ShaderMaterial" id=4]
+shader = SubResource( 3 )
+shader_param/scale_factor = 3.0
+shader_param/heart_tex = ExtResource( 2 )
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource( 6 )
@@ -74,10 +111,6 @@ cell_y_sort = true
 format = 1
 tile_data = PoolIntArray( 1, 0, 0, 2, 0, 0 )
 
-[node name="Player" parent="Level1" instance=ExtResource( 2 )]
-modulate = Color( 1, 0.32549, 0.32549, 1 )
-position = Vector2( -62.3815, 128.329 )
-
 [node name="Level2" type="TileMap" parent="." groups=[
 "TileMaps",
 ]]
@@ -99,11 +132,6 @@ cell_size = Vector2( 128, 64 )
 cell_tile_origin = 1
 cell_y_sort = true
 format = 1
-
-[node name="Player2" parent="Level3" instance=ExtResource( 2 )]
-modulate = Color( 0.756863, 0.32549, 1, 1 )
-position = Vector2( 129.651, -28.2498 )
-PLAYER_NUM = 1
 
 [node name="EmptyTilemap" type="TileMap" parent="."]
 mode = 1
@@ -130,6 +158,7 @@ script = ExtResource( 13 )
 ]]
 modulate = Color( 1, 0.419608, 0.419608, 1 )
 position = Vector2( 0.0613708, 285.711 )
+scale = Vector2( 0.75, 0.75 )
 
 [node name="Left1" type="TextureButton" parent="GUI/Player1Controls"]
 anchor_right = 1.0
@@ -214,6 +243,7 @@ frame = 1
 ]]
 modulate = Color( 0.623529, 0.392157, 1, 1 )
 position = Vector2( 507.29, 282.113 )
+scale = Vector2( 0.75, 0.75 )
 
 [node name="Left2" type="TextureButton" parent="GUI/Player2Controls"]
 anchor_right = 1.0
@@ -295,17 +325,26 @@ pause_mode = 2
 layer = 5
 script = ExtResource( 15 )
 
-[node name="HeartCutout" type="Sprite" parent="PauseScreen"]
-visible = false
-position = Vector2( 75.1407, 104.544 )
-scale = Vector2( 3, 3 )
-texture = ExtResource( 18 )
-
 [node name="WinParticleEffect" parent="PauseScreen" instance=ExtResource( 17 )]
 position = Vector2( 0, -1 )
 
-[node name="Control" type="Control" parent="PauseScreen"]
+[node name="HeartCutout" type="Control" parent="PauseScreen"]
 visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="PauseScreen/HeartCutout"]
+material = SubResource( 4 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Control" type="Control" parent="PauseScreen"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 0
@@ -418,6 +457,9 @@ hframes = 4
 frame = 6
 
 [node name="Tween" type="Tween" parent="PauseScreen"]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="PauseScreen"]
+"anims/Heart Cutout" = ExtResource( 7 )
 
 [node name="PlayerView0" type="Node2D" parent="."]
 modulate = Color( 3, 3, 3, 1 )

@@ -20,6 +20,9 @@ func _ready():
 			else:
 				node.set_meta("initial_size", 16)
 		
+		elif (node is Node2D):
+			node.set_meta("initial_size", node.get_scale())
+		
 		# TO DO: Get initial scale for Labels and Sprites (but HOW)
 	
 	###
@@ -84,21 +87,19 @@ func window_resize():
 		
 		# container nodes will always start at scale (1,1) and just use the scale level
 		elif node is Node2D:
-			node.set_scale( scale_level * Vector2(1,1) )
+			node.set_scale( scale_level * node.get_meta("initial_size") )
 		
 		elif node is TextureButton:
 			# scale minimum size of button (otherwise, button isn't clickable and doesn't center align)
 			var new_rect_size = node.get_meta("initial_size") * scale_level
 			node.rect_min_size = new_rect_size
 			
-			print(new_rect_size)
-
 			# scale sprite(s) that are children
 			# I make all buttons 4X the (56, 56) size to support all resolutions (and keep power of 2 scales)
 			for child in node.get_children():
 				if child is Sprite:
 					child.set_scale( (new_rect_size.x / 56.0) * Vector2(0.25,0.25) )
-
+	
 	# Update player control anchoring positions (only on mobile)
 	if Global.get_device() == "Android":
 		if mobile_controls_1 != null and mobile_controls_2 != null:
