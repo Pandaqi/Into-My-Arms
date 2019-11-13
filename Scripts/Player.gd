@@ -1,4 +1,4 @@
-extends Sprite
+extends "res://Scripts/TileMain.gd"
 
 ### 
 # INTERESTING LINKS
@@ -18,9 +18,6 @@ extends Sprite
 # Keep track of our current ROTATION ( = forward facing direction)
 # Also keep track of our current POSITION
 var FORWARD_DIR = 0
-var TILEMAP_POS = Vector3.ZERO
-var CUR_HEIGHT = 1
-
 var GRID
 
 export (int) var PLAYER_NUM = 0
@@ -54,17 +51,16 @@ func _ready():
 	tilemap = get_parent()
 	
 	# initialize tilemap_pos
-	TILEMAP_POS = tilemap.world_to_map( get_position() )
-	
+	var temp_pos = tilemap.world_to_map( get_position() )
+	TILEMAP_POS.x = temp_pos.x
+	TILEMAP_POS.y = temp_pos.y
+
 	# and snap it to the position we found
-	set_position( tilemap.map_to_world(TILEMAP_POS) + player_offset )
+	set_position( tilemap.map_to_world(Vector2(TILEMAP_POS.x, TILEMAP_POS.y)) + player_offset )
 	
 	# grab height from our tilemap
 	# tilemaps are named "LevelX" => we only want the X, parsed as an int
-	CUR_HEIGHT = int( tilemap.get_name().substr(5,1) )
-	
-	print(TILEMAP_POS)
-	print(CUR_HEIGHT)
+	TILEMAP_POS.z = int( tilemap.get_name().substr(5,1) )
 	
 	# intialize a faster speed for animations
 	$AnimationPlayer.set_speed_scale(2.0)
@@ -81,6 +77,9 @@ func _ready():
 	blink_timer.set_one_shot(false)
 	blink_timer.set_wait_time(rand_range(3,8))
 	blink_timer.start()
+	
+	# call our parent ready function ("TileMain.gd")
+	._ready()
 
 func initialize(grid):
 	# get root node
@@ -97,36 +96,13 @@ func initialize(grid):
 	tilemap = get_node("/root/Node2D/EmptyTilemap")
 	
 	# give ourselves the right metadata
-	set_meta("cell_type", -(PLAYER_NUM+1) )
+	CELL_TYPE = -(PLAYER_NUM+1)
 	
 	# and keep a reference to the main grid for the game
 	GRID = grid
-	
+
 	# save ourselves into the general GRID variable
-	update_position_in_grid(Vector3(TILEMAP_POS.x, CUR_HEIGHT, TILEMAP_POS.y))
-	
-	# and set the correct z_index value
-	update_z_index()
-
-func update_z_index():
-	var pos_3d = Vector3(TILEMAP_POS.x, CUR_HEIGHT, TILEMAP_POS.y)
-	
-	print(int(PLAYER_NUM), " -> ", pos_3d)
-
-#	# to deal with rounding errors in TILEMAP_POS
-#	if (abs(pos_3d.x - round(pos_3d.x)) < 0.1):
-#		pos_3d.x = round(pos_3d.x)
-#
-#	if (abs(pos_3d.z - round(pos_3d.z)) < 0.1):
-#		pos_3d.z = round(pos_3d.z)
-	
-	# NOTE: By rounding/ceiling the Z here, moving in FRONT of stuff looks great, but moving behind stuff is weird
-	# Essentially, I need a way to differentiate between these situations?
-	# TO DO: See if I can convert isometric to 3D coordinates within tilemap, so things should just work
-	z_index = round(pos_3d.x + 3*pos_3d.y + pos_3d.z)
-#
-#	if is_moving:
-#		z_index += 1.0
+	update_position_in_grid(TILEMAP_POS)
 
 func update_position_in_grid(new_position, old_position = null):
 	# remove ourselves from the OLD position
@@ -146,30 +122,23 @@ func blink():
 	blink_timer.set_wait_time(rand_range(3,8))
 
 func _process(delta):
-	# check what this player can see
-	# (if we can see the other player, it's GAME OVER)
-	determine_fov()
-	
-	# if we're moving ...
-	if is_moving:
-		# update player index (based on position) to get correct depth perception
-		update_z_index()
-	
-	# only consider other movements (forward/backward/gravity) if we're not moving
-	else:
-	
+	# if we're NOT moving ...
+	if not is_moving:
+		# check what this player can see
+		# (if we can see the other player, it's GAME OVER)
+		determine_fov()
+		
 		# check if we should fall down because of gravity
-		var pos_3d_below = Vector3(TILEMAP_POS.x + 1, CUR_HEIGHT - 1, TILEMAP_POS.y + 1)
+		var pos_3d_below = TILEMAP_POS + Vector3(1,1,-1)
 		var apply_gravity = true
 		
 		# if there is SOMETHING below us, disable the gravity for this tick
 		if GRID.has(v3_to_index(pos_3d_below)):
-			
 			# check if it's the other player!
 			# if we satisfied the "leap of faith" win condition, we win!
 			var val_below = GRID[v3_to_index(pos_3d_below)]
 			var other_player = (PLAYER_NUM + 1) % 2
-			if val_below.get_meta("cell_type") == -(other_player+1):
+			if val_below.CELL_TYPE == -(other_player+1):
 				if last_move_backward and fall_counter >= 1:
 					# hide this sprite
 					self.hide()
@@ -187,6 +156,12 @@ func _process(delta):
 		
 		if apply_gravity:
 			move_down()
+	else:
+		# update our bounds, if we're moving
+		update_bounds()
+		
+		# tell main node we're moving
+		get_node("/root/Node2D").update_depth_sort = true
 
 func check_blocking_objects():
 	for obj in previous_blocking_objects:
@@ -197,7 +172,7 @@ func check_blocking_objects():
 	# an object can only block player view if it's at these positions (always  at CUR_HEIGHT+1
 	var block_positions = [Vector2(0,-1), Vector2(-1,0), Vector2(0,0)]
 	for pos in block_positions:
-		var cell = Vector3(TILEMAP_POS.x + pos.x, CUR_HEIGHT+1, TILEMAP_POS.y + pos.y)
+		var cell = TILEMAP_POS + Vector3(pos.x, pos.y, 1)
 		
 		# if this object exists ...
 		if GRID.has(v3_to_index(cell)):
@@ -218,14 +193,14 @@ func determine_fov():
 	var step_counter = 1
 	
 	while not found_something:
-		var next_cell = Vector3(round(TILEMAP_POS.x) + step_counter * dir.x, round(CUR_HEIGHT), round(TILEMAP_POS.y) + step_counter * dir.y)
+		var next_cell = TILEMAP_POS + step_counter*dir
 		
 		if GRID.has(v3_to_index(next_cell)):
 			# if it's the other player, we LOSE
 			var val = GRID[v3_to_index(next_cell)]
 			
 			var other_player = (PLAYER_NUM + 1) % 2
-			if val.get_meta("cell_type") == -(other_player+1):
+			if val.CELL_TYPE == -(other_player+1):
 				# I also check if both players aren't moving, 
 				# otherwise the check happens too quickly (before you actually see the other player!)
 				if not val.is_moving and not is_moving:
@@ -234,10 +209,10 @@ func determine_fov():
 			
 			# as long as the object we see isn't see ourselves
 			# break out of the loop (and draw view line)
-			elif val.get_meta("cell_type") != -(PLAYER_NUM + 1):
+			elif val.CELL_TYPE != -(PLAYER_NUM + 1):
 				# save that we found something and WHERE we found it
 				found_something = true
-				view_drawer.create_view_line( get_position(), tilemap.map_to_world(Vector2(next_cell.x, next_cell.z)) + Vector2(0,32) )
+				view_drawer.create_view_line( get_position(), tilemap.map_to_world(Vector2(next_cell.x, next_cell.y)) + Vector2(0,32) )
 				break
 		
 		if step_counter >= max_steps:
@@ -277,8 +252,6 @@ func rotate(rotate_dir):
 		$AnimationPlayer.play_backwards("Rotate Player")
 	else:
 		$AnimationPlayer.play("Rotate Player")
-	
-	print($AnimationPlayer.is_playing())
 
 func rotation_finished(arg):
 	# if we found a different forward direction, stop
@@ -312,12 +285,10 @@ func rotation_finished(arg):
 
 func move_down():
 	# if we have a negative height, we're below level bounds, and have thus lost the level
-	if (CUR_HEIGHT - 1) < 0:
+	if (TILEMAP_POS.z - 1) < 0:
 		get_node("/root/Node2D").end_level(false, null, self)
 		return
-	
-	print("Moving down?? Player num: ", PLAYER_NUM)
-	
+
 	# increase fall counter
 	fall_counter += 1
 	
@@ -326,8 +297,8 @@ func move_down():
 	
 	# find corresponding tile in the tilemap => use it to get the position
 	var old_tilemap_position = TILEMAP_POS
-	var new_tilemap_position = TILEMAP_POS + Vector2(1,1)
-	var cell_pos = tilemap.map_to_world(new_tilemap_position) + player_offset
+	var new_tilemap_position = TILEMAP_POS + Vector3(1,1,-1)
+	var cell_pos = tilemap.map_to_world(Vector2(new_tilemap_position.x, new_tilemap_position.y)) + player_offset
 	
 	# now create a tween to move to our destination
 	# (the tween object has a signal that's fired when we REACH the destination)
@@ -336,10 +307,7 @@ func move_down():
 								fall_tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
 	
 	TILEMAP_POS = new_tilemap_position
-	CUR_HEIGHT -= 1
-	
-	update_position_in_grid(Vector3(TILEMAP_POS.x, CUR_HEIGHT, TILEMAP_POS.y), 
-							Vector3(old_tilemap_position.x, CUR_HEIGHT+1, old_tilemap_position.y))
+	update_position_in_grid(new_tilemap_position, old_tilemap_position)
 
 #	tween.interpolate_property(self, "TILEMAP_POS", 
 #								null, new_tilemap_position, 
@@ -353,13 +321,13 @@ func move_down():
 
 func get_dir_vector():
 	if FORWARD_DIR == 0:
-		return Vector2(1,0)
+		return Vector3(1,0,0)
 	elif FORWARD_DIR == 1:
-		return Vector2(0,1)
+		return Vector3(0,1,0)
 	elif FORWARD_DIR == 2:
-		return Vector2(-1, 0)
+		return Vector3(-1,0,0)
 	elif FORWARD_DIR == 3:
-		return Vector2(0,-1)
+		return Vector3(0,-1,0)
 
 func move_forward(forward):
 	if is_moving or is_rotating:
@@ -379,12 +347,11 @@ func move_forward(forward):
 	#  => Check for a tilemap cell in that direction
 	#  => Check for a player in that direction
 	# If not, break out of this function
-	###
-	var wanted_cell = Vector3(temp_pos.x, CUR_HEIGHT, temp_pos.y)
-
+	##
+	
 	# If there's something here, we can't move!
 	# TO DO: Maybe need a more specific check, when there will be things I can pass through??
-	if GRID.has(v3_to_index(wanted_cell)):
+	if GRID.has(v3_to_index(temp_pos)):
 		return
 
 	###
@@ -393,14 +360,13 @@ func move_forward(forward):
 	
 	#TILEMAP_POS = temp_pos
 	
-	update_position_in_grid(Vector3(temp_pos.x, CUR_HEIGHT, temp_pos.y), 
-							Vector3(TILEMAP_POS.x, CUR_HEIGHT, TILEMAP_POS.y))
+	update_position_in_grid(temp_pos, TILEMAP_POS)
 	
 	# disable moving (while we're moving/playing a tween)
 	is_moving = true
 	
 	# find corresponding tile in the tilemap => use it to get the position
-	var cell_pos = tilemap.map_to_world(temp_pos) + player_offset
+	var cell_pos = tilemap.map_to_world(Vector2(temp_pos.x, temp_pos.y)) + player_offset
 	
 	# now create a tween to move to our destination
 	# (the tween object has a signal that's fired when we REACH the destination)
@@ -421,12 +387,7 @@ func _on_Tween_tween_completed(object, key):
 	if key == ":position":
 		# ... reset movement variable
 		is_moving = false
-		
-		# do final update to z_index
-		update_z_index()
-		
-		print("Player ", str(PLAYER_NUM), " has z_index ", str(z_index))
-		
+
 		# check if there's something blocking the view towards this player
 		check_blocking_objects()
 
@@ -442,6 +403,6 @@ func display_exclamation_mark():
 	var seo = get_node("SeeingEachOther")
 	seo.set_visible(true)
 	
-	seo.z_index = TILEMAP_POS.x + (CUR_HEIGHT + 1) * 3.0 + TILEMAP_POS.y
+	#seo.z_index = TILEMAP_POS.x + (CUR_HEIGHT + 1) * 3.0 + TILEMAP_POS.y
 	
 	return seo

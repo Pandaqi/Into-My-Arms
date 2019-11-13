@@ -14,12 +14,12 @@
 [ext_resource path="res://Textures/game_win_screen.png" type="Texture" id=18]
 [ext_resource path="res://Textures/mobile_buttons.png" type="Texture" id=20]
 
-[sub_resource type="ShaderMaterial" id=3]
+[sub_resource type="ShaderMaterial" id=1]
 shader = ExtResource( 3 )
 shader_param/grad_bottom = Vector3( 0.2, 0.2, 1 )
 shader_param/grad_top = Vector3( 0, 0.6, 1 )
 
-[sub_resource type="Environment" id=1]
+[sub_resource type="Environment" id=2]
 background_mode = 4
 background_color = Color( 0.556863, 0.760784, 0.909804, 1 )
 tonemap_mode = 2
@@ -40,7 +40,7 @@ __meta__ = {
 }
 
 [node name="ColorRect" type="ColorRect" parent="Background/Control"]
-material = SubResource( 3 )
+material = SubResource( 1 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 __meta__ = {
@@ -48,7 +48,7 @@ __meta__ = {
 }
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="Background"]
-environment = SubResource( 1 )
+environment = SubResource( 2 )
 
 [node name="ScaleManager" parent="." instance=ExtResource( 10 )]
 
@@ -61,7 +61,7 @@ cell_size = Vector2( 128, 64 )
 cell_tile_origin = 1
 cell_y_sort = true
 format = 1
-tile_data = PoolIntArray( 65538, 0, 0, 65539, 0, 0, 131074, 0, 0, 131075, 0, 0, 196610, 0, 0, 196611, 0, 0 )
+tile_data = PoolIntArray( 65538, 0, 0, 65539, 0, 0, 65540, 0, 0, 131074, 0, 0, 131075, 0, 0, 131076, 0, 0, 196610, 0, 0, 196611, 0, 0, 196612, 0, 0 )
 
 [node name="Level1" type="TileMap" parent="." groups=[
 "TileMaps",
@@ -88,7 +88,7 @@ cell_size = Vector2( 128, 64 )
 cell_tile_origin = 1
 cell_y_sort = true
 format = 1
-tile_data = PoolIntArray( -65536, 0, 0, -65535, 0, 0 )
+tile_data = PoolIntArray( -65536, 0, 0, -65535, 0, 0, 1, 0, 0, 65537, 0, 0 )
 
 [node name="Level3" type="TileMap" parent="." groups=[
 "TileMaps",
@@ -102,7 +102,7 @@ format = 1
 
 [node name="Player2" parent="Level3" instance=ExtResource( 2 )]
 modulate = Color( 0.756863, 0.32549, 1, 1 )
-position = Vector2( 128.833, -34.7928 )
+position = Vector2( 129.651, -28.2498 )
 PLAYER_NUM = 1
 
 [node name="EmptyTilemap" type="TileMap" parent="."]

@@ -17,6 +17,7 @@ shader_param/grad_top = Vector3( 0, 1, 1 )
 script = ExtResource( 4 )
 
 [node name="ScaleManager" parent="." instance=ExtResource( 7 )]
+in_level = false
 
 [node name="Background" type="CanvasLayer" parent="."]
 layer = -5
@@ -104,9 +105,9 @@ size_flags_horizontal = 3
 "ResizableNodes",
 ]]
 margin_left = 35.0
-margin_top = 13.0
+margin_top = 14.0
 margin_right = 91.0
-margin_bottom = 69.0
+margin_bottom = 70.0
 rect_min_size = Vector2( 56, 56 )
 
 [node name="Sprite" type="Sprite" parent="Play/Control/VBoxContainer/HBoxContainer/CenterContainer/Settings"]
@@ -135,9 +136,9 @@ size_flags_horizontal = 3
 "ResizableNodes",
 ]]
 margin_left = 35.0
-margin_top = 13.0
+margin_top = 14.0
 margin_right = 91.0
-margin_bottom = 69.0
+margin_bottom = 70.0
 rect_min_size = Vector2( 56, 56 )
 
 [node name="Sprite" type="Sprite" parent="Play/Control/VBoxContainer/HBoxContainer/CenterContainer2/Quit"]

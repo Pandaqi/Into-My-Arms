@@ -4,10 +4,11 @@ onready var tw = $Tween
 onready var cur_active_screen = $Play
 
 func _ready():
+	pass
 	# check the save file => creates one if needed
 	
 	# start fullscreen
-	OS.window_fullscreen = true
+	#OS.window_fullscreen = true
 
 func _on_Play_pressed():
 	# Switch to current level ( = latest level we unlocked)

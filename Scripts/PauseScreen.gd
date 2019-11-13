@@ -49,17 +49,17 @@ func display_screen(did_we_win, pos, obj):
 	# (more efficient for checking if a tile is below them => might make this even more general though)
 	var player_pos_below = []
 	for player in get_tree().get_nodes_in_group("Players"):
-		player_pos_below.append( Vector3(player.TILEMAP_POS.x + 1, player.CUR_HEIGHT - 1, player.TILEMAP_POS.y + 1) )
+		player_pos_below.append( player.TILEMAP_POS + Vector3(1, 1, -1) )
 	
 	# loop through all level tiles
 	for tile in get_tree().get_nodes_in_group("LevelTiles"):
 		# check if player is standing on top of this
-		var pos_3d = tile.get_meta("pos_3d")
+		var pos_3d = tile.TILEMAP_POS
 		if pos_3d == player_pos_below[0] or pos_3d == player_pos_below[1]:
 			continue
 		
 		# get their HEIGHT
-		var temp_height = pos_3d.y
+		var temp_height = pos_3d.z
 		
 		# make it fall down, but DELAY it based on height
 		# also add some randomness to the delay (otherwise tiles fall down as one giant block)

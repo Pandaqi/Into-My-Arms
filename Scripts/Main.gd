@@ -7,6 +7,11 @@ var TILE_DICT = ["TileGround.tscn"]
 var TILE_SCENES = []
 var NUM_LEVELS
 
+var SORT_DEPTH = 0
+var ALL_SPRITES = []
+
+var update_depth_sort = false
+
 # Converts vector3 to a string-version that is better for dictionaries
 # (Plain vector3s give precision errors)
 func v3_to_index(v3):
@@ -34,9 +39,9 @@ func _ready():
 	# which allows very quick and easy access during the level
 	###
 	
-	for y in range(NUM_LEVELS):
+	for z in range(NUM_LEVELS):
 		# get all the used cells within this map
-		var cur_tilemap = get_node("Level" + str(y))
+		var cur_tilemap = get_node("Level" + str(z))
 		var used_cells = cur_tilemap.get_used_cells()
 		
 		# for each cell ...
@@ -48,24 +53,22 @@ func _ready():
 			var new_block = TILE_SCENES[cell_type].instance()
 			new_block.set_position( cur_tilemap.map_to_world(Vector2(cell.x,cell.y)) + tile_offset )
 			
-			# set cell type and block height as metadata
-			new_block.set_meta("cell_type", cell_type)
-			new_block.set_meta("pos_3d", Vector3(cell.x, y, cell.y) )
-			
-			# set correct z-index
-			# cell.x and cell.y are coordinates within the isometric map
-			# to convert them to (fake) 3D coordinates, we only need to add the height
-			new_block.z_index = (cell.x + y) + y + (cell.y + y)
-			
+			# set cell type and position
+			new_block.CELL_TYPE = cell_type
+			new_block.TILEMAP_POS = Vector3(cell.x, cell.y, z)
+
 			# modulate this block in accordance with height
-			var height_col_diff = ((y+1.0) / NUM_LEVELS)
+			var height_col_diff = ((z + 1.0) / NUM_LEVELS)
 			new_block.modulate = Color(height_col_diff, height_col_diff, height_col_diff)
 			
 			# add block to the world
 			add_child(new_block)
 			
+			# save a reference to this block (for depth sorting)
+			ALL_SPRITES.append(new_block)
+			
 			# finally, save the object in the grid
-			GRID[v3_to_index(Vector3(cell.x, y, cell.y))] = new_block
+			GRID[v3_to_index(Vector3(cell.x, cell.y, z))] = new_block
 	
 	###
 	# Once we have the grid ...
@@ -74,9 +77,18 @@ func _ready():
 	###
 	for player in get_tree().get_nodes_in_group("Players"):
 		player.initialize(GRID)
+		
+		ALL_SPRITES.append(player)
+		
+		print(player.TILEMAP_POS)
 	
-	for y in range(NUM_LEVELS):
-		get_node("Level" + str(y)).queue_free()
+	for z in range(NUM_LEVELS):
+		get_node("Level" + str(z)).queue_free()
+	
+	###
+	# Once ALL sprites have loaded, perform a single depth sort
+	# to make the first entrance into the level look the proper way
+	perform_depth_sort()
 	
 	###
 	# Lastly, pause the tree
@@ -85,6 +97,65 @@ func _ready():
 	# We do NOT use this zooming effect on a level retry, as that would just annoy the player
 	###
 	get_node("PauseScreen").move_camera_start()
+
+# The main script is mostly responsible for depth sorting the world
+func _process(delta):
+	if update_depth_sort:
+		perform_depth_sort()
+		update_depth_sort = false
+
+func perform_depth_sort():
+	# first, check which sprites are behind other sprites
+	var behind_index
+	for s1 in ALL_SPRITES:
+		behind_index = 0
+	
+		for s2 in ALL_SPRITES:
+			if s1 != s2:
+				if (s2.x_bounds.x < s1.x_bounds.y and s2.y_bounds.x < s1.y_bounds.y and s2.z_bounds.x < s1.z_bounds.y):
+					s1.sprites_behind[behind_index] = s2
+					behind_index += 1
+	
+		s1.sorting_visited = false
+	
+	# then reset sort depth to zero
+	# and visit all nodes to create a (topological) graph
+	SORT_DEPTH = 0
+	for s in ALL_SPRITES:
+		visit_node(s)
+
+func visit_node(s):
+	# if this node has NOT been visited yet ...
+	if not s.sorting_visited:
+		# remember now that we visited
+		s.sorting_visited = true
+		
+		# loop through sprites behind it
+		var counter = 0
+		for sprite in s.sprites_behind:
+			# if this is null, we've reached the end of the list for this frame
+			if sprite == null:
+				break
+
+			# otherwise, visit them, which recursively sets their depth value
+			# (by the time this function returns, all sprites behind this one have been considered, 
+			#  so the sort_depth variable is already at the right value for setting it directly)
+			else:
+				visit_node(sprite)
+				s.sprites_behind[counter] = null
+
+			counter += 1
+		
+		# finally, set the current depth value for this tile
+		# NOTE: because we set z_index directly,
+		# we don't need to loop through the tiles again to sort them visually
+		#  => Godot handles this for us
+		s.z_index = SORT_DEPTH
+		
+		s.get_node("DepthLabel").set_text(str(SORT_DEPTH))
+		
+		SORT_DEPTH += 1
+
 
 func end_level(did_we_win, pos, obj):
 	# transform position to CanvasLayer position

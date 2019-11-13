@@ -1,8 +1,6 @@
 extends Node2D
 
-onready var camera = get_node("/root/Node2D/Camera")
-onready var mobile_controls_1 = get_node("/root/Node2D/GUI/Player1Controls")
-onready var mobile_controls_2 = get_node("/root/Node2D/GUI/Player2Controls")
+export (bool) var in_level = true
 
 func _ready():
 	###
@@ -48,6 +46,15 @@ func window_resize():
 	# EXPERIMENT: see if setting zoom to an integer works better for visual effects
 	final_zoom = ceil(final_zoom)
 	
+	var camera = null
+	var mobile_controls_1 = null
+	var mobile_controls_2 = null
+	
+	if in_level:
+		camera = get_node("/root/Node2D/Camera") 
+		mobile_controls_1 = get_node("/root/Node2D/GUI/Player1Controls")
+		mobile_controls_2 = get_node("/root/Node2D/GUI/Player2Controls")
+	
 	# if we HAVE a camera, set the zoom
 	if camera != null: 
 		camera.set_zoom(Vector2(final_zoom, final_zoom))
@@ -63,7 +70,15 @@ func window_resize():
 			var font_size = scale_level * int( node.get_meta("initial_size") )
 			var path = "res://Fonts/BasicFont" + str(font_size) + ".tres"
 			
-			print(path)
+			var file_check = File.new()
+			while not file_check.file_exists(path):
+				font_size -= 16
+				path = "res://Fonts/BasicFont" + str(font_size) + ".tres"
+				
+				# create hard minimum at 16pt
+				if font_size <= 16:
+					path = "res://Fonts/BasicFont16.tscn"
+					break
 			
 			node.add_font_override("font", load(path))
 		
