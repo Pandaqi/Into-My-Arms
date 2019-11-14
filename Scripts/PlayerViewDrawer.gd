@@ -13,11 +13,8 @@ func _draw():
 		# convert pseudo-3D vectors to 2D positions on screen
 		for i in range(sight_path.size()):
 			var p = sight_path[i]
-			var screen_pos = Vector2(
-							(p.x - p.y)*64, 
-							(p.x + p.y)*32 - p.z*64
-							)
-			var screen_offset = Vector2(0, 32+64)
+			var screen_pos = Vector2((p.x - p.y)*64, (p.x + p.y)*32)
+			var screen_offset = Vector2(0, 32)
 			
 			sight_path[i] = screen_pos + screen_offset
 		

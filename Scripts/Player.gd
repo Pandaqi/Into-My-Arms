@@ -171,16 +171,23 @@ func check_blocking_objects():
 	
 	previous_blocking_objects.clear()
 	
-	# an object can only block player view if it's at these positions (always  at CUR_HEIGHT+1
-	var block_positions = [Vector2(0,-1), Vector2(-1,0), Vector2(0,0)]
+	# an object can only block player view if it's at these positions (left, right, front, above)
+	# we just check two heights above us => most levels won't be higher than that
+	var block_positions = [Vector3(0,-1,1), Vector3(-1,0,1), Vector3(-1,-1,1), Vector3(0,0,1),
+						   Vector3(0,-1,2), Vector3(-1,0,2), Vector3(-1,-1,2), Vector3(0,0,2)]
+	
 	for pos in block_positions:
-		var cell = TILEMAP_POS + Vector3(pos.x, pos.y, 1)
+		var cell = v3_to_index(TILEMAP_POS + pos)
 		
 		# if this object exists ...
-		if GRID.has(v3_to_index(cell)):
-			var cur_obj = GRID[v3_to_index(cell)]
+		if GRID.has(cell):
+			var cur_obj = GRID[cell]
 			
-			# hide it, and remember we hid it
+			# if it's a player, don't do anything
+			if cur_obj.CELL_TYPE < 0:
+				continue
+			
+			# otherwise, hide it, and remember we hid it
 			cur_obj.modulate.a = 0.5
 			previous_blocking_objects.append(cur_obj)
 
@@ -381,18 +388,15 @@ func get_dir_vector():
 	elif FORWARD_DIR == 3:
 		return Vector3(0,-1,0)
 
-func move_forward(forward):
-	if is_moving or is_rotating:
-		return
-	
+func move(move_vec, being_dragged = false):
 	# find the right vector that corresponds with the direction we're facing
-	var temp_dir = get_dir_vector()
-	var temp_pos = TILEMAP_POS + temp_dir*forward
+	var temp_pos = TILEMAP_POS + move_vec
 	
-	if forward < 0:
-		last_move_backward = true
-	else:
+	# if we're being dragged by another
+	# override win conditions
+	if being_dragged:
 		last_move_backward = false
+		fall_counter = 0.0
 	
 	###
 	# CHECK IF WE'RE ALLOWED TO MOVE
@@ -409,6 +413,15 @@ func move_forward(forward):
 	###
 	# ACTUALLY MOVE
 	###
+	
+	# check if the other player is standing on top of us
+	# => if so, drag them with us!
+	var ind_above = v3_to_index(TILEMAP_POS + Vector3(-1, -1, 1))
+	if GRID.has(ind_above):
+		var other_player = (PLAYER_NUM + 1) % 2
+		var val = GRID[ind_above]
+		if val.CELL_TYPE == -(other_player+1):
+			val.move(move_vec, true)
 	
 	#TILEMAP_POS = temp_pos
 	
@@ -433,6 +446,18 @@ func move_forward(forward):
 
 	# start the tween
 	tween.start()
+
+func move_forward(forward):
+	if is_moving or is_rotating:
+		return
+	
+	if forward < 0:
+		last_move_backward = true
+	else:
+		last_move_backward = false
+	
+	move( get_dir_vector()*forward )
+
 
 func _on_Tween_tween_completed(object, key):
 	# if this was a position tween ... (aka movement)

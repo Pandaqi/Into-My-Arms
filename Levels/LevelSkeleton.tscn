@@ -1,12 +1,14 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=21 format=2]
 
-[ext_resource path="res://TilesetBLUP.tres" type="TileSet" id=1]
+[ext_resource path="res://TilesetNew.tres" type="TileSet" id=1]
 [ext_resource path="res://Textures/game_win_heart.png" type="Texture" id=2]
 [ext_resource path="res://Shaders/BackgroundGradient.shader" type="Shader" id=3]
 [ext_resource path="res://Scripts/Camera.gd" type="Script" id=4]
 [ext_resource path="res://Fonts/BasicFont16.tres" type="DynamicFont" id=5]
 [ext_resource path="res://Scripts/Main.gd" type="Script" id=6]
 [ext_resource path="res://Animations/Heart Cutout.tres" type="Animation" id=7]
+[ext_resource path="res://Textures/light2.png" type="Texture" id=8]
+[ext_resource path="res://Tilemap.tscn" type="PackedScene" id=9]
 [ext_resource path="res://ScaleManager.tscn" type="PackedScene" id=10]
 [ext_resource path="res://Scripts/GUI.gd" type="Script" id=13]
 [ext_resource path="res://Scripts/PlayerViewDrawer.gd" type="Script" id=14]
@@ -25,6 +27,9 @@ background_color = Color( 0.556863, 0.760784, 0.909804, 1 )
 tonemap_mode = 2
 tonemap_exposure = 0.75
 glow_enabled = true
+
+[sub_resource type="Curve" id=5]
+_data = [ Vector2( 0.0418939, 0.0424 ), 0.0, 0.0, 0, 0, Vector2( 0.24658, 0.7728 ), 0.0629896, 0.0629896, 0, 0, Vector2( 1, 0.0424 ), -2.15879, 0.0, 0, 0 ]
 
 [sub_resource type="Shader" id=3]
 code = "shader_type canvas_item;
@@ -87,18 +92,31 @@ __meta__ = {
 [node name="WorldEnvironment" type="WorldEnvironment" parent="Background"]
 environment = SubResource( 2 )
 
+[node name="BackgroundStars" type="CPUParticles2D" parent="Background"]
+position = Vector2( 244.005, 138.571 )
+amount = 16
+texture = ExtResource( 8 )
+emission_shape = 2
+emission_rect_extents = Vector2( 256, 144 )
+spread = 180.0
+gravity = Vector2( 0, 0 )
+initial_velocity = 25.0
+initial_velocity_random = 0.8
+angular_velocity = 90.0
+angular_velocity_random = 1.0
+angle = 360.0
+angle_random = 1.0
+scale_amount = 0.1
+scale_amount_random = 0.4
+scale_amount_curve = SubResource( 5 )
+color = Color( 1, 1, 1, 0.392157 )
+hue_variation = 1.0
+hue_variation_random = 1.0
+
 [node name="ScaleManager" parent="." instance=ExtResource( 10 )]
 
-[node name="Level0" type="TileMap" parent="." groups=[
-"TileMaps",
-]]
-mode = 1
+[node name="Level0" parent="." instance=ExtResource( 9 )]
 tile_set = ExtResource( 1 )
-cell_size = Vector2( 128, 64 )
-cell_tile_origin = 1
-cell_y_sort = true
-format = 1
-tile_data = PoolIntArray( 65538, 0, 0, 65539, 0, 0, 65540, 0, 0, 131074, 0, 0, 131075, 0, 0, 131076, 0, 0, 196610, 0, 0, 196611, 0, 0, 196612, 0, 0 )
 
 [node name="Level1" type="TileMap" parent="." groups=[
 "TileMaps",
@@ -109,7 +127,6 @@ cell_size = Vector2( 128, 64 )
 cell_tile_origin = 1
 cell_y_sort = true
 format = 1
-tile_data = PoolIntArray( 1, 0, 0, 2, 0, 0 )
 
 [node name="Level2" type="TileMap" parent="." groups=[
 "TileMaps",

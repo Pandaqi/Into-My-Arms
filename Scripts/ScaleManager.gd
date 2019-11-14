@@ -105,3 +105,9 @@ func window_resize():
 		if mobile_controls_1 != null and mobile_controls_2 != null:
 			mobile_controls_1.set_position(Vector2(0, new_size.y))
 			mobile_controls_2.set_position(Vector2(new_size.x, new_size.y))
+	
+	# Update background stars
+	if in_level:
+		var particle_node = get_node("/root/Node2D/Background/BackgroundStars")
+		particle_node.emission_rect_extents = new_size
+		particle_node.amount = 16 * scale_level

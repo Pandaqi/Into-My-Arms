@@ -3,6 +3,10 @@ extends CanvasLayer
 onready var players = get_tree().get_nodes_in_group("Players")
 
 func _ready():
+	# if players are in the wrong order, switch them around
+	if players[0].PLAYER_NUM == 1:
+		players.invert()
+	
 	###
 	# Here we turn certain tutorial/interface parts on/off
 	# based on the PLATFORM/OS on which the game is running

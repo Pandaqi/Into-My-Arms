@@ -224,7 +224,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HSlider" type="HSlider" parent="Settings/Control/CenterContainer/VBoxContainer/AmbientSound"]
+[node name="AmbientSlider" type="HSlider" parent="Settings/Control/CenterContainer/VBoxContainer/AmbientSound"]
 margin_left = 122.0
 margin_right = 325.0
 margin_bottom = 64.0
@@ -235,6 +235,8 @@ custom_icons/grabber_highlight = ExtResource( 8 )
 custom_icons/grabber = ExtResource( 8 )
 custom_styles/slider = SubResource( 2 )
 custom_styles/grabber_area = SubResource( 3 )
+min_value = -36.0
+max_value = 0.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -259,7 +261,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HSlider3" type="HSlider" parent="Settings/Control/CenterContainer/VBoxContainer/SoundFX"]
+[node name="SoundFXSlider" type="HSlider" parent="Settings/Control/CenterContainer/VBoxContainer/SoundFX"]
 margin_left = 125.0
 margin_right = 325.0
 margin_bottom = 64.0
@@ -270,6 +272,8 @@ custom_icons/grabber_highlight = ExtResource( 8 )
 custom_icons/grabber = ExtResource( 8 )
 custom_styles/slider = SubResource( 2 )
 custom_styles/grabber_area = SubResource( 3 )
+min_value = -36.0
+max_value = 0.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -300,5 +304,6 @@ frame = 10
 [connection signal="pressed" from="Play/Control/VBoxContainer/CenterContainer/Play" to="." method="_on_Play_pressed"]
 [connection signal="pressed" from="Play/Control/VBoxContainer/HBoxContainer/CenterContainer/Settings" to="." method="_on_Settings_pressed"]
 [connection signal="pressed" from="Play/Control/VBoxContainer/HBoxContainer/CenterContainer2/Quit" to="." method="_on_Quit_pressed"]
+[connection signal="value_changed" from="Settings/Control/CenterContainer/VBoxContainer/AmbientSound/AmbientSlider" to="." method="_on_AmbientSlider_value_changed"]
 [connection signal="pressed" from="Settings/Control/CenterContainer/VBoxContainer/CenterContainer/CloseSettings" to="." method="_on_CloseSettings_pressed"]
 [connection signal="tween_completed" from="Tween" to="." method="_on_Tween_tween_completed"]

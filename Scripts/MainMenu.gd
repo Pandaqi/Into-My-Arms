@@ -3,7 +3,26 @@ extends Node2D
 onready var tw = $Tween
 onready var cur_active_screen = $Play
 
+var config_file_path = "user://config.cfg"
+
 func _ready():
+	# LINK: Very good post on Godot ConfigFiles
+	#		https://godotengine.org/qa/315/saving-loading-files-there-any-build-file-parsing-can-use-how
+	
+	# Load ConfigFile
+	var configFile= ConfigFile.new() 
+	configFile.load(config_file_path) 
+	
+	# set sliders (ambient sound and sound fx)
+	var ambient_slider_val = configFile.get_value("Settings", "AmbientSlider") 
+	var ambient_slider_node = $Settings/Control/CenterContainer/VBoxContainer/AmbientSound/AmbientSlider
+	
+	if ambient_slider_val != null:
+		ambient_slider_node.set_value(ambient_slider_val)
+		
+		# actually set audio levels based on slider
+		GlobalBackgroundAudio.volume_db = ambient_slider_val
+	
 	# check if save file exists
 	# => if so, get current level from it
 	# => if not, create it
@@ -46,4 +65,15 @@ func _on_Tween_tween_completed(object, key):
 	if key == ":modulate" and object.get_parent() != cur_active_screen:
 		object.set_visible(false)
 
-
+func _on_AmbientSlider_value_changed(value):
+	# get configuration file
+	var configFile = ConfigFile.new()  
+	
+	# Add values to file 
+	configFile.set_value("Settings","AmbientSlider", value) 
+	
+	# actually set audio levels based on slider
+	GlobalBackgroundAudio.volume_db = value
+	
+	# Save file 
+	configFile.save(config_file_path)

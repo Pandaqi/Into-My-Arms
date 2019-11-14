@@ -185,6 +185,9 @@ func _on_Retry_pressed():
 	get_tree().reload_current_scene()
 
 func _on_Menu_pressed():
+	# (for if the player decides to play again, from the main menu)
+	Global.set_retry(false)
+	
 	get_tree().paused = false
 	get_tree().change_scene("res://MainMenu.tscn")
 
