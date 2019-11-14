@@ -46,6 +46,10 @@ var blink_timer = null
 
 var fall_tween_duration = 0.3
 var move_tween_duration = 0.3
+var rotate_speed_scale = 1.0
+
+# this variable saves the four "lines of sight" we generate (left/right/up/down)
+var light_paths = [[],[],[],[]]
 
 func _ready():
 	tilemap = get_parent()
@@ -63,7 +67,7 @@ func _ready():
 	TILEMAP_POS.z = int( tilemap.get_name().substr(5,1) )
 	
 	# intialize a faster speed for animations
-	$AnimationPlayer.set_speed_scale(1.0)
+	$AnimationPlayer.set_speed_scale(rotate_speed_scale)
 	
 	# color the sprite (player 1 and 2 have distinct colors)
 	var player_colors = [Color(1.0, 83/255.0, 83/255.0), Color(193/255.0, 83/255.0, 1.0)]
@@ -126,10 +130,6 @@ func _process(delta):
 	
 	# if we're NOT moving ...
 	if not is_moving:
-		# check what this player can see
-		# (if we can see the other player, it's GAME OVER)
-		determine_fov()
-		
 		# check if we should fall down because of gravity
 		var pos_3d_below = TILEMAP_POS + Vector3(1,1,-1)
 		var apply_gravity = true
@@ -183,56 +183,96 @@ func check_blocking_objects():
 			# hide it, and remember we hid it
 			cur_obj.modulate.a = 0.5
 			previous_blocking_objects.append(cur_obj)
-		
-		
-func determine_fov():
-	# get forward direction vector
-	var dir = get_dir_vector()
+
+func next_sight_step(pos, dir, num_steps):
+	var path = []
 	
-	# step through the grid until we find something
-	var found_something = false
-	var max_steps = 10
-	var step_counter = 1
+	# get the next block
+	var next_block = pos + dir
+	var ind = v3_to_index(next_block)
 	
-	while not found_something:
-		var next_cell = TILEMAP_POS + step_counter*dir
+	# increase number of steps taken
+	num_steps += 1
+	
+	# add the (3D) position to the path
+	path.append( pos )
+	
+	# after 5 steps where nothing happened, the sight ray dies
+	if num_steps > 5:
+		return path
+	
+	# if there is SOMETHING here
+	if GRID.has(ind):
+		var val = GRID[ind]
 		
-		if GRID.has(v3_to_index(next_cell)):
-			# if it's the other player, we LOSE
-			var val = GRID[v3_to_index(next_cell)]
+		# if it's a mirror (type 1, 2 or 3)
+		if val.CELL_TYPE in [1,2,3]:
+			# change light direction
+			# also reset number of steps
+			# and add the resulting path to the path we already found
+			dir = val.get_reflection_vector(dir)
 			
+			# if dir returns an empty vector, this reflection is impossible/not allowed for some reason
+			if dir.length() == 0:
+				return path
+		
+			val.show_reflection( next_block, TILEMAP_POS, self )
+
+			#dir = Vector3(-dir.y, dir.x, dir.z) # 90 degree angle to the RIGHT
+			# dir = Vector3(0, 0, 1) # straight up
+			
+			path = path + next_sight_step(next_block, dir, 0)
+		
+		# if it's another player
+		elif val.CELL_TYPE < 0:
+			path.append( next_block)
+			return path
+		
+		# if not, stop the ray
+		else:
+			return path
+	
+	# if there is NOTHING here, go to next step
+	else:
+		path = path + next_sight_step(next_block, dir, num_steps)
+	
+	return path
+
+func determine_line_of_sight():
+	# for each of the four directions (left/right/up/down)
+	# emit a "sight" ray
+	var light_path
+	for i in range(4):
+		var dir = get_custom_dir_vector(i)
+		
+		light_paths[i] = next_sight_step(TILEMAP_POS, dir, 0)
+		
+		# if this is the direction we're looking in ...
+		if i == FORWARD_DIR:
+			# if it's the other player ...
 			var other_player = (PLAYER_NUM + 1) % 2
-			if val.CELL_TYPE == -(other_player+1):
-				# I also check if both players aren't moving, 
-				# otherwise the check happens too quickly (before you actually see the other player!)
-				if not val.is_moving and not is_moving:
-					get_node("/root/Node2D").end_level(false, null, self)
-					break
 			
-			# as long as the object we see isn't see ourselves
-			# break out of the loop (and draw view line)
-			elif val.CELL_TYPE != -(PLAYER_NUM + 1):
-				# save that we found something and WHERE we found it
-				found_something = true
-				view_drawer.create_view_line( get_position(), tilemap.map_to_world(Vector2(next_cell.x, next_cell.y)) + Vector2(0,32) )
+			# get cell at last light path index
+			# (index -1 checks the LAST element in the array)
+			var last_ind = v3_to_index(light_paths[i][-1])
+			if GRID.has(last_ind) and GRID[last_ind].CELL_TYPE == -(other_player+1):
+				# LOSE! LOSE! LOSE!
+				get_node("/root/Node2D").end_level(false, null, self)
 				break
-		
-		if step_counter >= max_steps:
-			break
-		
-		step_counter += 1
+			
+			# TO DO: Only count this when the other (target) player is NOT moving?
+			# TO DO: Should I "lock" movement for one player, while the other is moving?
 	
-	if not found_something:
-		view_drawer.create_view_line(null, null)
+	view_drawer.create_line_of_sight( light_paths[FORWARD_DIR] )
 
 func get_action(action_name):
 	return action_name + str(PLAYER_NUM)
 
 func _input(ev):
 	if not is_rotating:
-		if ev.is_action_released( get_action("left") ):
+		if ev.is_action_released( get_action("left") ) and not ev.is_echo():
 			rotate(-1)
-		elif ev.is_action_released( get_action("right") ):
+		elif ev.is_action_released( get_action("right") ) and not ev.is_echo():
 			rotate(1)
 	
 	if not is_rotating and not is_moving:
@@ -284,6 +324,9 @@ func rotation_finished(arg):
 		
 		# set the forward direction from the argument passed in
 		FORWARD_DIR = arg
+		
+		# tell the world sight lines should update
+		get_node("/root/Node2D").update_sight_lines()
 
 func move_down():
 	# if we have a negative height, we're below level bounds, and have thus lost the level
@@ -316,6 +359,17 @@ func move_down():
 
 
 	tween.start()
+
+func get_custom_dir_vector(vec):
+	match vec:
+		0:
+			return Vector3(1,0,0)
+		1:
+			return Vector3(0,1,0)
+		2:
+			return Vector3(-1,0,0)
+		3:
+			return Vector3(0,-1,0)
 
 func get_dir_vector():
 	if FORWARD_DIR == 0:
@@ -394,6 +448,12 @@ func _on_Tween_tween_completed(object, key):
 		
 		# update depth sort one last time
 		get_node("/root/Node2D").update_depth_sort = true
+		
+		# check what this player can see
+		# (this also takes into account mirrors, lights, etc.)
+		# (if we can see the other player, it's GAME OVER)
+		# IMPORTANT: We only do this once something is done moving and the world is static again => huge performance improvement
+		get_node("/root/Node2D").update_sight_lines()
 
 		# check if there's something blocking the view towards this player
 		check_blocking_objects()

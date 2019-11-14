@@ -1,0 +1,32 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Levels/LevelSkeleton.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://TilesetNew.tres" type="TileSet" id=3]
+
+[node name="Node2D" index="0" instance=ExtResource( 1 )]
+cur_level = 2
+
+[node name="Level0" parent="." index="2"]
+tile_set = ExtResource( 3 )
+
+[node name="Level1" parent="." index="3"]
+tile_set = ExtResource( 3 )
+tile_data = PoolIntArray( 1, 0, 0, 2, 3, 0, 131073, 2, 0, 131075, 1, 0 )
+
+[node name="Player" parent="Level1" index="0" instance=ExtResource( 2 )]
+position = Vector2( 194.283, 129.096 )
+
+[node name="Level2" parent="." index="4"]
+tile_set = ExtResource( 3 )
+tile_data = PoolIntArray(  )
+
+[node name="Player2" parent="Level2" index="0" instance=ExtResource( 2 )]
+position = Vector2( 62.8972, 0.219681 )
+PLAYER_NUM = 1
+
+[node name="Level3" parent="." index="5"]
+tile_set = ExtResource( 3 )
+
+[node name="EmptyTilemap" parent="." index="6"]
+tile_set = ExtResource( 3 )

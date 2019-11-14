@@ -1,14 +1,25 @@
 extends Node2D
 
-var start_point = null
-var end_point = null
+var sight_path = null
 
-func create_view_line(start_point, end_point):
-	self.start_point = start_point
-	self.end_point = end_point
+func create_line_of_sight(sight_path):
+	self.sight_path = sight_path
 	
 	update()
 
 func _draw():
-	if start_point != null and end_point != null:
-		draw_line( start_point, end_point, Color(255, 0, 0), 10)
+	if sight_path != null and sight_path.size() > 2:
+		
+		# convert pseudo-3D vectors to 2D positions on screen
+		for i in range(sight_path.size()):
+			var p = sight_path[i]
+			var screen_pos = Vector2(
+							(p.x - p.y)*64, 
+							(p.x + p.y)*32 - p.z*64
+							)
+			var screen_offset = Vector2(0, 32+64)
+			
+			sight_path[i] = screen_pos + screen_offset
+		
+		# draw the whole sight path
+		draw_polyline( sight_path, Color(255,0,0), 10)

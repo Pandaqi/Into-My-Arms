@@ -3,7 +3,7 @@ extends Node2D
 var GRID = {}
 var tile_offset = Vector2(0, 32)
 
-var TILE_DICT = ["TileGround.tscn"]
+var TILE_DICT = ["TileGround.tscn", "TileMirror.tscn", "TileMirror2.tscn", "TileMirrorClosed.tscn"]
 var TILE_SCENES = []
 var NUM_LEVELS
 
@@ -12,6 +12,9 @@ var ALL_SPRITES = []
 
 var update_depth_sort = false
 export (int) var cur_level = 0
+
+# for caching a reference to both players
+var players = []
 
 # Converts vector3 to a string-version that is better for dictionaries
 # (Plain vector3s give precision errors)
@@ -59,8 +62,9 @@ func _ready():
 			new_block.TILEMAP_POS = Vector3(cell.x, cell.y, z)
 
 			# modulate this block in accordance with height
-			var height_col_diff = ((z + 1.0) / NUM_LEVELS)
-			new_block.modulate = Color(height_col_diff, height_col_diff, height_col_diff)
+			if cell_type == 0:
+				var height_col_diff = ((z + 1.0) / NUM_LEVELS)
+				new_block.modulate = Color(height_col_diff, height_col_diff, height_col_diff)
 			
 			# add block to the world
 			add_child(new_block)
@@ -76,12 +80,10 @@ func _ready():
 	#  => The players must be added to the Ysort as well
 	#  => We no longer need the tilemaps (we only keep a reference map for easy coordinate calculation)
 	###
-	for player in get_tree().get_nodes_in_group("Players"):
+	players = get_tree().get_nodes_in_group("Players")
+	for player in players:
 		player.initialize(GRID)
-		
 		ALL_SPRITES.append(player)
-		
-		print(player.TILEMAP_POS)
 	
 	for z in range(NUM_LEVELS):
 		get_node("Level" + str(z)).queue_free()
@@ -101,9 +103,17 @@ func _ready():
 
 # The main script is mostly responsible for depth sorting the world
 func _process(delta):
+	# if ANYTHING is moving, the depth sort needs to be updated
 	if update_depth_sort:
 		perform_depth_sort()
 		update_depth_sort = false
+
+func update_sight_lines():
+	for mirror in get_tree().get_nodes_in_group('Mirrors'):
+		mirror.hide_reflection()
+	
+	for player in players:
+		player.determine_line_of_sight()
 
 func perform_depth_sort():
 	# first, check which sprites are behind other sprites
@@ -153,7 +163,7 @@ func visit_node(s):
 		#  => Godot handles this for us
 		s.z_index = SORT_DEPTH
 		
-		s.get_node("DepthLabel").set_text(str(SORT_DEPTH))
+		# s.get_node("DepthLabel").set_text(str(SORT_DEPTH))
 		
 		SORT_DEPTH += 1
 
