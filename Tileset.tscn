@@ -1,23 +1,43 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://Tiles/TileMirror.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Tiles/TileMirrorClosed.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Tiles/TileGround.tscn" type="PackedScene" id=3]
-[ext_resource path="res://Tiles/TileMirror2.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Tiles/TileBasic.tscn" type="PackedScene" id=1]
 
 [node name="Node2D" type="Node2D"]
 
-[node name="Basic" parent="." instance=ExtResource( 3 )]
+[node name="Ground" parent="." instance=ExtResource( 1 )]
 offset = Vector2( 0, -64 )
 
-[node name="Mirror1" parent="." instance=ExtResource( 1 )]
-position = Vector2( 215, 0 )
+[node name="Grass" parent="." instance=ExtResource( 1 )]
+position = Vector2( 153.942, 0 )
 offset = Vector2( 0, -64 )
+frame = 1
 
-[node name="Mirror2" parent="." instance=ExtResource( 4 )]
-position = Vector2( 380.04, 0.890732 )
+[node name="Button1" parent="." instance=ExtResource( 1 )]
+position = Vector2( 324.989, 0 )
 offset = Vector2( 0, -64 )
+frame = 2
 
-[node name="MirrorClosed" parent="." instance=ExtResource( 2 )]
-position = Vector2( 554.934, 0.945389 )
+[node name="Button2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 485.04, 0 )
 offset = Vector2( 0, -64 )
+frame = 3
+
+[node name="Button3" parent="." instance=ExtResource( 1 )]
+position = Vector2( 642.647, 0 )
+offset = Vector2( 0, -64 )
+frame = 4
+
+[node name="Elevator1" parent="." instance=ExtResource( 1 )]
+position = Vector2( 796.589, 0 )
+offset = Vector2( 0, -64 )
+frame = 5
+
+[node name="Elevator2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 950.531, 0 )
+offset = Vector2( 0, -64 )
+frame = 6
+
+[node name="Elevator3" parent="." instance=ExtResource( 1 )]
+position = Vector2( 1109.7, 0 )
+offset = Vector2( 0, -64 )
+frame = 7

@@ -9,14 +9,13 @@
 cur_level = 3
 
 [node name="Level0" parent="." index="2"]
-tile_data = PoolIntArray( -65532, 0, 0, 4, 0, 0, 65539, 0, 0 )
+tile_data = PoolIntArray( -65532, 1, 0, 4, 1, 0, 65539, 0, 0 )
 
 [node name="Level1" parent="." index="3"]
-tile_data = PoolIntArray( -131070, 0, 0, -65534, 0, 0, 2, 0, 0, 131074, 0, 0, 131075, 0, 0, 131076, 0, 0 )
+tile_data = PoolIntArray( -131070, 0, 0, -65534, 1, 0, 2, 0, 0, 131074, 1, 0, 131075, 1, 0, 131076, 1, 0 )
 
 [node name="Level2" parent="." index="4"]
-position = Vector2( 0, 0 )
-tile_data = PoolIntArray( -196608, 0, 0, -196607, 0, 0, -131072, 0, 0, -65536, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0, 65536, 0, 0 )
+tile_data = PoolIntArray( -196608, 1, 0, -196607, 1, 0, -131072, 1, 0, -65536, 1, 0, 0, 1, 0, 1, 1, 0, 2, 0, 0, 65536, 1, 0 )
 
 [node name="Level3" parent="." index="5"]
 tile_data = PoolIntArray( -65535, 0, 0 )
@@ -25,7 +24,7 @@ tile_data = PoolIntArray( -65535, 0, 0 )
 position = Vector2( -64.9286, -2.62917 )
 
 [node name="Level4" parent="." index="6" instance=ExtResource( 4 )]
-tile_data = PoolIntArray( -131073, 0, 0, -196608, 0, 0, -65537, 0, 0, -131072, 0, 0 )
+tile_data = PoolIntArray( -131073, 1, 0, -196608, 1, 0, -65537, 1, 0, -131072, 1, 0 )
 
 [node name="Player2" parent="Level4" index="0" instance=ExtResource( 2 )]
 position = Vector2( -66.874, -68.0922 )

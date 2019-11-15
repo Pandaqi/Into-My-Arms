@@ -18,7 +18,6 @@ extends "res://Scripts/TileMain.gd"
 # Keep track of our current ROTATION ( = forward facing direction)
 # Also keep track of our current POSITION
 var FORWARD_DIR = 0
-var GRID
 
 export (int) var PLAYER_NUM = 0
 
@@ -50,6 +49,10 @@ var rotate_speed_scale = 1.0
 
 # this variable saves the four "lines of sight" we generate (left/right/up/down)
 var light_paths = [[],[],[],[]]
+
+var button_cells = []
+var elevator_cells = []
+var mirror_cells = []
 
 func _ready():
 	tilemap = get_parent()
@@ -85,7 +88,7 @@ func _ready():
 	# call our parent ready function ("TileMain.gd")
 	._ready()
 
-func initialize(grid):
+func initialize(grid, button_cells, elevator_cells, mirror_cells):
 	# get root node
 	# NOTE: It's important to do this BEFORE we remove ourselves,
 	#       because "can't use get_node() with absolute paths from outside the active scene tree" (Godot error message)
@@ -104,6 +107,11 @@ func initialize(grid):
 	
 	# and keep a reference to the main grid for the game
 	GRID = grid
+
+	# save a quick link to special cell types (takes more memory, but is better for performance)
+	self.button_cells = button_cells
+	self.elevator_cells = elevator_cells
+	self.mirror_cells = mirror_cells
 
 	# save ourselves into the general GRID variable
 	update_position_in_grid(TILEMAP_POS)
@@ -188,7 +196,7 @@ func check_blocking_objects():
 				continue
 			
 			# otherwise, hide it, and remember we hid it
-			cur_obj.modulate.a = 0.5
+			cur_obj.modulate.a = 0.25
 			previous_blocking_objects.append(cur_obj)
 
 func next_sight_step(pos, dir, num_steps):
@@ -213,7 +221,7 @@ func next_sight_step(pos, dir, num_steps):
 		var val = GRID[ind]
 		
 		# if it's a mirror (type 1, 2 or 3)
-		if val.CELL_TYPE in [1,2,3]:
+		if val.CELL_TYPE in mirror_cells:
 			# change light direction
 			# also reset number of steps
 			# and add the resulting path to the path we already found
@@ -482,6 +490,19 @@ func _on_Tween_tween_completed(object, key):
 
 		# check if there's something blocking the view towards this player
 		check_blocking_objects()
+		
+		# check if we're standing on a BUTTON that should be activated
+		var pos_3d_below = v3_to_index(TILEMAP_POS + Vector3(1,1,-1))
+		if GRID.has(pos_3d_below):
+			var val = GRID[pos_3d_below]
+			
+			if val.CELL_TYPE in button_cells:
+				# find the connected object (whatever it is; an elevator, mirror, light, etc.)
+				var ind = button_cells.find(val.CELL_TYPE)
+				var obj = get_node("/root/Node2D").button_objects[ind]
+				
+				# activate it!
+				obj.activate()
 
 func display_holding_sprite():
 	# make the sprite visible

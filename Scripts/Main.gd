@@ -3,7 +3,11 @@ extends Node2D
 var GRID = {}
 var tile_offset = Vector2(0, 32)
 
-var TILE_DICT = ["TileGround.tscn", "TileMirror.tscn", "TileMirror2.tscn", "TileMirrorClosed.tscn"]
+onready var basic_tile = preload("res://Tiles/TileBasic.tscn")
+var mirror_cells = [8,9,10,11,12,13]
+var button_cells = [2,3,4]
+var elevator_cells = [5,6,7]
+
 var TILE_SCENES = []
 var NUM_LEVELS
 
@@ -16,6 +20,16 @@ export (int) var cur_level = 0
 # for caching a reference to both players
 var players = []
 
+# in this game, there are only three possible colors for interactive objects
+# meaning there are only three possible connections between objects (dark blue, red, light blue)
+# these connections are saved in this array for quick access
+var button_objects = [null, null, null]
+
+# these parameters are given to _whatever object_ each button is linked to
+# (for example: elevators use this to determine their min/max movement height)
+export (Array) var button_parameters = [Vector2(0,1), Vector2(0,1), Vector2(0,1)]
+
+
 # Converts vector3 to a string-version that is better for dictionaries
 # (Plain vector3s give precision errors)
 func v3_to_index(v3):
@@ -25,8 +39,8 @@ func _ready():
 	###
 	# Preload all the tiles we need
 	###
-	for tile in TILE_DICT:
-		TILE_SCENES.append( load("res://Tiles/" + tile) )
+#	for tile in TILE_DICT:
+#		TILE_SCENES.append( load("res://Tiles/" + tile) )
 	
 	###
 	# Determine how many "height levels" this stage has
@@ -42,7 +56,7 @@ func _ready():
 	# and save their position in a 3D grid,
 	# which allows very quick and easy access during the level
 	###
-	
+
 	for z in range(NUM_LEVELS):
 		# get all the used cells within this map
 		var cur_tilemap = get_node("Level" + str(z))
@@ -54,8 +68,42 @@ func _ready():
 			
 			# instantiate the correct scene
 			# and add that to the world
-			var new_block = TILE_SCENES[cell_type].instance()
+			var new_block = basic_tile.instance()
 			new_block.set_position( cur_tilemap.map_to_world(Vector2(cell.x,cell.y)) + tile_offset )
+			
+			# set block to correct frame
+			new_block.frame = cell_type
+			
+			# attach script (if needed)
+			# and set other parameters
+			if cell_type in mirror_cells:
+				# mirrors have their own script (which calculates reflections and stuff)
+				new_block.script = load("res://Scripts/TileMirror.gd")
+			
+			elif cell_type in elevator_cells:
+				# elevators just need to save the button they should be connected with
+				var ind = elevator_cells.find(cell_type)
+				button_objects[ind] = new_block
+				
+				# and they get their own script
+				new_block.script = load("res://Scripts/TileElevator.gd")
+				new_block.movement_bounds = button_parameters[ind]
+			
+			###
+			# TO DO: Assign correct variables/settings to the script
+			# Mirrors: 
+			#  => set mirror/reflection vector (based on frame), 
+			#  => put into group "Mirrors"
+			#  => attach child sprite that displays reflection??
+			#
+			# Elevators:
+			#  => Assign elevator script
+			#
+			# Buttons:
+			#  => Assign button script
+			#  => Set value to the connected elevator
+			###
+			
 			
 			# set cell type and position
 			new_block.CELL_TYPE = cell_type
@@ -82,7 +130,7 @@ func _ready():
 	###
 	players = get_tree().get_nodes_in_group("Players")
 	for player in players:
-		player.initialize(GRID)
+		player.initialize(GRID, button_cells, elevator_cells, mirror_cells)
 		ALL_SPRITES.append(player)
 	
 	for z in range(NUM_LEVELS):
