@@ -29,6 +29,9 @@ var button_objects = [null, null, null]
 # (for example: elevators use this to determine their min/max movement height)
 export (Array) var button_parameters = [Vector2(0,1), Vector2(0,1), Vector2(0,1)]
 
+# move axes for elevators/platforms in the level (0 = X-axis, 1 = Y-axis, 2 = Z-axis)
+export (Array) var elevator_move_axes = [2, 2, 2]
+
 
 # Converts vector3 to a string-version that is better for dictionaries
 # (Plain vector3s give precision errors)
@@ -88,6 +91,7 @@ func _ready():
 				# and they get their own script
 				new_block.script = load("res://Scripts/TileElevator.gd")
 				new_block.movement_bounds = button_parameters[ind]
+				new_block.movement_axis = elevator_move_axes[ind]
 			
 			###
 			# TO DO: Assign correct variables/settings to the script
@@ -110,9 +114,11 @@ func _ready():
 			new_block.TILEMAP_POS = Vector3(cell.x, cell.y, z)
 
 			# modulate this block in accordance with height
-			if cell_type == 0:
+			if true: #cell_type == 0:
 				var height_col_diff = ((z + 1.0) / NUM_LEVELS)
-				new_block.modulate = Color(height_col_diff, height_col_diff, height_col_diff)
+				var modulate_range = Vector2(0.5, 1.0)
+				var v = modulate_range.x + height_col_diff * (modulate_range.y - modulate_range.x)
+				new_block.modulate = Color(v,v,v)
 			
 			# add block to the world
 			add_child(new_block)

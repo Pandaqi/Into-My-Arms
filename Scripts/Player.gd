@@ -45,7 +45,7 @@ var blink_timer = null
 
 var fall_tween_duration = 0.3
 var move_tween_duration = 0.3
-var rotate_speed_scale = 1.0
+var rotate_speed_scale = 2.0
 
 # this variable saves the four "lines of sight" we generate (left/right/up/down)
 var light_paths = [[],[],[],[]]
@@ -129,8 +129,11 @@ func v3_to_index(v3):
 	return str(int(round(v3.x))) + "," + str(int(round(v3.y))) + "," + str(int(round(v3.z)))
 
 func blink():
-	$AnimationPlayerEyes.play("Player Blink")
+	if not is_rotating:
+		var cur_frame = $Eyes.frame
+		$AnimPlayerEyes.play("Blink " + str(cur_frame))
 	
+	# plan the next blink
 	blink_timer.set_wait_time(rand_range(3,8))
 
 func _process(delta):
@@ -286,8 +289,10 @@ func get_action(action_name):
 func _input(ev):
 	if not is_rotating:
 		if ev.is_action_released( get_action("left") ) and not ev.is_echo():
+			print("I want to rotate LEFT!")
 			rotate(-1)
 		elif ev.is_action_released( get_action("right") ) and not ev.is_echo():
+			print("I want to rotate RIGHT!")
 			rotate(1)
 	
 	if not is_rotating and not is_moving:
@@ -302,6 +307,9 @@ func rotate(rotate_dir):
 	
 	# disable rotating while we're playing the animation
 	is_rotating = true
+	
+	# stop blinking animation
+	$AnimPlayerEyes.stop()
 	
 	# Play rotation animation (which is a custom spritesheet I made)
 	# NOTE: Once that's finished, rotation is allowed again
@@ -320,20 +328,8 @@ func rotation_finished(arg):
 		
 		# ensure we have the right frame
 		# TO DO: If I ever make a more detailed rotating animation, we need to update this line of code
-		frame = arg
-		
-		# also update eyes
-		if arg == 0:
-			$Eyes.set_visible(true)
-			$Eyes.scale.x = 1
-			$Eyes.set_position(Vector2(26, -36))
-		elif arg == 1:
-			$Eyes.set_visible(true)
-			$Eyes.scale.x = -1
-			$Eyes.set_position(Vector2(-26, -36))
-		else:
-			$Eyes.set_visible(false)
-		
+		frame = arg * 2
+
 		# remember we're done rotating
 		is_rotating = false
 		

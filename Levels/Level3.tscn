@@ -31,10 +31,10 @@ position = Vector2( -66.874, -68.0922 )
 PLAYER_NUM = 1
 
 [node name="Instructions-Rule1" type="RichTextLabel" parent="." index="14"]
-margin_left = 352.0
-margin_top = -175.0
-margin_right = 650.0
-margin_bottom = -39.0
+margin_left = -439.465
+margin_top = -156.508
+margin_right = -141.465
+margin_bottom = -20.5078
 custom_fonts/normal_font = ExtResource( 3 )
 text = "Stay together or stay apart, what's the solution that lives in your heart?"
 __meta__ = {

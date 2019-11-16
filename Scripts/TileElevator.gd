@@ -6,18 +6,27 @@ onready var tween = $Tween
 
 var obj_above_us = null
 var movement_bounds = Vector2(0,0)
-var start_pos
+var movement_axis = 2
+var movement_offset = 0 # used for calculating where we are in our movement (if we're still within bounds)
 var should_activate = false
 
 func _ready():
-	# save our starting position
-	start_pos = TILEMAP_POS
-	
 	check_move_bounds()
 	
 	# elevators have half bounds on the Z-axis (up axis)
 	min_bounds = Vector3(0.5, 0.5, 0.25)
 	max_bounds = Vector3(0.5, 0.5, 0.25)
+	
+	# convert movement_axis to actual vector
+	match movement_axis:
+		0:
+			movement_axis = Vector3(1, 0, 0)
+		
+		1:
+			movement_axis = Vector3(0, 1, 0)
+		
+		2:
+			movement_axis = Vector3(-1, -1, 1)
 	
 	# call parent ready
 	._ready()
@@ -27,39 +36,46 @@ func activate():
 	is_moving = true
 	
 	# determine our moving direction
-	var delta_pos = Vector3(-1 * move_dir, -1 * move_dir, 1 * move_dir)
+	var delta_pos = move_dir * movement_axis
 	var player_above = null
+	
+	# Check if there's something above us
+	var above_ind = v3_to_index(TILEMAP_POS + Vector3(-1, -1, 1))
+	if GRID.has(above_ind):
+		var val = GRID[above_ind]
+		
+		if val.CELL_TYPE < 0 and not val.is_moving:
+			player_above = val
 	
 	# Check if there's something in our path
 	var next_ind = v3_to_index(TILEMAP_POS + delta_pos)
 	obj_above_us = null
 	if GRID.has(next_ind):
-		var val = GRID[next_ind]
-		
-		# if we're going down, something blocking us always means our movement ends
-		if move_dir == -1:
-			return
-		
-		# if a PLAYER is above us, move them with us
-		var blocked = true
-		if val.CELL_TYPE < 0:
-			# but only if they aren't moving
-			if not val.is_moving:
-				val.move(delta_pos, true) # second parameter (true) tells the player he is being dragged
-				obj_above_us = val
-				blocked = false
-		
-		# if we end up being blocked, stop doing anything
-		if blocked:
+		# if we're checking the tile above us,
+		# only return if we don't find a player
+		if delta_pos.z == 1 and player_above != null:
+			pass
+		# otherwise, any tile will block us!
+		else:
 			return
 	
+	if player_above != null:
+		player_above.move(delta_pos, true)
+	
+	movement_offset += move_dir
+	
 	# move the elevator
+	var new_pos = TILEMAP_POS + delta_pos
+	
+	# this is a standard convertion to isometric
+	# BUT with a Vector2(0, 32) added at the end, because our tiles have a weird center ...
+	var screen_pos = Vector2( (new_pos.x - new_pos.y)*64, (new_pos.x + new_pos.y)*32) + Vector2(0, 32)
+	
 	var elevator_move_speed = 0.3
 	tween.interpolate_property(self, "position",
-							   null, get_position() - Vector2(0,64)*move_dir,
+							   null, screen_pos,
 							   elevator_move_speed, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
 
-	var new_pos = TILEMAP_POS + delta_pos
 	tween.interpolate_property(self, "TILEMAP_POS",
 							   null, new_pos,
 							   elevator_move_speed, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
@@ -70,11 +86,11 @@ func activate():
 	update_position_in_grid(new_pos, TILEMAP_POS)
 
 func check_move_bounds():
-	if move_dir == 1 and (TILEMAP_POS.z) >= (start_pos.z + movement_bounds[1]):
+	if move_dir == 1 and movement_offset >= movement_bounds[1]:
 		move_dir = -1
 		return true
 	
-	elif move_dir == -1 and (TILEMAP_POS.z) <= (start_pos.z + movement_bounds[0]):
+	elif move_dir == -1 and movement_offset <= movement_bounds[0]:
 		move_dir = 1
 		return true
 	return false

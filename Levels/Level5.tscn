@@ -5,8 +5,8 @@
 [ext_resource path="res://Fonts/BasicFont32.tres" type="DynamicFont" id=3]
 
 [node name="Node2D" index="0" instance=ExtResource( 1 )]
-cur_level = 4
-button_parameters = [ Vector2( 0, 3 ), Vector2( -1, 0 ), Vector2( 0, 1 ) ]
+cur_level = 5
+button_parameters = [ Vector2( 0, 2 ), Vector2( -1, 0 ), Vector2( 0, 1 ) ]
 
 [node name="Level0" parent="." index="2"]
 tile_data = PoolIntArray( 131076, 0, 0, 131077, 1, 0, 131078, 1, 0, 196611, 1, 0, 196614, 1, 0, 262149, 0, 0, 262150, 1, 0, 327685, 0, 0, 327686, 1, 0 )
