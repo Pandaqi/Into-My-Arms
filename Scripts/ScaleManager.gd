@@ -2,28 +2,31 @@ extends Node2D
 
 export (bool) var in_level = true
 
+func register_node_for_scaling(node):
+	if (node is TextureButton):
+		node.set_meta("initial_size", node.rect_min_size)
+	
+	elif (node is Label):
+		if node.is_in_group("Font48"):
+			node.set_meta("initial_size", 48)
+		
+		elif node.is_in_group("Font32"):
+			node.set_meta("initial_size", 32)
+		
+		else:
+			node.set_meta("initial_size", 16)
+	
+	elif (node is Node2D):
+		node.set_meta("initial_size", node.get_scale())
+	
+	# TO DO: Get initial scale for Labels and Sprites (but HOW)
+
 func _ready():
 	###
 	# For all resizable nodes, save their initial scale
 	###
 	for node in get_tree().get_nodes_in_group("ResizableNodes"):
-		if (node is TextureButton):
-			node.set_meta("initial_size", node.rect_min_size)
-		
-		elif (node is Label):
-			if node.is_in_group("Font48"):
-				node.set_meta("initial_size", 48)
-			
-			elif node.is_in_group("Font32"):
-				node.set_meta("initial_size", 32)
-			
-			else:
-				node.set_meta("initial_size", 16)
-		
-		elif (node is Node2D):
-			node.set_meta("initial_size", node.get_scale())
-		
-		# TO DO: Get initial scale for Labels and Sprites (but HOW)
+		register_node_for_scaling(node)
 	
 	###
 	# Attach resize signal to this node

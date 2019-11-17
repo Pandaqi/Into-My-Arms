@@ -133,12 +133,30 @@ vframes = 3
 hframes = 4
 frame = 9
 
-[node name="FakeMargin" type="CenterContainer" parent="Play/Control/VBoxContainer/HBoxContainer"]
+[node name="CenterContainer3" type="CenterContainer" parent="Play/Control/VBoxContainer/HBoxContainer"]
 margin_left = 130.0
 margin_right = 382.0
 margin_bottom = 84.0
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
+
+[node name="LevelSelect" type="TextureButton" parent="Play/Control/VBoxContainer/HBoxContainer/CenterContainer3" groups=[
+"ResizableNodes",
+]]
+margin_left = 98.0
+margin_top = 14.0
+margin_right = 154.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 56, 56 )
+
+[node name="Sprite" type="Sprite" parent="Play/Control/VBoxContainer/HBoxContainer/CenterContainer3/LevelSelect"]
+modulate = Color( 0.901961, 0.392157, 0.054902, 1 )
+scale = Vector2( 0.25, 0.25 )
+texture = ExtResource( 2 )
+centered = false
+vframes = 3
+hframes = 4
+frame = 7
 
 [node name="CenterContainer2" type="CenterContainer" parent="Play/Control/VBoxContainer/HBoxContainer"]
 margin_left = 386.0
@@ -300,10 +318,100 @@ vframes = 3
 hframes = 4
 frame = 10
 
+[node name="LevelSelect" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="LevelSelect"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LevelSelect/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LevelSelect" type="Label" parent="LevelSelect/Control/VBoxContainer" groups=[
+"Font32",
+"ResizableNodes",
+]]
+margin_right = 512.0
+margin_bottom = 42.0
+custom_fonts/font = ExtResource( 5 )
+custom_colors/font_color = Color( 0.054902, 0.211765, 0.419608, 1 )
+text = "Level Select"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="LevelSelect/Control/VBoxContainer"]
+margin_top = 46.0
+margin_right = 512.0
+margin_bottom = 204.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/margin_right = 25
+custom_constants/margin_top = 25
+custom_constants/margin_left = 25
+custom_constants/margin_bottom = 25
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ScrollContainer" type="ScrollContainer" parent="LevelSelect/Control/VBoxContainer/MarginContainer"]
+margin_left = 256.0
+margin_top = 25.0
+margin_right = 256.0
+margin_bottom = 133.0
+size_flags_horizontal = 4
+size_flags_vertical = 3
+scroll_horizontal_enabled = false
+
+[node name="GridContainer" type="GridContainer" parent="LevelSelect/Control/VBoxContainer/MarginContainer/ScrollContainer"]
+margin_bottom = 108.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 8
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CenterContainer2" type="CenterContainer" parent="LevelSelect/Control/VBoxContainer"]
+margin_top = 208.0
+margin_right = 512.0
+margin_bottom = 288.0
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="CloseSettings" type="TextureButton" parent="LevelSelect/Control/VBoxContainer/CenterContainer2" groups=[
+"ResizableNodes",
+]]
+margin_left = 228.0
+margin_top = 12.0
+margin_right = 284.0
+margin_bottom = 68.0
+rect_min_size = Vector2( 56, 56 )
+
+[node name="Sprite" type="Sprite" parent="LevelSelect/Control/VBoxContainer/CenterContainer2/CloseSettings"]
+modulate = Color( 1, 0.278431, 0.278431, 1 )
+scale = Vector2( 0.25, 0.25 )
+texture = ExtResource( 2 )
+centered = false
+vframes = 3
+hframes = 4
+frame = 10
+
 [node name="Tween" type="Tween" parent="."]
 [connection signal="pressed" from="Play/Control/VBoxContainer/CenterContainer/Play" to="." method="_on_Play_pressed"]
 [connection signal="pressed" from="Play/Control/VBoxContainer/HBoxContainer/CenterContainer/Settings" to="." method="_on_Settings_pressed"]
+[connection signal="pressed" from="Play/Control/VBoxContainer/HBoxContainer/CenterContainer3/LevelSelect" to="." method="_on_LevelSelect_pressed"]
 [connection signal="pressed" from="Play/Control/VBoxContainer/HBoxContainer/CenterContainer2/Quit" to="." method="_on_Quit_pressed"]
 [connection signal="value_changed" from="Settings/Control/CenterContainer/VBoxContainer/AmbientSound/AmbientSlider" to="." method="_on_AmbientSlider_value_changed"]
 [connection signal="pressed" from="Settings/Control/CenterContainer/VBoxContainer/CenterContainer/CloseSettings" to="." method="_on_CloseSettings_pressed"]
+[connection signal="pressed" from="LevelSelect/Control/VBoxContainer/CenterContainer2/CloseSettings" to="." method="_on_CloseSettings_pressed"]
 [connection signal="tween_completed" from="Tween" to="." method="_on_Tween_tween_completed"]

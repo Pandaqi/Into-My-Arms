@@ -4,8 +4,13 @@ onready var tw = $Tween
 onready var cur_active_screen = $Play
 
 var config_file_path = "user://config.cfg"
+onready var level_select_node = $Play/Control/VBoxContainer/HBoxContainer/CenterContainer3/LevelSelect
+onready var level_button_scene = preload("res://LevelButton.tscn")
+onready var level_select_grid = $LevelSelect/Control/VBoxContainer/MarginContainer/ScrollContainer/GridContainer
 
 func _ready():
+	randomize()
+	
 	# LINK: Very good post on Godot ConfigFiles
 	#		https://godotengine.org/qa/315/saving-loading-files-there-any-build-file-parsing-can-use-how
 	
@@ -27,9 +32,46 @@ func _ready():
 	# => if so, get current level from it
 	# => if not, create it
 	Global.check_save_file()
+	
+	# Check if we have at least ONE level finished => display level select screen if so
+	var cur_level = Global.get_cur_level()
+	
+	# Load "level select" buttons into container
+	var number_of_levels = 24
+	if cur_level > 0:
+		for i in range(number_of_levels):
+			var new_button = level_button_scene.instance()
+			new_button.get_node("Label").set_text( str(i+1) )
+			
+			# modulate buttons randomly, just for fun
+			var rand_col = Color.from_hsv(rand_range(0, 360), rand_range(0.25, 0.75), rand_range(0.85, 0.95))
+			new_button.modulate = rand_col
+			new_button.get_node("Label").set('custom_colors/font_color', rand_col.darkened(0.6))
+			
+			if i > cur_level:
+				new_button.disabled = true
+				new_button.modulate.a = 0.25
+
+			
+			level_select_grid.add_child(new_button)
+			
+			get_node("/root/Node2D/ScaleManager").register_node_for_scaling(new_button)
+			get_node("/root/Node2D/ScaleManager").register_node_for_scaling(new_button.get_node("Label"))
+			
+			new_button.connect("pressed", self, "_on_LevelButton_pressed", [i])
+		
+	# or hide level select button altogether
+	else:
+		level_select_node.modulate.a = 0.0
+		level_select_node.disabled = true
 
 	# start fullscreen
 	#OS.window_fullscreen = true
+
+# If a level button is pressed, load the corresponding scene!
+func _on_LevelButton_pressed(which_btn):
+	Global.set_cur_level(which_btn)
+	get_tree().change_scene("res://Levels/Level" + str(which_btn) + ".tscn")
 
 func _on_Play_pressed():
 	# Switch to current level ( = latest level we unlocked)
@@ -58,6 +100,10 @@ func switch_screen(new_screen):
 func _on_CloseSettings_pressed():
 	switch_screen($Play)
 
+func _on_LevelSelect_pressed():
+	switch_screen($LevelSelect)
+
+
 func _on_Quit_pressed():
 	get_tree().quit()
 
@@ -77,3 +123,4 @@ func _on_AmbientSlider_value_changed(value):
 	
 	# Save file 
 	configFile.save(config_file_path)
+

@@ -28,6 +28,9 @@ func check_save_file():
 		
 		cur_level = content.cur_level
 
+func set_cur_level(lvl):
+	cur_level = lvl
+
 func get_cur_level():
 	return cur_level
 
@@ -41,8 +44,10 @@ func save_progress(level_num):
 	save_game.close()
 	
 	# increment level counter (if we just finished our current level)
-	if level_num == content["cur_level"]:
-		content["cur_level"] += 1
+	# (I set it to the next level number, because that allows me to test it more easily)
+	# (Using equality ( == ) and incrementing would work just fine here)
+	if level_num >= content["cur_level"]:
+		content["cur_level"] = level_num + 1
 	
 	var write_save_game = File.new()
 	write_save_game.open("user://savegame.save", File.WRITE)
