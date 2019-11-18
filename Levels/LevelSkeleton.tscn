@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=2]
+[gd_scene load_steps=22 format=2]
 
 [ext_resource path="res://TilesetFinal.tres" type="TileSet" id=1]
 [ext_resource path="res://Textures/game_win_heart.png" type="Texture" id=2]
@@ -10,6 +10,7 @@
 [ext_resource path="res://Textures/light2.png" type="Texture" id=8]
 [ext_resource path="res://Tilemap.tscn" type="PackedScene" id=9]
 [ext_resource path="res://ScaleManager.tscn" type="PackedScene" id=10]
+[ext_resource path="res://TextureButton.tscn" type="PackedScene" id=11]
 [ext_resource path="res://Scripts/GUI.gd" type="Script" id=13]
 [ext_resource path="res://Scripts/PlayerViewDrawer.gd" type="Script" id=14]
 [ext_resource path="res://Scripts/PauseScreen.gd" type="Script" id=15]
@@ -338,6 +339,7 @@ __meta__ = {
 }
 
 [node name="Control" type="Control" parent="PauseScreen"]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 0
@@ -378,22 +380,11 @@ margin_right = 168.0
 margin_bottom = 93.0
 size_flags_horizontal = 3
 
-[node name="Menu" type="TextureButton" parent="PauseScreen/Control/VBoxContainer/HBoxContainer/CenterContainer" groups=[
-"ResizableNodes",
-]]
+[node name="Menu" parent="PauseScreen/Control/VBoxContainer/HBoxContainer/CenterContainer" instance=ExtResource( 11 )]
 margin_left = 56.0
 margin_top = 18.0
 margin_right = 112.0
 margin_bottom = 74.0
-rect_min_size = Vector2( 56, 56 )
-size_flags_horizontal = 3
-
-[node name="Sprite" type="Sprite" parent="PauseScreen/Control/VBoxContainer/HBoxContainer/CenterContainer/Menu"]
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 20 )
-centered = false
-vframes = 3
-hframes = 4
 frame = 5
 
 [node name="MarginContainer" type="MarginContainer" parent="PauseScreen/Control/VBoxContainer/HBoxContainer"]
@@ -408,22 +399,11 @@ margin_right = 512.0
 margin_bottom = 93.0
 size_flags_horizontal = 3
 
-[node name="Next" type="TextureButton" parent="PauseScreen/Control/VBoxContainer/HBoxContainer/CenterContainer2" groups=[
-"ResizableNodes",
-]]
+[node name="Next" parent="PauseScreen/Control/VBoxContainer/HBoxContainer/CenterContainer2" instance=ExtResource( 11 )]
 margin_left = 56.0
 margin_top = 18.0
 margin_right = 112.0
 margin_bottom = 74.0
-rect_min_size = Vector2( 56, 56 )
-size_flags_horizontal = 3
-
-[node name="Sprite" type="Sprite" parent="PauseScreen/Control/VBoxContainer/HBoxContainer/CenterContainer2/Next"]
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 20 )
-centered = false
-vframes = 3
-hframes = 4
 frame = 4
 
 [node name="CenterContainer" type="CenterContainer" parent="PauseScreen/Control/VBoxContainer"]
@@ -432,21 +412,11 @@ margin_right = 512.0
 margin_bottom = 288.0
 size_flags_vertical = 3
 
-[node name="Retry" type="TextureButton" parent="PauseScreen/Control/VBoxContainer/CenterContainer" groups=[
-"ResizableNodes",
-]]
+[node name="Retry" parent="PauseScreen/Control/VBoxContainer/CenterContainer" instance=ExtResource( 11 )]
 margin_left = 228.0
-margin_top = 19.0
+margin_top = 18.0
 margin_right = 284.0
-margin_bottom = 75.0
-rect_min_size = Vector2( 56, 56 )
-
-[node name="Sprite" type="Sprite" parent="PauseScreen/Control/VBoxContainer/CenterContainer/Retry"]
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 20 )
-centered = false
-vframes = 3
-hframes = 4
+margin_bottom = 74.0
 frame = 6
 
 [node name="Tween" type="Tween" parent="PauseScreen"]

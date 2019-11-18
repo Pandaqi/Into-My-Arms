@@ -27,7 +27,9 @@ position = Vector2( 0.233734, 28.8333 )
 position = Vector2( 124.852, -33.3184 )
 PLAYER_NUM = 1
 
-[node name="Instructions" type="RichTextLabel" parent="." index="13"]
+[node name="Instructions" type="RichTextLabel" parent="." index="13" groups=[
+"InstructionLabels",
+]]
 margin_left = 205.002
 margin_top = -127.007
 margin_right = 593.002

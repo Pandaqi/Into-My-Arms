@@ -1,20 +1,20 @@
 [gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Shaders/BackgroundGradient.shader" type="Shader" id=1]
-[ext_resource path="res://Textures/mobile_buttons.png" type="Texture" id=2]
 [ext_resource path="res://Fonts/BasicFont48.tres" type="DynamicFont" id=3]
 [ext_resource path="res://Scripts/MainMenu.gd" type="Script" id=4]
 [ext_resource path="res://Fonts/BasicFont32.tres" type="DynamicFont" id=5]
 [ext_resource path="res://Fonts/BasicFont16.tres" type="DynamicFont" id=6]
 [ext_resource path="res://ScaleManager.tscn" type="PackedScene" id=7]
 [ext_resource path="res://Textures/slider_grabber.png" type="Texture" id=8]
+[ext_resource path="res://TextureButton.tscn" type="PackedScene" id=9]
 
 [sub_resource type="ShaderMaterial" id=1]
 shader = ExtResource( 1 )
 shader_param/grad_bottom = Vector3( 0.2, 0.2, 1 )
 shader_param/grad_top = Vector3( 0, 1, 1 )
 
-[sub_resource type="StyleBoxFlat" id=2]
+[sub_resource type="StyleBoxFlat" id=4]
 content_margin_top = 15.0
 content_margin_bottom = 15.0
 bg_color = Color( 0.4, 0.337255, 0.282353, 1 )
@@ -24,7 +24,7 @@ corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 shadow_size = 2
 
-[sub_resource type="StyleBoxFlat" id=3]
+[sub_resource type="StyleBoxFlat" id=5]
 bg_color = Color( 1, 0.27451, 0.27451, 1 )
 
 [node name="Node2D" type="Node2D"]
@@ -87,21 +87,11 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Play" type="TextureButton" parent="Play/Control/VBoxContainer/CenterContainer" groups=[
-"ResizableNodes",
-]]
-margin_left = 200.0
+[node name="Play" parent="Play/Control/VBoxContainer/CenterContainer" instance=ExtResource( 9 )]
 margin_right = 312.0
 margin_bottom = 112.0
 rect_min_size = Vector2( 112, 112 )
-
-[node name="Sprite" type="Sprite" parent="Play/Control/VBoxContainer/CenterContainer/Play"]
-modulate = Color( 0.431373, 1, 0, 1 )
-scale = Vector2( 0.5, 0.5 )
-texture = ExtResource( 2 )
-centered = false
-vframes = 3
-hframes = 4
+scale = Vector2( 112, 112 )
 frame = 8
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Play/Control/VBoxContainer"]
@@ -115,22 +105,11 @@ margin_right = 126.0
 margin_bottom = 84.0
 size_flags_horizontal = 3
 
-[node name="Settings" type="TextureButton" parent="Play/Control/VBoxContainer/HBoxContainer/CenterContainer" groups=[
-"ResizableNodes",
-]]
+[node name="Settings" parent="Play/Control/VBoxContainer/HBoxContainer/CenterContainer" instance=ExtResource( 9 )]
 margin_left = 35.0
-margin_top = 14.0
+margin_top = 13.0
 margin_right = 91.0
-margin_bottom = 70.0
-rect_min_size = Vector2( 56, 56 )
-
-[node name="Sprite" type="Sprite" parent="Play/Control/VBoxContainer/HBoxContainer/CenterContainer/Settings"]
-modulate = Color( 0.52549, 0.52549, 0.52549, 1 )
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 2 )
-centered = false
-vframes = 3
-hframes = 4
+margin_bottom = 69.0
 frame = 9
 
 [node name="CenterContainer3" type="CenterContainer" parent="Play/Control/VBoxContainer/HBoxContainer"]
@@ -140,22 +119,11 @@ margin_bottom = 84.0
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 
-[node name="LevelSelect" type="TextureButton" parent="Play/Control/VBoxContainer/HBoxContainer/CenterContainer3" groups=[
-"ResizableNodes",
-]]
+[node name="LevelSelect" parent="Play/Control/VBoxContainer/HBoxContainer/CenterContainer3" instance=ExtResource( 9 )]
 margin_left = 98.0
-margin_top = 14.0
+margin_top = 13.0
 margin_right = 154.0
-margin_bottom = 70.0
-rect_min_size = Vector2( 56, 56 )
-
-[node name="Sprite" type="Sprite" parent="Play/Control/VBoxContainer/HBoxContainer/CenterContainer3/LevelSelect"]
-modulate = Color( 0.901961, 0.392157, 0.054902, 1 )
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 2 )
-centered = false
-vframes = 3
-hframes = 4
+margin_bottom = 69.0
 frame = 7
 
 [node name="CenterContainer2" type="CenterContainer" parent="Play/Control/VBoxContainer/HBoxContainer"]
@@ -164,22 +132,11 @@ margin_right = 512.0
 margin_bottom = 84.0
 size_flags_horizontal = 3
 
-[node name="Quit" type="TextureButton" parent="Play/Control/VBoxContainer/HBoxContainer/CenterContainer2" groups=[
-"ResizableNodes",
-]]
+[node name="Quit" parent="Play/Control/VBoxContainer/HBoxContainer/CenterContainer2" instance=ExtResource( 9 )]
 margin_left = 35.0
-margin_top = 14.0
+margin_top = 13.0
 margin_right = 91.0
-margin_bottom = 70.0
-rect_min_size = Vector2( 56, 56 )
-
-[node name="Sprite" type="Sprite" parent="Play/Control/VBoxContainer/HBoxContainer/CenterContainer2/Quit"]
-modulate = Color( 1, 0.278431, 0.278431, 1 )
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 2 )
-centered = false
-vframes = 3
-hframes = 4
+margin_bottom = 69.0
 frame = 10
 
 [node name="Settings" type="CanvasLayer" parent="."]
@@ -251,8 +208,8 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_icons/grabber_highlight = ExtResource( 8 )
 custom_icons/grabber = ExtResource( 8 )
-custom_styles/slider = SubResource( 2 )
-custom_styles/grabber_area = SubResource( 3 )
+custom_styles/slider = SubResource( 4 )
+custom_styles/grabber_area = SubResource( 5 )
 min_value = -36.0
 max_value = 0.0
 __meta__ = {
@@ -288,8 +245,8 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_icons/grabber_highlight = ExtResource( 8 )
 custom_icons/grabber = ExtResource( 8 )
-custom_styles/slider = SubResource( 2 )
-custom_styles/grabber_area = SubResource( 3 )
+custom_styles/slider = SubResource( 4 )
+custom_styles/grabber_area = SubResource( 5 )
 min_value = -36.0
 max_value = 0.0
 __meta__ = {
@@ -301,21 +258,9 @@ margin_top = 182.0
 margin_right = 325.0
 margin_bottom = 238.0
 
-[node name="CloseSettings" type="TextureButton" parent="Settings/Control/CenterContainer/VBoxContainer/CenterContainer" groups=[
-"ResizableNodes",
-]]
+[node name="CloseSettings" parent="Settings/Control/CenterContainer/VBoxContainer/CenterContainer" instance=ExtResource( 9 )]
 margin_left = 134.0
 margin_right = 190.0
-margin_bottom = 56.0
-rect_min_size = Vector2( 56, 56 )
-
-[node name="Sprite" type="Sprite" parent="Settings/Control/CenterContainer/VBoxContainer/CenterContainer/CloseSettings"]
-modulate = Color( 1, 0.278431, 0.278431, 1 )
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 2 )
-centered = false
-vframes = 3
-hframes = 4
 frame = 10
 
 [node name="LevelSelect" type="CanvasLayer" parent="."]
@@ -388,22 +333,11 @@ margin_bottom = 288.0
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.5
 
-[node name="CloseSettings" type="TextureButton" parent="LevelSelect/Control/VBoxContainer/CenterContainer2" groups=[
-"ResizableNodes",
-]]
+[node name="CloseSettings" parent="LevelSelect/Control/VBoxContainer/CenterContainer2" instance=ExtResource( 9 )]
 margin_left = 228.0
-margin_top = 12.0
+margin_top = 11.0
 margin_right = 284.0
-margin_bottom = 68.0
-rect_min_size = Vector2( 56, 56 )
-
-[node name="Sprite" type="Sprite" parent="LevelSelect/Control/VBoxContainer/CenterContainer2/CloseSettings"]
-modulate = Color( 1, 0.278431, 0.278431, 1 )
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 2 )
-centered = false
-vframes = 3
-hframes = 4
+margin_bottom = 67.0
 frame = 10
 
 [node name="Tween" type="Tween" parent="."]

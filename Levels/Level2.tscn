@@ -23,7 +23,9 @@ PLAYER_NUM = 1
 [node name="Player" parent="Level3" index="1" instance=ExtResource( 2 )]
 position = Vector2( -63.6217, -0.913315 )
 
-[node name="Instructions-Rule1" type="RichTextLabel" parent="." index="13"]
+[node name="Instructions-Rule1" type="RichTextLabel" parent="." index="13" groups=[
+"InstructionLabels",
+]]
 margin_left = -415.0
 margin_top = -165.0
 margin_right = -74.0

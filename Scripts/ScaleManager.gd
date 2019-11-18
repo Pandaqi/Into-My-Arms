@@ -93,15 +93,19 @@ func window_resize():
 			node.set_scale( scale_level * node.get_meta("initial_size") )
 		
 		elif node is TextureButton:
-			# scale minimum size of button (otherwise, button isn't clickable and doesn't center align)
 			var new_rect_size = node.get_meta("initial_size") * scale_level
-			node.rect_min_size = new_rect_size
+			if node.has_method("on_resize"):
+				node.on_resize(new_rect_size)
 			
-			# scale sprite(s) that are children
-			# I make all buttons 4X the (56, 56) size to support all resolutions (and keep power of 2 scales)
-			for child in node.get_children():
-				if child is Sprite:
-					child.set_scale( (new_rect_size.x / 56.0) * Vector2(0.25,0.25) )
+			else:
+				# scale minimum size of button (otherwise, button isn't clickable and doesn't center align)
+				node.rect_min_size = new_rect_size
+				
+				# scale sprite(s) that are children
+				# I make all buttons 4X the (56, 56) size to support all resolutions (and keep power of 2 scales)
+				for child in node.get_children():
+					if child is Sprite:
+						child.set_scale( (new_rect_size.x / 56.0) * Vector2(0.25,0.25) )
 	
 	# Update player control anchoring positions (only on mobile)
 	if Global.get_device() == "Android":

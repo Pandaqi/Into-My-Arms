@@ -23,7 +23,9 @@ PLAYER_NUM = 1
 [node name="Level2" parent="." index="4"]
 tile_data = PoolIntArray( -65536, 1, 0 )
 
-[node name="Instructions" type="RichTextLabel" parent="." index="13"]
+[node name="Instructions" type="RichTextLabel" parent="." index="13" groups=[
+"InstructionLabels",
+]]
 margin_left = -445.0
 margin_top = -161.0
 margin_right = -57.0

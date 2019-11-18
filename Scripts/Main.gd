@@ -23,7 +23,7 @@ var players = []
 # in this game, there are only three possible colors for interactive objects
 # meaning there are only three possible connections between objects (dark blue, red, light blue)
 # these connections are saved in this array for quick access
-var button_objects = [null, null, null]
+var button_objects = [[], [], []]
 
 # these parameters are given to _whatever object_ each button is linked to
 # (for example: elevators use this to determine their min/max movement height)
@@ -32,6 +32,8 @@ export (Array) var button_parameters = [Vector2(0,1), Vector2(0,1), Vector2(0,1)
 # move axes for elevators/platforms in the level (0 = X-axis, 1 = Y-axis, 2 = Z-axis)
 export (Array) var elevator_move_axes = [2, 2, 2]
 
+export (bool) var lights_enabled = false
+var lights_list = [Vector3(3, 2, 1)]
 
 # Converts vector3 to a string-version that is better for dictionaries
 # (Plain vector3s give precision errors)
@@ -41,6 +43,7 @@ func v3_to_index(v3):
 func _ready():
 	###
 	# Preload all the tiles we need
+	# NOT NECESSARY ANYMORE
 	###
 #	for tile in TILE_DICT:
 #		TILE_SCENES.append( load("res://Tiles/" + tile) )
@@ -51,6 +54,15 @@ func _ready():
 	# We don't count the reference tilemap, because that isn't in the TileMaps group
 	###
 	NUM_LEVELS = get_tree().get_nodes_in_group("TileMaps").size()
+	
+	# remove levels without any tiles in them (can happen on flat levels)
+	for z in range(NUM_LEVELS):
+		if get_node("Level" + str(z)).get_used_cells().size() <= 0:
+			NUM_LEVELS -= 1
+	
+	###
+	# If lights are enabled ...
+	# Check 
 	
 	###
 	# Build the game grid
@@ -86,7 +98,8 @@ func _ready():
 			elif cell_type in elevator_cells:
 				# elevators just need to save the button they should be connected with
 				var ind = elevator_cells.find(cell_type)
-				button_objects[ind] = new_block
+				
+				button_objects[ind].append(new_block)
 				
 				# and they get their own script
 				new_block.script = load("res://Scripts/TileElevator.gd")
@@ -119,9 +132,13 @@ func _ready():
 				var modulate_range = Vector2(0.5, 1.0)
 				var v = modulate_range.x + height_col_diff * (modulate_range.y - modulate_range.x)
 				new_block.modulate = Color(v,v,v)
+				
+				new_block.base_modulate = Color(v,v,v)
 			
 			# add block to the world
 			add_child(new_block)
+			
+			new_block.update_light_value()
 			
 			# save a reference to this block (for depth sorting)
 			ALL_SPRITES.append(new_block)
@@ -238,3 +255,4 @@ func project_to_iso(x, y, z):
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
+

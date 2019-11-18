@@ -30,7 +30,9 @@ tile_data = PoolIntArray( -131073, 1, 0, -196608, 1, 0, -65537, 1, 0, -131072, 1
 position = Vector2( -66.874, -68.0922 )
 PLAYER_NUM = 1
 
-[node name="Instructions-Rule1" type="RichTextLabel" parent="." index="14"]
+[node name="Instructions-Rule1" type="RichTextLabel" parent="." index="14" groups=[
+"InstructionLabels",
+]]
 margin_left = -439.465
 margin_top = -156.508
 margin_right = -141.465

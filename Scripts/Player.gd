@@ -76,6 +76,8 @@ func _ready():
 	var player_colors = [Color(1.0, 83/255.0, 83/255.0), Color(193/255.0, 83/255.0, 1.0)]
 	modulate = player_colors[PLAYER_NUM]
 	
+	base_modulate = player_colors[PLAYER_NUM]
+	
 	# start blink timer
 	blink_timer = Timer.new()
 	add_child(blink_timer)
@@ -462,7 +464,6 @@ func move_forward(forward):
 	
 	move( get_dir_vector()*forward )
 
-
 func _on_Tween_tween_completed(object, key):
 	# if this was a position tween ... (aka movement)
 	# NOTE: Previously, I checked the ":position" property => DON'T DO THIS
@@ -477,6 +478,9 @@ func _on_Tween_tween_completed(object, key):
 		
 		# update depth sort one last time
 		get_node("/root/Node2D").update_depth_sort = true
+		
+		# update light value
+		update_light_value()
 		
 		# check what this player can see
 		# (this also takes into account mirrors, lights, etc.)
@@ -495,10 +499,11 @@ func _on_Tween_tween_completed(object, key):
 			if val.CELL_TYPE in button_cells:
 				# find the connected object (whatever it is; an elevator, mirror, light, etc.)
 				var ind = button_cells.find(val.CELL_TYPE)
-				var obj = get_node("/root/Node2D").button_objects[ind]
+				var objects = get_node("/root/Node2D").button_objects[ind]
 				
 				# activate it!
-				obj.activate()
+				for obj in objects:
+					obj.activate()
 
 func display_holding_sprite():
 	# make the sprite visible

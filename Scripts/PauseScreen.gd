@@ -72,6 +72,9 @@ func display_screen(did_we_win, pos, obj):
 		
 		tw.start()
 	
+	for label in get_tree().get_nodes_in_group("InstructionLabels"):
+		label.hide()
+	
 	
 	
 	# remember if we won (for use in other functions)
@@ -79,6 +82,9 @@ func display_screen(did_we_win, pos, obj):
 
 	# if the player won ...
 	if did_we_win:
+		# remember we made progress
+		Global.save_progress(get_node("/root/Node2D").cur_level)
+		
 		# play the particle effect (that partly obscures the bad animation here)
 		var wpe = get_node("WinParticleEffect")
 		wpe.set_position(pos)
@@ -91,7 +97,7 @@ func display_screen(did_we_win, pos, obj):
 		$AnimationPlayer.play("Heart Cutout")
 
 		tw.interpolate_property(hc, "modulate",
-								Color(1.0, 0.5, 0.5), Color(0.2, 0.0, 0.0),
+								Color(1.0, 0.5, 0.5, 1.0), Color(0.5, 0.0, 0.0, 0.5),
 								1.0, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
 		
 		tw.start()
@@ -163,9 +169,6 @@ func move_camera_end():
 func _on_Next_pressed():
 	# remember this is a new level, not a retry
 	Global.set_retry(false)
-	
-	# remember we made progress
-	Global.save_progress(get_node("/root/Node2D").cur_level)
 	
 	# disable cutout
 	get_node("HeartCutout").set_visible(false)

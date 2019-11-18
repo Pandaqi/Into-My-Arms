@@ -43,6 +43,9 @@ func save_progress(level_num):
 	var content = parse_json(save_game.get_as_text())
 	save_game.close()
 	
+	print(level_num)
+	print(content["cur_level"])
+	
 	# increment level counter (if we just finished our current level)
 	# (I set it to the next level number, because that allows me to test it more easily)
 	# (Using equality ( == ) and incrementing would work just fine here)

@@ -11,6 +11,9 @@ var movement_offset = 0 # used for calculating where we are in our movement (if 
 var should_activate = false
 
 func _ready():
+	# always start at first bound
+	# movement_offset = movement_bounds.x
+	
 	check_move_bounds()
 	
 	# elevators have half bounds on the Z-axis (up axis)
@@ -23,7 +26,7 @@ func _ready():
 			movement_axis = Vector3(1, 0, 0)
 		
 		1:
-			movement_axis = Vector3(0, 1, 0)
+			movement_axis = Vector3(0, -1, 0)
 		
 		2:
 			movement_axis = Vector3(-1, -1, 1)
@@ -88,10 +91,12 @@ func activate():
 func check_move_bounds():
 	if move_dir == 1 and movement_offset >= movement_bounds[1]:
 		move_dir = -1
+		movement_offset = movement_bounds[1]
 		return true
 	
 	elif move_dir == -1 and movement_offset <= movement_bounds[0]:
 		move_dir = 1
+		movement_offset = movement_bounds[0]
 		return true
 	return false
 

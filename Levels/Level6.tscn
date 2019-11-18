@@ -23,3 +23,6 @@ position = Vector2( 61.0851, 1.65305 )
 [node name="Player2" parent="Level2" index="1" instance=ExtResource( 2 )]
 position = Vector2( 192.627, 189.426 )
 PLAYER_NUM = 1
+
+[node name="Control" parent="PauseScreen" index="2"]
+visible = false

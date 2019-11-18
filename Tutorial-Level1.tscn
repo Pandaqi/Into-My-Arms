@@ -8,7 +8,9 @@
 [node name="Tutorial" type="Node2D"]
 script = ExtResource( 3 )
 
-[node name="Instructions-Rule1" type="RichTextLabel" parent="."]
+[node name="Instructions-Rule1" type="RichTextLabel" parent="." groups=[
+"InstructionLabels",
+]]
 margin_left = -415.0
 margin_top = -165.0
 margin_right = -74.0
@@ -21,7 +23,9 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Instructions-Rule2" type="RichTextLabel" parent="."]
+[node name="Instructions-Rule2" type="RichTextLabel" parent="." groups=[
+"InstructionLabels",
+]]
 margin_left = 214.069
 margin_top = 56.0
 margin_right = 550.069
