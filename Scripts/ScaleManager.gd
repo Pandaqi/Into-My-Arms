@@ -93,6 +93,9 @@ func window_resize():
 			node.set_scale( scale_level * node.get_meta("initial_size") )
 		
 		elif node is TextureButton:
+			if node.is_in_group("ResizeExceptions"):
+				continue
+			
 			var new_rect_size = node.get_meta("initial_size") * scale_level
 			if node.has_method("on_resize"):
 				node.on_resize(new_rect_size)

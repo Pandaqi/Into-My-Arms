@@ -19,6 +19,17 @@ var win = false
 var level_start = true
 onready var tw = get_node("Tween")
 
+var players = []
+
+var standing_player = null
+var falling_player = null
+
+var anim_center_pos = Vector2.ZERO
+var play_rotating_anim = false
+var anim_timestep = 0
+var falling_player_start_frame = 0
+var falling_player_start_rotation = 0
+
 func display_options():
 	# NOTE: This is called when the "death/win" animation is finished!
 	# display the option screen (next level, retry, back to menu, etc.)
@@ -29,6 +40,46 @@ func display_options():
 		get_node("/root/Node2D/GUI/Player1Controls").set_visible(false)
 		get_node("/root/Node2D/GUI/Player2Controls").set_visible(false)
 
+func _process(delta):
+	# if the game isn't paused, ignore our process function
+	if not get_tree().paused:
+		return
+	
+	# otherwise, if we're at the end of the level ...
+	if not level_start:
+		
+		# if "falling"-tween is not playing anymore, start rotating the players around each other
+		if play_rotating_anim:
+			anim_timestep += delta
+			
+			# update position (through rotation)
+			var rad_x = 32 # radius
+			var rad_y = 16
+			var angle = anim_timestep * 2 * PI + falling_player_start_rotation
+			
+			# angle = 0
+			falling_player.position = Vector2(anim_center_pos.x + cos(angle) * rad_x, anim_center_pos.y + sin(angle) * rad_y)
+			standing_player.position = Vector2(anim_center_pos.x + cos(angle + PI) * rad_x, anim_center_pos.y + sin(angle + PI) * rad_y)
+			
+			
+			# update frames
+			falling_player.frame = (falling_player_start_frame + int(ceil(anim_timestep*8))) % 8
+			standing_player.frame = (falling_player.frame + 4) % 8
+		
+		if falling_player != null:
+			for player in players:
+				player.min_bounds = Vector3(1,1,1) * player.get_scale().x * 0.5
+				player.max_bounds = Vector3(1,1,1) * player.get_scale().x * 0.5
+				
+				var pos_iso =  Vector2((player.position.x - player.position.y)*64, (player.position.x + player.position.y)*32)
+				player.TILEMAP_POS = Vector3(pos_iso.x, pos_iso.y, player.TILEMAP_POS.z)
+				
+				player.update_bounds()
+		
+		# keep updating the depth sort (during the falling animation)
+		get_node("/root/Node2D").perform_depth_sort()
+
+
 #
 # @parameter did_we_win => true if the player won, false if they lost
 # @parameter pos => the position of the player, used for animating/focusing in the game-over-animation
@@ -37,6 +88,8 @@ func display_options():
 func display_screen(did_we_win, pos, obj):
 	# pause the game
 	get_tree().paused = true
+	
+	players = get_tree().get_nodes_in_group("Players")
 	
 	###
 	# LEVEL FALLING AWAY ANIMATION
@@ -48,7 +101,7 @@ func display_screen(did_we_win, pos, obj):
 	# quickly save player positions
 	# (more efficient for checking if a tile is below them => might make this even more general though)
 	var player_pos_below = []
-	for player in get_tree().get_nodes_in_group("Players"):
+	for player in players:
 		player_pos_below.append( player.TILEMAP_POS + Vector3(1, 1, -1) )
 	
 	# loop through all level tiles
@@ -75,8 +128,6 @@ func display_screen(did_we_win, pos, obj):
 	for label in get_tree().get_nodes_in_group("InstructionLabels"):
 		label.hide()
 	
-	
-	
 	# remember if we won (for use in other functions)
 	win = did_we_win
 
@@ -87,6 +138,7 @@ func display_screen(did_we_win, pos, obj):
 		
 		# play the particle effect (that partly obscures the bad animation here)
 		var wpe = get_node("WinParticleEffect")
+		wpe.show()
 		wpe.set_position(pos)
 		wpe.set_emitting(true)
 		
@@ -104,7 +156,55 @@ func display_screen(did_we_win, pos, obj):
 
 		# set the right text
 		var rand_text = gamewin_texts[ randi() % gamewin_texts.size() ]
+		container.get_node("ResultText").set('custom_colors/font_color', Color(1.0, 0.8, 0.8))
 		container.get_node("ResultText").set_text(rand_text)
+		
+		###
+		# create "falling in arms" animation
+		###
+		
+		# first, get both players (and their roles)
+		falling_player = obj
+		standing_player = obj.other_player
+		
+		# check which way the falling player is facing
+		# use this to determine player positions + rotations
+		var face_vec = falling_player.get_dir_vector()
+		var face_vec_iso = Vector2((face_vec.x - face_vec.y)*64, (face_vec.x + face_vec.y)*32)
+		
+		var pos_standing = standing_player.get_position() - 0.25*face_vec_iso
+		var pos_falling = pos_standing + 0.5*face_vec_iso
+		
+		var frame_standing = falling_player.FORWARD_DIR * 2
+		var frame_falling = ((falling_player.FORWARD_DIR + 2) % 4) * 2
+		
+		var tween_duration = 1.0
+		# scale/position/rotate the falling player
+		tw.interpolate_property(falling_player, "scale",
+								null, Vector2(0.5, 0.5),
+								tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
+		tw.interpolate_property(falling_player, "position",
+								null, pos_falling,
+								tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
+		tw.interpolate_property(falling_player, "frame",
+								null, frame_falling,
+								tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
+		falling_player.TILEMAP_POS.z -= 1
+		
+		# scale/position/rotate the standing player
+		tw.interpolate_property(standing_player, "scale",
+								null, Vector2(0.5, 0.5),
+								tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
+		tw.interpolate_property(standing_player, "position",
+								null, pos_standing,
+								tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
+		tw.interpolate_property(standing_player, "frame",
+								null, frame_standing,
+								tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
+		
+		tw.start()
+		
+		
 	
 	# if the player lost ...
 	else:
@@ -195,6 +295,8 @@ func _on_Menu_pressed():
 	get_tree().change_scene("res://MainMenu.tscn")
 
 func _on_Tween_tween_completed(object, key):
+	print(object, " || ", key)
+	
 	# offset only changes at start/end of level
 	if key == ":offset":
 		get_tree().paused = false
@@ -212,6 +314,38 @@ func _on_Tween_tween_completed(object, key):
 			# load next level
 			get_tree().change_scene("res://Levels/Level" + str(Global.get_cur_level()) + ".tscn")
 	
+	# frame changes are for the falling-into-arms animation
+	elif key == ":frame":
+		if object.PLAYER_NUM == standing_player.PLAYER_NUM:
+			anim_center_pos = (falling_player.position + standing_player.position) * 0.5
+			falling_player_start_frame = falling_player.frame
+			
+			falling_player_start_rotation = get_rotation_from_frame(falling_player.frame)
+			
+			play_rotating_anim = true
+			get_tree().paused = true
+	
 	# modulate/scale changes on game win/loss
 	elif key == ":modulate" or key == ":scale":
 		display_options()
+	
+	# delete tiles when they are out of view (their falling position tween is done)
+	elif key == ":position":
+		pass
+#		if object.is_in_group("LevelTiles"):
+##			ALL_SPRITES.erase(object)
+##			object.queue_free()
+
+func get_rotation_from_frame(f):
+	match f:
+		0:
+			return 1.25*PI
+		
+		2:
+			return 1.75*PI
+		
+		4:
+			return 0.25*PI
+		
+		6:
+			return 0.75*PI

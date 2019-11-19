@@ -48,6 +48,8 @@ func _ready():
 #	for tile in TILE_DICT:
 #		TILE_SCENES.append( load("res://Tiles/" + tile) )
 	
+	Global.set_cur_level(cur_level)
+	
 	###
 	# Determine how many "height levels" this stage has
 	#
@@ -152,8 +154,14 @@ func _ready():
 	#  => We no longer need the tilemaps (we only keep a reference map for easy coordinate calculation)
 	###
 	players = get_tree().get_nodes_in_group("Players")
+	
+	# if players are in the wrong order, switch them around
+	if players[0].PLAYER_NUM == 1:
+		players.invert()
+	
 	for player in players:
-		player.initialize(GRID, button_cells, elevator_cells, mirror_cells)
+		var other_player = players[ (player.PLAYER_NUM + 1) % 2 ]
+		player.initialize(GRID, other_player, button_cells, elevator_cells, mirror_cells)
 		ALL_SPRITES.append(player)
 	
 	for z in range(NUM_LEVELS):
@@ -241,7 +249,10 @@ func visit_node(s):
 
 func end_level(did_we_win, pos, obj):
 	# transform position to CanvasLayer position
-	pos = 0.5 * get_node("Camera").get_viewport().size 
+	pos = 0.5 * get_node("Camera").get_viewport().size
+	
+	obj.is_disabled = true
+	obj.other_player.is_disabled = true 
 	
 	# NOTE: Transforming coordinates isn't really necessary => camera average position, and players will be at the same position anyway!
 	# + (pos - get_node("Camera").get_position() )

@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Levels/LevelSkeleton.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Fonts/BasicFont32.tres" type="DynamicFont" id=3]
 
 [node name="Node2D" index="0" instance=ExtResource( 1 )]
 cur_level = 1
@@ -21,3 +22,18 @@ position = Vector2( -63.5927, -2.37785 )
 [node name="Player2" parent="Level3" index="1" instance=ExtResource( 2 )]
 position = Vector2( 60.7244, -3.19573 )
 PLAYER_NUM = 1
+
+[node name="Instructions-Rule3" type="RichTextLabel" parent="." index="13" groups=[
+"InstructionLabels",
+]]
+margin_left = 145.149
+margin_top = 14.4488
+margin_right = 486.149
+margin_bottom = 108.449
+custom_fonts/normal_font = ExtResource( 3 )
+bbcode_enabled = true
+bbcode_text = "[color=#FFAAAA]Rule #3:[/color] Players are NEVER allowed to move simultaneously"
+text = "Rule #3: Players are NEVER allowed to move simultaneously"
+__meta__ = {
+"_edit_use_anchors_": false
+}

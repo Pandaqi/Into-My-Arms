@@ -67,7 +67,7 @@ func get_prev_camera_pos():
 	return prev_camera_pos
 
 func set_retry(val):
-	print(val)
+	print("Retry? ", val)
 	is_retry = val
 
 func is_retry():

@@ -3,7 +3,7 @@ extends TextureButton
 
 export (Vector2) var scale = Vector2(56, 56) setget scale_changed
 export (int) var frame = 0 setget frame_changed
-export (bool) var particles_enabled = true
+export (bool) var particles_enabled = true setget particles_changed
 
 var modulate_values = [null, null, null, null, 
 					   Color(1.0, 0.0, 0.0), Color(0.0, 1.0, 0.0), Color(0.5, 0.5, 0.5), Color(230/255.0, 100/255.0, 14/255.0),
@@ -15,6 +15,16 @@ func on_resize(val):
 	scale_changed(val)
 	
 	if not particles_enabled:
+		$Particles.hide()
+		$Particles.set_emitting(false)
+
+func particles_changed(v):
+	particles_enabled = v
+	
+	if v:
+		$Particles.show()
+		$Particles.set_emitting(true)
+	else:
 		$Particles.hide()
 		$Particles.set_emitting(false)
 

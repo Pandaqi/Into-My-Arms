@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=21 format=2]
 
 [ext_resource path="res://TilesetFinal.tres" type="TileSet" id=1]
 [ext_resource path="res://Textures/game_win_heart.png" type="Texture" id=2]
@@ -15,7 +15,6 @@
 [ext_resource path="res://Scripts/PlayerViewDrawer.gd" type="Script" id=14]
 [ext_resource path="res://Scripts/PauseScreen.gd" type="Script" id=15]
 [ext_resource path="res://Effects/WinParticleEffect.tscn" type="PackedScene" id=17]
-[ext_resource path="res://Textures/mobile_buttons.png" type="Texture" id=20]
 
 [sub_resource type="ShaderMaterial" id=1]
 shader = ExtResource( 3 )
@@ -151,168 +150,93 @@ script = ExtResource( 13 )
 "ResizableNodes",
 ]]
 modulate = Color( 1, 0.419608, 0.419608, 1 )
-position = Vector2( 0.0613708, 285.711 )
+position = Vector2( 0.0613708, 287.572 )
 scale = Vector2( 0.75, 0.75 )
 
-[node name="Left1" type="TextureButton" parent="GUI/Player1Controls"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_top = -89.9342
-margin_right = 272.788
-margin_bottom = 166.066
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="Left1" parent="GUI/Player1Controls" groups=[
+"ResizeExceptions",
+] instance=ExtResource( 11 )]
+margin_left = 5.89059
+margin_top = -90.5117
+margin_right = 61.8906
+margin_bottom = -34.5117
+particles_enabled = false
 
-[node name="Sprite" type="Sprite" parent="GUI/Player1Controls/Left1"]
-position = Vector2( 9.80213, 0 )
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 20 )
-centered = false
-vframes = 3
-hframes = 4
-
-[node name="Forward1" type="TextureButton" parent="GUI/Player1Controls"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 68.35
-margin_top = -122.311
-margin_right = 325.35
-margin_bottom = 133.689
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Sprite2" type="Sprite" parent="GUI/Player1Controls/Forward1"]
-position = Vector2( -4.66187, 0 )
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 20 )
-centered = false
-vframes = 3
-hframes = 4
+[node name="Forward1" parent="GUI/Player1Controls" groups=[
+"ResizeExceptions",
+] instance=ExtResource( 11 )]
+margin_left = 58.2347
+margin_top = -121.046
+margin_right = 114.235
+margin_bottom = -65.0457
 frame = 2
+particles_enabled = false
 
-[node name="Reverse1" type="TextureButton" parent="GUI/Player1Controls"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 68.35
-margin_top = -61.1552
-margin_right = 324.35
-margin_bottom = 194.845
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Sprite3" type="Sprite" parent="GUI/Player1Controls/Reverse1"]
-position = Vector2( -4.66187, 0 )
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 20 )
-centered = false
-vframes = 3
-hframes = 4
+[node name="Reverse1" parent="GUI/Player1Controls" groups=[
+"ResizeExceptions",
+] instance=ExtResource( 11 )]
+margin_left = 58.2347
+margin_top = -57.7966
+margin_right = 114.235
+margin_bottom = -1.7966
 frame = 3
+particles_enabled = false
 
-[node name="Right1" type="TextureButton" parent="GUI/Player1Controls"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 124.86
-margin_top = -88.2615
-margin_right = 381.86
-margin_bottom = 167.739
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Sprite4" type="Sprite" parent="GUI/Player1Controls/Right1"]
-position = Vector2( -4.66187, 0 )
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 20 )
-centered = false
-vframes = 3
-hframes = 4
+[node name="Right1" parent="GUI/Player1Controls" groups=[
+"ResizeExceptions",
+] instance=ExtResource( 11 )]
+margin_left = 111.669
+margin_top = -90.5117
+margin_right = 167.669
+margin_bottom = -34.5117
 frame = 1
+particles_enabled = false
 
 [node name="Player2Controls" type="Node2D" parent="GUI" groups=[
 "ResizableNodes",
 ]]
 modulate = Color( 0.623529, 0.392157, 1, 1 )
-position = Vector2( 507.29, 282.113 )
+position = Vector2( 510.915, 286.644 )
 scale = Vector2( 0.75, 0.75 )
 
-[node name="Left2" type="TextureButton" parent="GUI/Player2Controls"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -167.877
-margin_top = -89.9342
-margin_right = 88.1227
-margin_bottom = 166.066
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="Left2" parent="GUI/Player2Controls" groups=[
+"ResizeExceptions",
+] instance=ExtResource( 11 )]
+margin_left = -166.835
+margin_top = -92.3749
+margin_right = -110.835
+margin_bottom = -36.3749
+particles_enabled = false
 
-[node name="Sprite2" type="Sprite" parent="GUI/Player2Controls/Left2"]
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 20 )
-centered = false
-vframes = 3
-hframes = 4
-
-[node name="Forward2" type="TextureButton" parent="GUI/Player2Controls"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -116.315
-margin_top = -122.311
-margin_right = 140.685
-margin_bottom = 133.689
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Sprite3" type="Sprite" parent="GUI/Player2Controls/Forward2"]
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 20 )
-centered = false
-vframes = 3
-hframes = 4
+[node name="Forward2" parent="GUI/Player2Controls" groups=[
+"ResizeExceptions",
+] instance=ExtResource( 11 )]
+margin_left = -113.542
+margin_top = -123.463
+margin_right = -57.5419
+margin_bottom = -67.4627
 frame = 2
+particles_enabled = false
 
-[node name="Reverse2" type="TextureButton" parent="GUI/Player2Controls"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -116.315
-margin_top = -61.1552
-margin_right = 139.685
-margin_bottom = 194.845
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Sprite4" type="Sprite" parent="GUI/Player2Controls/Reverse2"]
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 20 )
-centered = false
-vframes = 3
-hframes = 4
+[node name="Reverse2" parent="GUI/Player2Controls" groups=[
+"ResizeExceptions",
+] instance=ExtResource( 11 )]
+margin_left = -112.654
+margin_top = -60.399
+margin_right = -56.6536
+margin_bottom = -4.39896
 frame = 3
+particles_enabled = false
 
-[node name="Right2" type="TextureButton" parent="GUI/Player2Controls"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -59.8051
-margin_top = -88.2615
-margin_right = 197.195
-margin_bottom = 167.739
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Sprite5" type="Sprite" parent="GUI/Player2Controls/Right2"]
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 20 )
-centered = false
-vframes = 3
-hframes = 4
+[node name="Right2" parent="GUI/Player2Controls" groups=[
+"ResizeExceptions",
+] instance=ExtResource( 11 )]
+margin_left = -60.2485
+margin_top = -90.5985
+margin_right = -4.24854
+margin_bottom = -34.5985
 frame = 1
+particles_enabled = false
 
 [node name="PauseScreen" type="CanvasLayer" parent="."]
 pause_mode = 2
@@ -414,9 +338,9 @@ size_flags_vertical = 3
 
 [node name="Retry" parent="PauseScreen/Control/VBoxContainer/CenterContainer" instance=ExtResource( 11 )]
 margin_left = 228.0
-margin_top = 18.0
+margin_top = 19.0
 margin_right = 284.0
-margin_bottom = 74.0
+margin_bottom = 75.0
 frame = 6
 
 [node name="Tween" type="Tween" parent="PauseScreen"]

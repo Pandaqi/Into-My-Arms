@@ -54,6 +54,9 @@ var button_cells = []
 var elevator_cells = []
 var mirror_cells = []
 
+var other_player
+var is_disabled = false
+
 func _ready():
 	tilemap = get_parent()
 	
@@ -90,7 +93,7 @@ func _ready():
 	# call our parent ready function ("TileMain.gd")
 	._ready()
 
-func initialize(grid, button_cells, elevator_cells, mirror_cells):
+func initialize(grid, other_player, button_cells, elevator_cells, mirror_cells):
 	# get root node
 	# NOTE: It's important to do this BEFORE we remove ourselves,
 	#       because "can't use get_node() with absolute paths from outside the active scene tree" (Godot error message)
@@ -117,6 +120,8 @@ func initialize(grid, button_cells, elevator_cells, mirror_cells):
 
 	# save ourselves into the general GRID variable
 	update_position_in_grid(TILEMAP_POS)
+	
+	self.other_player = other_player
 
 func update_position_in_grid(new_position, old_position = null):
 	# remove ourselves from the OLD position
@@ -139,6 +144,9 @@ func blink():
 	blink_timer.set_wait_time(rand_range(3,8))
 
 func _process(delta):
+	if is_disabled:
+		return
+	
 	$PosLabel.set_text(str(TILEMAP_POS))
 	
 	# if we're NOT moving ...
@@ -155,13 +163,6 @@ func _process(delta):
 			var other_player = (PLAYER_NUM + 1) % 2
 			if val_below.CELL_TYPE == -(other_player+1):
 				if last_move_backward and fall_counter >= 1:
-					# hide this sprite
-					self.hide()
-					
-					# display the "holding in arms" sprite
-					# (on the OTHER object, as that is the one standing on the ground, catching you)
-					val_below.display_holding_sprite()
-					
 					# tell the main node to end the level
 					get_node("/root/Node2D").end_level(true, get_position(), self )
 			
@@ -289,6 +290,9 @@ func get_action(action_name):
 	return action_name + str(PLAYER_NUM)
 
 func _input(ev):
+	if is_disabled:
+		return
+	
 	if not is_rotating:
 		if ev.is_action_released( get_action("left") ) and not ev.is_echo():
 			print("I want to rotate LEFT!")
@@ -454,7 +458,8 @@ func move(move_vec, being_dragged = false):
 	tween.start()
 
 func move_forward(forward):
-	if is_moving or is_rotating:
+	# we are NOT allowed to move simultaneously with the other player
+	if other_player.is_moving:
 		return
 	
 	if forward < 0:

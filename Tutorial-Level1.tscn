@@ -32,7 +32,7 @@ margin_right = 550.069
 margin_bottom = 245.0
 custom_fonts/normal_font = ExtResource( 4 )
 bbcode_enabled = true
-bbcode_text = "[color=#FFAAAA]Rule #2:[/color] To win, one player must step backwards from a height, and fall on top of the other player (\"in their arms\")"
+bbcode_text = "[color=#FFAAAA]Rule #2:[/color] To win, one player must step [color=#AAFFAA]backwards[/color] from a height, and fall on top of the other player (\"in their arms\")"
 text = "Rule #2: To win, one player must step backwards from a height, and fall on top of the other player (\"in their arms\")"
 __meta__ = {
 "_edit_use_anchors_": false

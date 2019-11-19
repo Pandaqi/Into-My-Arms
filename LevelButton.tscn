@@ -1,28 +1,23 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://Textures/mobile_buttons.png" type="Texture" id=1]
+[ext_resource path="res://TextureButton.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Fonts/BasicFont32.tres" type="DynamicFont" id=2]
 
-[node name="LevelButton" type="TextureButton" groups=[
-"ResizableNodes",
-]]
+[node name="TextureButton" index="0" instance=ExtResource( 1 )]
+margin_left = 0.0
 margin_right = 56.0
-margin_bottom = 56.0
-rect_min_size = Vector2( 56, 56 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+frame = 11
+particles_enabled = false
 
-[node name="Sprite" type="Sprite" parent="."]
-modulate = Color( 0.827451, 1, 0, 1 )
-scale = Vector2( 0.25, 0.25 )
-texture = ExtResource( 1 )
-centered = false
-vframes = 3
-hframes = 4
+[node name="Sprite" parent="." index="0"]
+modulate = Color( 1, 0.278431, 0.278431, 1 )
 frame = 11
 
-[node name="Label" type="Label" parent="." groups=[
+[node name="Particles" parent="." index="1"]
+visible = false
+emitting = false
+
+[node name="Label" type="Label" parent="." index="3" groups=[
 "ResizableNodes",
 ]]
 anchor_right = 1.0
