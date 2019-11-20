@@ -285,7 +285,7 @@ func determine_line_of_sight():
 			
 			# TO DO: Only count this when the other (target) player is NOT moving?
 
-	if has_lost:
+	if true: #has_lost:
 		view_drawer.create_line_of_sight( light_paths[FORWARD_DIR] )
 
 func get_action(action_name):

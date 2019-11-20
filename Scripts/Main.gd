@@ -4,18 +4,38 @@ var GRID = {}
 var tile_offset = Vector2(0, 32)
 
 onready var basic_tile = preload("res://Tiles/TileBasic.tscn")
-var mirror_cells = [8,9,10,11,12,13,   16,17,18,19,20,21]
-var interactive_mirror_cells = [16,17,18,19,20,21]
+var mirror_cells = [8,9,10,11,12,13,   
+					16,17,18,19,20,21,
+					24,25,26,27,28,29,30,31,
+					32,33,34,35,36,37,38,39]
+var interactive_mirror_cells = [16,17,18,19,20,21,
+								24,25,26,27,28,29,30,31]
+var upwards_mirror_cells = [24,25,26,27,   32,33,34,35]
+var downwards_mirror_cells = [28,29,30,31,   36,37,38,39]
+
 var mirror_normals = [Vector2(1,1), Vector2(1,-1), 
 					  Vector2(1,1), Vector2(-1,1), Vector2(-1,-1), Vector2(1,-1),
 					  Vector2(1,1), Vector2(1,-1),
 					  Vector2(1,1), Vector2(1,-1),
-					  Vector2(1,1), Vector2(1,-1)]
+					  Vector2(1,1), Vector2(1,-1),
+					
+					  Vector2(1,0), Vector2(0,1), Vector2(-1,0), Vector2(0,-1),
+					  Vector2(1,0), Vector2(0,1), Vector2(-1,0), Vector2(0,-1),
+					
+					  Vector2(1,0), Vector2(0,1), Vector2(-1,0), Vector2(0,-1),
+					  Vector2(1,0), Vector2(0,1), Vector2(-1,0), Vector2(0,-1)]
+					
 var mirror_closed = [false, false, 
 					 true, true, true, true, 
 					 false, false, 
 					 false, false, 
-					 false, false]
+					 false, false,
+					
+					 true,true,true,true,
+					 true,true,true,true,
+					
+					 true, true, true, true,
+					true, true, true, true]
 
 var button_cells = [2,3,4]
 var elevator_cells = [5,6,7]
@@ -104,7 +124,7 @@ func _ready():
 			if cell_type == 1:
 				# randomly swap it for different gras cells
 				var rand_index = randi() % 3
-				var grass_cells = [1,14,15,22]
+				var grass_cells = [1,14,15,22,23]
 				
 				cell_type = grass_cells[rand_index]
 				
@@ -136,13 +156,26 @@ func _ready():
 				
 				# check if it's an interactive mirror
 				if cell_type in interactive_mirror_cells:
-					# if so, get the button index it should connect to
-					var ind = floor(interactive_mirror_cells.find(cell_type) * 0.5)
+					var ind = 0
+					
+					# to keep assets/game simplified, interactive mirrors are always red (aka interactive index 1)
+					if cell_type in upwards_mirror_cells or cell_type in downwards_mirror_cells:
+						ind = 1
+					else:
+						# if so, get the button index it should connect to
+						ind = floor(interactive_mirror_cells.find(cell_type) * 0.5)
 					
 					button_objects[ind].append(new_block)
 				
-				print(new_block.closed)
-				print(new_block.mirror_normal)
+				# upwards/downwards mirrors do something special
+				# they pretend the light is in a 2D plane, where the Y axis is the Z axis
+				if cell_type in upwards_mirror_cells:
+					new_block.vertical = true
+					new_block.vertical_value = 1
+				
+				if cell_type in downwards_mirror_cells:
+					new_block.vertical = true
+					new_block.vertical_value = -1
 				
 				# TO DO: Attach child sprite for displaying reflection
 			
