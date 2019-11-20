@@ -22,9 +22,17 @@ var GRID = null
 func update_bounds():
 	var height = TILEMAP_POS.z
 	
-	x_bounds = Vector2((TILEMAP_POS.x + height) - min_bounds.x, (TILEMAP_POS.x + height) + max_bounds.x)
-	y_bounds = Vector2((TILEMAP_POS.y + height) - min_bounds.y, (TILEMAP_POS.y + height) + max_bounds.y)
-	z_bounds = Vector2(height - min_bounds.z, height + max_bounds.z)
+	# if it's a height movement ...
+	# (which means we get a non-integer height along the way)
+	var pos_3d = Vector3(TILEMAP_POS.x + height, TILEMAP_POS.y + height, height)
+	if round(height) != height:
+		# round the X and Y values to stay in their lane
+		pos_3d.x = round(TILEMAP_POS.x + height)
+		pos_3d.y = round(TILEMAP_POS.y + height)
+	
+	x_bounds = Vector2(pos_3d.x - min_bounds.x, pos_3d.x + max_bounds.x)
+	y_bounds = Vector2(pos_3d.y - min_bounds.y, pos_3d.y + max_bounds.y)
+	z_bounds = Vector2(pos_3d.z - min_bounds.z, pos_3d.z + max_bounds.z)
 
 func _ready():
 	# TO DO: Change this to dynamically resize
@@ -32,7 +40,7 @@ func _ready():
 	sprites_behind.resize(50)
 	
 	# when tile enters the tree, set the bounds once
-	# (inheriting scripts might also call the function during the game)
+	# (inheriting scripts might also call the function during the game, if needed)
 	update_bounds()
 	
 	# cache main grid

@@ -64,7 +64,6 @@ __meta__ = {
 }
 
 [node name="PosLabel" type="Label" parent="."]
-visible = false
 margin_left = -17.4585
 margin_top = -62.1521
 margin_right = 22.5415

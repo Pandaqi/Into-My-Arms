@@ -19,4 +19,4 @@ func _draw():
 			sight_path[i] = screen_pos + screen_offset
 		
 		# draw the whole sight path
-		draw_polyline( sight_path, Color(255,0,0), 10)
+		draw_polyline( sight_path, Color(255,0,0,0.5), 10)

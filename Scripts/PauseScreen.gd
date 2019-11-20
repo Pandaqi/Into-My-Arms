@@ -48,6 +48,9 @@ func _process(delta):
 	# otherwise, if we're at the end of the level ...
 	if not level_start:
 		
+		for tile in get_tree().get_nodes_in_group("LevelTiles"):
+			tile.update_bounds()
+		
 		# if "falling"-tween is not playing anymore, start rotating the players around each other
 		if play_rotating_anim:
 			anim_timestep += delta
@@ -61,20 +64,29 @@ func _process(delta):
 			falling_player.position = Vector2(anim_center_pos.x + cos(angle) * rad_x, anim_center_pos.y + sin(angle) * rad_y)
 			standing_player.position = Vector2(anim_center_pos.x + cos(angle + PI) * rad_x, anim_center_pos.y + sin(angle + PI) * rad_y)
 			
-			
 			# update frames
 			falling_player.frame = (falling_player_start_frame + int(ceil(anim_timestep*8))) % 8
 			standing_player.frame = (falling_player.frame + 4) % 8
+			
+			falling_player.get_node("PosLabel").set_text(str(falling_player.TILEMAP_POS))
+			standing_player.get_node("PosLabel").set_text(str(standing_player.TILEMAP_POS))
 		
 		if falling_player != null:
 			for player in players:
 				player.min_bounds = Vector3(1,1,1) * player.get_scale().x * 0.5
 				player.max_bounds = Vector3(1,1,1) * player.get_scale().x * 0.5
 				
-				var pos_iso =  Vector2((player.position.x - player.position.y)*64, (player.position.x + player.position.y)*32)
-				player.TILEMAP_POS = Vector3(pos_iso.x, pos_iso.y, player.TILEMAP_POS.z)
+				var transformed_pos = player.get_position() - Vector2(0, 32) * player.get_scale().x
+				var pos_iso = get_node("/root/Node2D/EmptyTilemap").world_to_map(transformed_pos)
 				
-				player.update_bounds()
+				player.TILEMAP_POS = Vector3(pos_iso.x, pos_iso.y, standing_player.TILEMAP_POS.z)
+				
+				#
+				# NOTE: This is just a hack
+				# I had trouble getting depth sorting to work with the falling animation => often, one of the players would render behind a falling blok
+				# As such, we only update player bounds once only the players are left (and the single tile they stand on)
+				if get_node("/root/Node2D").ALL_SPRITES.size() <= 3:
+					player.update_bounds()
 		
 		# keep updating the depth sort (during the falling animation)
 		get_node("/root/Node2D").perform_depth_sort()
@@ -117,11 +129,18 @@ func display_screen(did_we_win, pos, obj):
 		# make it fall down, but DELAY it based on height
 		# also add some randomness to the delay (otherwise tiles fall down as one giant block)
 		var delay = temp_height * 0.3 + rand_range(0.0, 0.3)
-		var end_pos = tile.get_position() + Vector2(0, 1000)
+		var end_pos = tile.get_position() + Vector2(0, 1280)
+		
+		tw.interpolate_property(tile, "TILEMAP_POS",
+								null, tile.TILEMAP_POS - Vector3(0,0,20),
+								1.0, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR,
+								delay)
+		
 		tw.interpolate_property(tile, "position",
 								null, end_pos,
 								1.0, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR,
 								delay)
+		
 		
 		tw.start()
 	
@@ -167,6 +186,9 @@ func display_screen(did_we_win, pos, obj):
 		falling_player = obj
 		standing_player = obj.other_player
 		
+		falling_player.get_node("Eyes").hide()
+		standing_player.get_node("Eyes").hide()
+		
 		# check which way the falling player is facing
 		# use this to determine player positions + rotations
 		var face_vec = falling_player.get_dir_vector()
@@ -178,7 +200,7 @@ func display_screen(did_we_win, pos, obj):
 		var frame_standing = falling_player.FORWARD_DIR * 2
 		var frame_falling = ((falling_player.FORWARD_DIR + 2) % 4) * 2
 		
-		var tween_duration = 1.0
+		var tween_duration = 0.5
 		# scale/position/rotate the falling player
 		tw.interpolate_property(falling_player, "scale",
 								null, Vector2(0.5, 0.5),
@@ -189,7 +211,9 @@ func display_screen(did_we_win, pos, obj):
 		tw.interpolate_property(falling_player, "frame",
 								null, frame_falling,
 								tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
-		falling_player.TILEMAP_POS.z -= 1
+		tw.interpolate_property(falling_player, "TILEMAP_POS",
+								null, standing_player.TILEMAP_POS,
+								tween_duration, Tween.TRANS_LINEAR, Tween.TRANS_LINEAR)
 		
 		# scale/position/rotate the standing player
 		tw.interpolate_property(standing_player, "scale",
@@ -231,6 +255,8 @@ func move_camera_start():
 	# make sure the pause screen isn't visible
 	$Control.hide()
 	
+	get_tree().paused = true
+	
 	# on a retry, just position camera immediately, no tweening
 	var camera = get_node("/root/Node2D/Camera")
 	if Global.is_retry():
@@ -238,9 +264,8 @@ func move_camera_start():
 		tw.interpolate_property(camera, "offset",
 							null, Vector2(0,0),
 							0.1, Tween.TRANS_LINEAR, Tween.EASE_OUT)
+		tw.start()
 		return
-	
-	get_tree().paused = true
 	
 	# tween OFFSET and POSITION
 	# (camera might end with a different position in the previous level)
@@ -295,16 +320,15 @@ func _on_Menu_pressed():
 	get_tree().change_scene("res://MainMenu.tscn")
 
 func _on_Tween_tween_completed(object, key):
-	print(object, " || ", key)
-	
 	# offset only changes at start/end of level
 	if key == ":offset":
-		get_tree().paused = false
 		
 		# if it's the start of the level ...
 		if level_start:
 			# ... simply save the fact that we're not at the start anymore
 			level_start = false
+			
+			get_tree().paused = false
 		
 		# if it's the end of the level ...
 		else:
@@ -331,10 +355,9 @@ func _on_Tween_tween_completed(object, key):
 	
 	# delete tiles when they are out of view (their falling position tween is done)
 	elif key == ":position":
-		pass
-#		if object.is_in_group("LevelTiles"):
-##			ALL_SPRITES.erase(object)
-##			object.queue_free()
+		if object.is_in_group("LevelTiles"):
+			get_node("/root/Node2D").ALL_SPRITES.erase(object)
+			object.queue_free()
 
 func get_rotation_from_frame(f):
 	match f:

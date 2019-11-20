@@ -41,3 +41,73 @@ frame = 6
 position = Vector2( 1109.7, 0 )
 offset = Vector2( 0, -64 )
 frame = 7
+
+[node name="Mirror1" parent="." instance=ExtResource( 1 )]
+position = Vector2( 0, 158.124 )
+offset = Vector2( 0, -64 )
+frame = 8
+
+[node name="Mirror2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 142.84, 158.124 )
+offset = Vector2( 0, -64 )
+frame = 9
+
+[node name="Mirror3" parent="." instance=ExtResource( 1 )]
+position = Vector2( 326.491, 158.124 )
+offset = Vector2( 0, -64 )
+frame = 10
+
+[node name="Mirror4" parent="." instance=ExtResource( 1 )]
+position = Vector2( 487.695, 158.124 )
+offset = Vector2( 0, -64 )
+frame = 11
+
+[node name="Mirror5" parent="." instance=ExtResource( 1 )]
+position = Vector2( 642.779, 158.124 )
+offset = Vector2( 0, -64 )
+frame = 12
+
+[node name="Mirror6" parent="." instance=ExtResource( 1 )]
+position = Vector2( 795.821, 158.124 )
+offset = Vector2( 0, -64 )
+frame = 13
+
+[node name="Grass2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 965.188, 158.124 )
+offset = Vector2( 0, -64 )
+frame = 14
+
+[node name="Grass3" parent="." instance=ExtResource( 1 )]
+position = Vector2( 1148.84, 158.124 )
+offset = Vector2( 0, -64 )
+frame = 15
+
+[node name="MirrorBlue1" parent="." instance=ExtResource( 1 )]
+position = Vector2( 0, 311.166 )
+offset = Vector2( 0, -64 )
+frame = 16
+
+[node name="MirrorBlue2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 140.799, 311.166 )
+offset = Vector2( 0, -64 )
+frame = 17
+
+[node name="MirrorRed1" parent="." instance=ExtResource( 1 )]
+position = Vector2( 324.45, 311.166 )
+offset = Vector2( 0, -64 )
+frame = 18
+
+[node name="MirrorRed2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 497.898, 311.166 )
+offset = Vector2( 0, -64 )
+frame = 19
+
+[node name="MirrorLightBlue1" parent="." instance=ExtResource( 1 )]
+position = Vector2( 644.819, 311.166 )
+offset = Vector2( 0, -64 )
+frame = 20
+
+[node name="MirrorLightBlue2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 791.74, 311.166 )
+offset = Vector2( 0, -64 )
+frame = 21

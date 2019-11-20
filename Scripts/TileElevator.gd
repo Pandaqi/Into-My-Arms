@@ -4,11 +4,11 @@ var is_moving = false
 var move_dir = 1
 onready var tween = $Tween
 
-var obj_above_us = null
 var movement_bounds = Vector2(0,0)
 var movement_axis = 2
 var movement_offset = 0 # used for calculating where we are in our movement (if we're still within bounds)
 var should_activate = false
+var player_above = null
 
 func _ready():
 	# always start at first bound
@@ -17,8 +17,8 @@ func _ready():
 	check_move_bounds()
 	
 	# elevators have half bounds on the Z-axis (up axis)
-	min_bounds = Vector3(0.5, 0.5, 0.25)
-	max_bounds = Vector3(0.5, 0.5, 0.25)
+	min_bounds = Vector3(0.5, 0.5, 0)
+	max_bounds = Vector3(0.5, 0.5, 0.5)
 	
 	# convert movement_axis to actual vector
 	match movement_axis:
@@ -40,7 +40,7 @@ func activate():
 	
 	# determine our moving direction
 	var delta_pos = move_dir * movement_axis
-	var player_above = null
+	player_above = null
 	
 	# Check if there's something above us
 	var above_ind = v3_to_index(TILEMAP_POS + Vector3(-1, -1, 1))
@@ -52,7 +52,6 @@ func activate():
 	
 	# Check if there's something in our path
 	var next_ind = v3_to_index(TILEMAP_POS + delta_pos)
-	obj_above_us = null
 	if GRID.has(next_ind):
 		# if we're checking the tile above us,
 		# only return if we don't find a player
@@ -112,6 +111,8 @@ func _on_Tween_tween_completed(object, key):
 			
 			update_bounds()
 			get_node("/root/Node2D").update_depth_sort = true
+			
+			get_node("/root/Node2D").update_sight_lines()
 		
 		# if not, keep moving!
 		# (but wait a frame, so the player can catch up => otherwise, the player falls through and imprecisions happen)
@@ -124,5 +125,10 @@ func _process(delta):
 		activate()
 	
 	if is_moving:
+		if player_above != null:
+			# never allow player_above to be below our own z_index
+			if player_above.z_index < z_index:
+				player_above.z_index = z_index+0.5
+		
 		update_bounds()
 		get_node("/root/Node2D").update_depth_sort = true

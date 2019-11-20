@@ -146,8 +146,8 @@ func blink():
 func _process(delta):
 	if is_disabled:
 		return
-	
-	$PosLabel.set_text(str(TILEMAP_POS))
+
+	$PosLabel.set_text(v3_to_index(TILEMAP_POS))
 	
 	# if we're NOT moving ...
 	if not is_moving:
@@ -263,6 +263,7 @@ func determine_line_of_sight():
 	# for each of the four directions (left/right/up/down)
 	# emit a "sight" ray
 	var light_path
+	var has_lost = false
 	for i in range(4):
 		var dir = get_custom_dir_vector(i)
 		
@@ -278,13 +279,14 @@ func determine_line_of_sight():
 			var last_ind = v3_to_index(light_paths[i][-1])
 			if GRID.has(last_ind) and GRID[last_ind].CELL_TYPE == -(other_player+1):
 				# LOSE! LOSE! LOSE!
+				has_lost = true
 				get_node("/root/Node2D").end_level(false, null, self)
 				break
 			
 			# TO DO: Only count this when the other (target) player is NOT moving?
-			# TO DO: Should I "lock" movement for one player, while the other is moving?
-	
-	view_drawer.create_line_of_sight( light_paths[FORWARD_DIR] )
+
+	if has_lost:
+		view_drawer.create_line_of_sight( light_paths[FORWARD_DIR] )
 
 func get_action(action_name):
 	return action_name + str(PLAYER_NUM)

@@ -4,7 +4,19 @@ var GRID = {}
 var tile_offset = Vector2(0, 32)
 
 onready var basic_tile = preload("res://Tiles/TileBasic.tscn")
-var mirror_cells = [8,9,10,11,12,13]
+var mirror_cells = [8,9,10,11,12,13,   16,17,18,19,20,21]
+var interactive_mirror_cells = [16,17,18,19,20,21]
+var mirror_normals = [Vector2(1,1), Vector2(1,-1), 
+					  Vector2(1,1), Vector2(-1,1), Vector2(-1,-1), Vector2(1,-1),
+					  Vector2(1,1), Vector2(1,-1),
+					  Vector2(1,1), Vector2(1,-1),
+					  Vector2(1,1), Vector2(1,-1)]
+var mirror_closed = [false, false, 
+					 true, true, true, true, 
+					 false, false, 
+					 false, false, 
+					 false, false]
+
 var button_cells = [2,3,4]
 var elevator_cells = [5,6,7]
 
@@ -88,6 +100,24 @@ func _ready():
 			var new_block = basic_tile.instance()
 			new_block.set_position( cur_tilemap.map_to_world(Vector2(cell.x,cell.y)) + tile_offset )
 			
+			# this is a grass cell!
+			if cell_type == 1:
+				# randomly swap it for different gras cells
+				var rand_index = randi() % 3
+				var grass_cells = [1,14,15,22]
+				
+				cell_type = grass_cells[rand_index]
+				
+				
+				# check tile above
+				# if it's a mirror, use default grass (without anything sticking out)
+				if (z+1) < NUM_LEVELS:
+					var above_tilemap = get_node("Level" + str(z + 1))
+					var cell_above = above_tilemap.get_cell(cell.x - 1, cell.y - 1)
+					
+					if cell_above in mirror_cells:
+						cell_type = 22
+			
 			# set block to correct frame
 			new_block.frame = cell_type
 			
@@ -96,6 +126,25 @@ func _ready():
 			if cell_type in mirror_cells:
 				# mirrors have their own script (which calculates reflections and stuff)
 				new_block.script = load("res://Scripts/TileMirror.gd")
+				
+				# add it to the Mirrors group
+				new_block.add_to_group("Mirrors")
+				
+				# set mirror normal and if it's closed or not (for proper reflection)
+				new_block.closed = mirror_closed[ mirror_cells.find(cell_type) ]
+				new_block.mirror_normal = mirror_normals[ mirror_cells.find(cell_type) ]
+				
+				# check if it's an interactive mirror
+				if cell_type in interactive_mirror_cells:
+					# if so, get the button index it should connect to
+					var ind = floor(interactive_mirror_cells.find(cell_type) * 0.5)
+					
+					button_objects[ind].append(new_block)
+				
+				print(new_block.closed)
+				print(new_block.mirror_normal)
+				
+				# TO DO: Attach child sprite for displaying reflection
 			
 			elif cell_type in elevator_cells:
 				# elevators just need to save the button they should be connected with
@@ -114,13 +163,6 @@ func _ready():
 			#  => set mirror/reflection vector (based on frame), 
 			#  => put into group "Mirrors"
 			#  => attach child sprite that displays reflection??
-			#
-			# Elevators:
-			#  => Assign elevator script
-			#
-			# Buttons:
-			#  => Assign button script
-			#  => Set value to the connected elevator
 			###
 			
 			
@@ -171,6 +213,7 @@ func _ready():
 	# Once ALL sprites have loaded, perform a single depth sort
 	# to make the first entrance into the level look the proper way
 	perform_depth_sort()
+	update_sight_lines()
 	
 	###
 	# Lastly, pause the tree

@@ -32,6 +32,8 @@ func convert_dir_to_vec(forward_dir):
 			return Vector2(0,-1)
 
 func hide_reflection():
+	return
+	
 	$Player.hide()
 
 func show_reflection(my_pos, player_pos, player_obj):
@@ -42,6 +44,8 @@ func show_reflection(my_pos, player_pos, player_obj):
 	
 	if my_pos.y != player_pos.y:
 		player_forward_vec.y *= -1
+	
+	return
 	
 	# show player in the mirror
 	$Player.show()
@@ -67,3 +71,13 @@ func get_reflection_vector(vec):
 	var reflec_vec = temp_vec - 2.0 * temp_normal.dot(temp_vec) * temp_normal
 	
 	return Vector3(reflec_vec.x, reflec_vec.y, 0)
+
+func activate():
+	if mirror_normal == Vector2(1,1):
+		frame += 1
+		mirror_normal = Vector2(1,-1)
+	else:
+		frame -= 1
+		mirror_normal = Vector2(1,1)
+	
+	get_node("/root/Node2D").update_sight_lines()
