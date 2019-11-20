@@ -28,6 +28,16 @@ func _ready():
 		# actually set audio levels based on slider
 		GlobalBackgroundAudio.volume_db = ambient_slider_val
 	
+	var soundfx_slider_val = configFile.get_value("Settings", "SoundSlider") 
+	var soundfx_slider_node = $Settings/Control/CenterContainer/VBoxContainer/SoundFX/SoundFXSlider
+	
+	if soundfx_slider_val != null:
+		soundfx_slider_node.set_value(soundfx_slider_val)
+	
+	# remove fullscreen settings on mobile
+	if Global.get_device() == "Android":
+		$Settings/Control/CenterContainer/VBoxContainer/Fullscreen.hide()
+	
 	# check if save file exists
 	# => if so, get current level from it
 	# => if not, create it
@@ -66,7 +76,7 @@ func _ready():
 		level_select_node.disabled = true
 
 	# start fullscreen
-	#OS.window_fullscreen = true
+	OS.window_fullscreen = true
 
 # If a level button is pressed, load the corresponding scene!
 func _on_LevelButton_pressed(which_btn):
@@ -123,4 +133,19 @@ func _on_AmbientSlider_value_changed(value):
 	
 	# Save file 
 	configFile.save(config_file_path)
+
+func _on_SoundFXSlider_value_changed(value):
+	# get configuration file
+	var configFile = ConfigFile.new()  
+	
+	# Add values to file 
+	configFile.set_value("Settings","SoundSlider", value) 
+	
+	# Save file 
+	configFile.save(config_file_path)
+
+func _on_Fullscreen_toggled(button_pressed):
+	OS.window_fullscreen = button_pressed
+
+
 

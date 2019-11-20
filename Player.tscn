@@ -1,9 +1,8 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Textures/player_spritesheet.png" type="Texture" id=1]
 [ext_resource path="res://Scripts/Player.gd" type="Script" id=2]
 [ext_resource path="res://Animations/Rotate Player.tres" type="Animation" id=3]
-[ext_resource path="res://Textures/holding_in_arms.png" type="Texture" id=4]
 [ext_resource path="res://Textures/seeing_each_other.png" type="Texture" id=5]
 [ext_resource path="res://Textures/player_eyes.png" type="Texture" id=6]
 [ext_resource path="res://Animations/Blink 0.tres" type="Animation" id=7]
@@ -30,12 +29,6 @@ script = ExtResource( 2 )
 "anims/Blink 0" = ExtResource( 7 )
 "anims/Blink 1" = ExtResource( 10 )
 "anims/Blink 2" = ExtResource( 9 )
-
-[node name="HoldingInArms" type="Sprite" parent="."]
-visible = false
-texture = ExtResource( 4 )
-centered = false
-offset = Vector2( -84, -120 )
 
 [node name="SeeingEachOther" type="Sprite" parent="."]
 visible = false
@@ -64,6 +57,7 @@ __meta__ = {
 }
 
 [node name="PosLabel" type="Label" parent="."]
+visible = false
 margin_left = -17.4585
 margin_top = -62.1521
 margin_right = 22.5415

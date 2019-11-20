@@ -285,7 +285,7 @@ func determine_line_of_sight():
 			
 			# TO DO: Only count this when the other (target) player is NOT moving?
 
-	if true: #has_lost:
+	if has_lost:
 		view_drawer.create_line_of_sight( light_paths[FORWARD_DIR] )
 
 func get_action(action_name):
@@ -511,14 +511,6 @@ func _on_Tween_tween_completed(object, key):
 				# activate it!
 				for obj in objects:
 					obj.activate()
-
-func display_holding_sprite():
-	# make the sprite visible
-	var hia = get_node("HoldingInArms")
-	hia.set_visible(true)
-	
-	# but "hide" ourselves
-	self.self_modulate.a = 0.0
 
 func display_exclamation_mark():
 	var seo = get_node("SeeingEachOther")
