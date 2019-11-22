@@ -4,6 +4,7 @@ var prev_camera_pos = null
 var is_retry = false
 
 var cur_level = 0
+var play_intro = false
 
 # Checks if a save file exists
 # If not => creates one
@@ -14,6 +15,7 @@ func check_save_file():
 		var new_game_dict = { "cur_level": 0 }
 		
 		cur_level = 0
+		play_intro = true
 		
 		var write_save_game = File.new()
 		write_save_game.open("user://savegame.save", File.WRITE)
@@ -74,5 +76,5 @@ func is_retry():
 	return is_retry
 
 func get_device():
-	return "Android"
-	#return OS.get_name()
+	#return "Android"
+	return OS.get_name()

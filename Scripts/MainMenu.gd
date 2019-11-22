@@ -8,6 +8,8 @@ onready var level_select_node = $Play/Control/VBoxContainer/HBoxContainer/Center
 onready var level_button_scene = preload("res://LevelButton.tscn")
 onready var level_select_grid = $LevelSelect/Control/VBoxContainer/MarginContainer/ScrollContainer/GridContainer
 
+var configFile = null
+
 func _ready():
 	randomize()
 	
@@ -15,7 +17,7 @@ func _ready():
 	#		https://godotengine.org/qa/315/saving-loading-files-there-any-build-file-parsing-can-use-how
 	
 	# Load ConfigFile
-	var configFile= ConfigFile.new() 
+	configFile = ConfigFile.new() 
 	configFile.load(config_file_path) 
 	
 	# set sliders (ambient sound and sound fx)
@@ -84,8 +86,12 @@ func _on_LevelButton_pressed(which_btn):
 	get_tree().change_scene("res://Levels/Level" + str(which_btn) + ".tscn")
 
 func _on_Play_pressed():
-	# Switch to current level ( = latest level we unlocked)
-	get_tree().change_scene("res://Levels/Level" + str(Global.get_cur_level()) + ".tscn")
+	var cur_level = Global.get_cur_level()
+	if cur_level == 0 and Global.play_intro:
+		get_tree().change_scene("res://IntroAnimation.tscn")
+	else:
+		# Switch to current level ( = latest level we unlocked)
+		get_tree().change_scene("res://Levels/Level" + str(cur_level) + ".tscn")
 
 func _on_Settings_pressed():
 	switch_screen($Settings)
@@ -122,9 +128,6 @@ func _on_Tween_tween_completed(object, key):
 		object.set_visible(false)
 
 func _on_AmbientSlider_value_changed(value):
-	# get configuration file
-	var configFile = ConfigFile.new()  
-	
 	# Add values to file 
 	configFile.set_value("Settings","AmbientSlider", value) 
 	
@@ -135,9 +138,6 @@ func _on_AmbientSlider_value_changed(value):
 	configFile.save(config_file_path)
 
 func _on_SoundFXSlider_value_changed(value):
-	# get configuration file
-	var configFile = ConfigFile.new()  
-	
 	# Add values to file 
 	configFile.set_value("Settings","SoundSlider", value) 
 	
