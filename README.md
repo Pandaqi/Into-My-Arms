@@ -8,13 +8,23 @@ It's made in **Godot Game Engine v3.2** (beta version, at the time of writing). 
 
 I also made sure the game would work on both **desktop** (Windows/Mac/Linux) and **mobile** (Android/iOS). The main issue was performance and rescaling/resizing the interface and level area for all different sizes and resolutions. I think I succeeded quite well, but I obviously don't have every single device in the world to test the game on.
 
-This project is available under the **GNU General Public License v3** This means you can:
+(Oh, and, the title of the game comes from the song *Into My Arms* by *Nick Cave*. A beautiful song.)
+
+## Future of the project
+
+I'm thinking of turning this game into a full game. I think the mechanics and look could work really well for a small, cute, puzzle game (especially on mobile). If you want to see more of these games, or more of these open source projects for you to study, please support me by donating/buying my work on itch.io: http://pandaqi.itch.io
+
+## License
+
+The project source code is open source, available under the **GNU General Public License v3** This basically means you can do whatever you want with it:
 *  View, read, use, and distribute the source code any way you want (even commercially)
 *  If you do so, however, you must also make your project available under the same open source license, give credit to the original project, and highlight any (significant) changes
 
-You're more than free to look at the project, learn from it, use parts of it for your own project. Please don't blindly copy the assets/systems/code and release it as your own. You won't learn anything from it, and I would be very, very mad. (Well, disappointed might be a better word.) 
+The assets (images, soundtrack, etc.) are licensed as **CC BY-NC-SA 4.0** This means you can freely copy, distribute and remix the assets however you like - but not commercially. I wanted you to be able to download the project and run it immediately, without errors or steps in between, which is why I still provided all the assets I made (instead of placeholder sprites or something).
 
-Another reason I have for saying this, is the fact that I am thinking of developing the project into a full game, which I would like to release as a paid version in the future. If you want to see more of these games, or more of these open source projects for you to study, please support me by donating/buying my work on itch.io: http://pandaqi.itch.io
+You're more than free to look at the project, learn from it, use parts of it for your own project. Please don't blindly copy parts of the game and release it as your own. You won't learn anything from it, and I would be very, very mad. (Well, disappointed might be a better word.) 
+
+## Warnings
 
 The project was made in approximately two weeks for the game jam, with making it open source always in the back of my mind. I am very proud of it and think it looks/works great, but there are always some warnings:
 *  Code is messy or unoptimized in places
