@@ -6,6 +6,8 @@ var is_retry = false
 var cur_level = 0
 var play_intro = false
 
+var max_levels = 13
+
 # Checks if a save file exists
 # If not => creates one
 # If so => grab current level

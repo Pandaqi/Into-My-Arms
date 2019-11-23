@@ -336,7 +336,15 @@ func _on_Tween_tween_completed(object, key):
 			Global.set_prev_camera_pos( get_node("/root/Node2D/Camera").get_position() )
 			
 			# load next level
-			get_tree().change_scene("res://Levels/Level" + str(Global.get_cur_level()) + ".tscn")
+			var next_level = Global.get_cur_level()
+			
+			# if there is no next level (we finished the game), load outro animation
+			if next_level >= Global.max_levels:
+				get_tree().change_scene("res://OutroAnimation.tscn")
+			
+			# otherwise, simply change scene
+			else:
+				get_tree().change_scene("res://Levels/Level" + str(next_level) + ".tscn")
 	
 	# frame changes are for the falling-into-arms animation
 	elif key == ":frame":

@@ -36,6 +36,13 @@ func _ready():
 	if soundfx_slider_val != null:
 		soundfx_slider_node.set_value(soundfx_slider_val)
 	
+	var fullscreen_val = configFile.get_value("Settings", "Fullscreen")
+	if fullscreen_val != null:
+		OS.window_fullscreen = fullscreen_val
+		$Settings/Control/CenterContainer/VBoxContainer/Fullscreen/Fullscreen.pressed = fullscreen_val
+	else:
+		OS.window_fullscreen = true
+	
 	# remove fullscreen settings on mobile
 	if Global.get_device() == "Android":
 		$Settings/Control/CenterContainer/VBoxContainer/Fullscreen.hide()
@@ -49,7 +56,7 @@ func _ready():
 	var cur_level = Global.get_cur_level()
 	
 	# Load "level select" buttons into container
-	var number_of_levels = 24
+	var number_of_levels = Global.max_levels
 	if cur_level > 0:
 		for i in range(number_of_levels):
 			var new_button = level_button_scene.instance()
@@ -76,9 +83,6 @@ func _ready():
 	else:
 		level_select_node.modulate.a = 0.0
 		level_select_node.disabled = true
-
-	# start fullscreen
-	OS.window_fullscreen = true
 
 # If a level button is pressed, load the corresponding scene!
 func _on_LevelButton_pressed(which_btn):
@@ -145,6 +149,9 @@ func _on_SoundFXSlider_value_changed(value):
 	configFile.save(config_file_path)
 
 func _on_Fullscreen_toggled(button_pressed):
+	configFile.set_value("Settings", "Fullscreen", button_pressed)
+	configFile.save(config_file_path)
+	
 	OS.window_fullscreen = button_pressed
 
 

@@ -4,6 +4,7 @@
 [ext_resource path="res://Levels/LevelSkeleton.tscn" type="PackedScene" id=2]
 
 [node name="Node2D" index="0" instance=ExtResource( 2 )]
+cur_level = 11
 button_parameters = [ Vector2( 0, 3 ), Vector2( 0, 2 ), Vector2( -4, 0 ) ]
 elevator_move_axes = [ 2, 2, 1 ]
 
