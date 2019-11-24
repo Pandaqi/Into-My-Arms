@@ -114,6 +114,10 @@ func _ready():
 	change_state('default')
 
 func play_sound(path):
+	# mobile controls don't get sound effects (unnecessary and annoying)
+	if frame in [0,1,2,3]:
+		return
+	
 	$AudioStreamPlayer.volume_db = Global.get_soundfx_level()
 	
 	# don't play if something is already playing

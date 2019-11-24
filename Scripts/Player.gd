@@ -56,6 +56,7 @@ var mirror_cells = []
 
 var other_player
 var is_disabled = false
+var wait_frames = 0
 
 func _ready():
 	tilemap = get_parent()
@@ -146,6 +147,9 @@ func blink():
 func _process(delta):
 	if is_disabled:
 		return
+	
+	if wait_frames > 0:
+		wait_frames -= 1
 
 	$PosLabel.set_text(v3_to_index(TILEMAP_POS))
 	
@@ -189,7 +193,8 @@ func check_blocking_objects():
 	# an object can only block player view if it's at these positions (left, right, front, above)
 	# we just check two heights above us => most levels won't be higher than that
 	var block_positions = [Vector3(0,-1,1), Vector3(-1,0,1), Vector3(-1,-1,1), Vector3(0,0,1),
-						   Vector3(0,-1,2), Vector3(-1,0,2), Vector3(-1,-1,2), Vector3(0,0,2)]
+						   Vector3(0,-1,2), Vector3(-1,0,2), Vector3(-1,-1,2), Vector3(0,0,2),
+						   Vector3(0,-1,3), Vector3(-1,0,3), Vector3(-1,-1,3), Vector3(0,0,3)]
 	
 	for pos in block_positions:
 		var cell = v3_to_index(TILEMAP_POS + pos)
@@ -294,7 +299,7 @@ func get_action(action_name):
 	return action_name + str(PLAYER_NUM)
 
 func _input(ev):
-	if is_disabled:
+	if is_disabled or wait_frames > 0:
 		return
 	
 	if not is_rotating:
@@ -312,7 +317,7 @@ func _input(ev):
 			move_forward(-1)
 
 func rotate(rotate_dir):
-	if is_rotating:
+	if is_rotating or wait_frames > 0:
 		return
 	
 	play_sound('rotate2', true)
@@ -338,6 +343,8 @@ func rotation_finished(arg):
 		# pause the animation
 		# (just stopping it with stop() would reset it every time)
 		$AnimationPlayer.stop(false)
+		
+		wait_frames = 3.0
 		
 		# ensure we have the right frame
 		# TO DO: If I ever make a more detailed rotating animation, we need to update this line of code
@@ -426,11 +433,17 @@ func move(move_vec, being_dragged = false):
 	# If there's something here, we can't move!
 	# TO DO: Maybe need a more specific check, when there will be things I can pass through??
 	if GRID.has(v3_to_index(temp_pos)):
+		
+		# turn off particles, just in case
+		$MovementParticles.emitting = false
+		
 		return
 
 	###
 	# ACTUALLY MOVE
 	###
+	
+	wait_frames = 3.0
 	
 	# check if the other player is standing on top of us
 	# => if so, drag them with us!
@@ -467,7 +480,7 @@ func move(move_vec, being_dragged = false):
 
 func move_forward(forward):
 	# we are NOT allowed to move simultaneously with the other player
-	if other_player.is_moving:
+	if is_moving or is_rotating or other_player.is_moving or wait_frames > 0:
 		return
 	
 	# position particles near our backside
@@ -538,11 +551,11 @@ func _on_Tween_tween_completed(object, key):
 					obj.activate()
 
 func play_sound(path, wav = false):
-#	# don't play if something is already playing
-#	# (mainly to prevent duplicate sounds)
-#	if $AudioStreamPlayer2D.playing:
-#		return
-#
+	# don't play if something is already playing
+	# (mainly to prevent duplicate sounds)
+	if $AudioStreamPlayer2D.playing:
+		return
+	
 	$AudioStreamPlayer2D.volume_db = Global.get_soundfx_level()
 
 	# if path = null, it means I want the thing to stop

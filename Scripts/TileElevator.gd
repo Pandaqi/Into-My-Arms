@@ -101,6 +101,11 @@ func check_move_bounds():
 
 func _on_Tween_tween_completed(object, key):
 	if key == ":TILEMAP_POS":
+		# update blocking objects for players
+		var players = get_tree().get_nodes_in_group("Players")
+		for player in players:
+			player.check_blocking_objects()
+		
 		# check if we're above/below our maximum bounds
 		# if so, make sure our next move is in the other direction
 		var changed_dir = check_move_bounds()
