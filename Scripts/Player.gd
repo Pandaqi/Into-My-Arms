@@ -45,7 +45,7 @@ var blink_timer = null
 
 var fall_tween_duration = 0.3
 var move_tween_duration = 0.3
-var rotate_speed_scale = 2.0
+var rotate_speed_scale = 1.0
 
 # this variable saves the four "lines of sight" we generate (left/right/up/down)
 var light_paths = [[],[],[],[]]
@@ -164,6 +164,7 @@ func _process(delta):
 			if val_below.CELL_TYPE == -(other_player+1):
 				if last_move_backward and fall_counter >= 1:
 					# tell the main node to end the level
+					play_sound('game_win')
 					get_node("/root/Node2D").end_level(true, get_position(), self )
 			
 			# in any case, if there's an object below us, reset gravity
@@ -280,6 +281,7 @@ func determine_line_of_sight():
 			if GRID.has(last_ind) and GRID[last_ind].CELL_TYPE == -(other_player+1):
 				# LOSE! LOSE! LOSE!
 				has_lost = true
+				play_sound("game_loss")
 				get_node("/root/Node2D").end_level(false, null, self)
 				break
 			
@@ -313,6 +315,8 @@ func rotate(rotate_dir):
 	if is_rotating:
 		return
 	
+	play_sound('rotate2', true)
+	
 	# disable rotating while we're playing the animation
 	is_rotating = true
 	
@@ -327,6 +331,7 @@ func rotate(rotate_dir):
 		$AnimationPlayer.play("Rotate Player")
 
 func rotation_finished(arg):
+	
 	# if we found a different forward direction, stop
 	# (otherwise, you need to press twice when switching directions)
 	if FORWARD_DIR != arg:
@@ -350,6 +355,7 @@ func rotation_finished(arg):
 func move_down():
 	# if we have a negative height, we're below level bounds, and have thus lost the level
 	if (TILEMAP_POS.z - 1) < 0:
+		play_sound("game_loss")
 		get_node("/root/Node2D").end_level(false, null, self)
 		return
 
@@ -464,6 +470,17 @@ func move_forward(forward):
 	if other_player.is_moving:
 		return
 	
+	# position particles near our backside
+	var pos = get_dir_vector() * forward * -1
+	var pos_iso = Vector2((pos.x - pos.y) * 65, (pos.x + pos.y) * 32)
+	$MovementParticles.set_position(pos_iso)
+	
+	# emit movement particles
+	$MovementParticles.emitting = true
+	
+	# only play sliding sound if we're actually moving on the ground, of course
+	play_sound("slide")
+	
 	if forward < 0:
 		last_move_backward = true
 	else:
@@ -479,6 +496,11 @@ func _on_Tween_tween_completed(object, key):
 	if key == ":TILEMAP_POS":
 		# ... reset movement variable
 		is_moving = false
+		
+		# always reset particles
+		# (they might not be on, because we're being dragged or something)
+		# (but hey, just to be sure)
+		$MovementParticles.emitting = false
 		
 		# update bounds one last time
 		update_bounds()
@@ -508,9 +530,33 @@ func _on_Tween_tween_completed(object, key):
 				var ind = button_cells.find(val.CELL_TYPE)
 				var objects = get_node("/root/Node2D").button_objects[ind]
 				
+				# play sound
+				play_sound("switch")
+				
 				# activate it!
 				for obj in objects:
 					obj.activate()
+
+func play_sound(path, wav = false):
+#	# don't play if something is already playing
+#	# (mainly to prevent duplicate sounds)
+#	if $AudioStreamPlayer2D.playing:
+#		return
+#
+	$AudioStreamPlayer2D.volume_db = Global.get_soundfx_level()
+
+	# if path = null, it means I want the thing to stop
+	if path == null:
+		$AudioStreamPlayer2D.playing = false
+		return
+	
+	# otherwise, play the sound at specified path
+	if wav:
+		$AudioStreamPlayer2D.stream = load("res://Sound/" + str(path) + ".wav")
+	else:
+		$AudioStreamPlayer2D.stream = load("res://Sound/" + str(path) + ".ogg")
+	$AudioStreamPlayer2D.pitch_scale = rand_range(0.95,1.05)
+	$AudioStreamPlayer2D.playing = true
 
 func display_exclamation_mark():
 	var seo = get_node("SeeingEachOther")

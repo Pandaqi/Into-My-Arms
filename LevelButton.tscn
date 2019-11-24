@@ -10,7 +10,6 @@ frame = 11
 particles_enabled = false
 
 [node name="Sprite" parent="." index="0"]
-modulate = Color( 1, 0.278431, 0.278431, 1 )
 frame = 11
 
 [node name="Particles" parent="." index="1"]

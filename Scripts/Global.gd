@@ -7,6 +7,7 @@ var cur_level = 0
 var play_intro = false
 
 var max_levels = 13
+var soundfx_level = 0
 
 # Checks if a save file exists
 # If not => creates one
@@ -37,6 +38,12 @@ func set_cur_level(lvl):
 
 func get_cur_level():
 	return cur_level
+
+func set_soundfx_level(lvl):
+	soundfx_level = lvl
+
+func get_soundfx_level():
+	return soundfx_level
 
 # Saves your progress
 # If you finished a new level, unlocks the next level

@@ -24,7 +24,6 @@ __meta__ = {
 }
 
 [node name="Sprite" type="Sprite" parent="."]
-modulate = Color( 0, 1, 0, 1 )
 position = Vector2( 28, 28 )
 scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 2 )
@@ -33,7 +32,7 @@ hframes = 4
 
 [node name="Particles" type="CPUParticles2D" parent="."]
 show_behind_parent = true
-position = Vector2( 28, 50 )
+position = Vector2( 28, 50.4 )
 amount = 30
 lifetime = 4.0
 preprocess = 4.0
@@ -54,6 +53,8 @@ hue_variation = 1.0
 hue_variation_random = 1.0
 
 [node name="Tween" type="Tween" parent="."]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 [connection signal="button_down" from="." to="." method="_on_TextureButton_button_down"]
 [connection signal="button_up" from="." to="." method="_on_TextureButton_button_up"]
 [connection signal="mouse_entered" from="." to="." method="_on_TextureButton_mouse_entered"]

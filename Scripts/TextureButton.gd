@@ -10,6 +10,7 @@ var modulate_values = [null, null, null, null,
 					   Color(110 / 255, 1.0, 0.0), Color(134/255.0, 134/255.0, 134/255.0), Color(1.0, 71/255.0, 71/255.0), null]
 
 var base_modulate = Color(1.0, 1.0, 1.0)
+var cur_state = ''
 
 func on_resize(val):
 	scale_changed(val)
@@ -67,14 +68,22 @@ func change_state(new_state):
 		'default':
 			$Sprite.modulate.a = 0.8
 			$Sprite.modulate = base_modulate
+			play_sound(null)
 			
 		'hover':
 			$Sprite.modulate.a = 1.0
 			$Sprite.modulate = base_modulate.lightened(0.5)
+			
+			# if we come from the click state, we don't want the sound playing twice
+			if cur_state != 'click': 
+				play_sound('click')
 
 		'click':
 			$Sprite.modulate.a = 1.0
 			$Sprite.modulate = base_modulate.darkened(0.5)
+			play_sound('click')
+	
+	cur_state = new_state
 	
 	var cur_frame = $Sprite.frame
 	var rotation = 0
@@ -104,6 +113,24 @@ func change_state(new_state):
 func _ready():
 	change_state('default')
 
+func play_sound(path):
+	$AudioStreamPlayer.volume_db = Global.get_soundfx_level()
+	
+	# don't play if something is already playing
+	# or if the button is disabled
+	# (mainly to prevent duplicate sounds)
+	if $AudioStreamPlayer.playing or self.disabled:
+		return
+	
+	# if path = null, it means I want the thing to stop
+	if path == null:
+		$AudioStreamPlayer.playing = false
+		return
+	
+	# otherwise, play the sound at specified path
+	$AudioStreamPlayer.stream = load("res://Sound/" + str(path) + ".ogg")
+	$AudioStreamPlayer.pitch_scale = rand_range(0.95,1.05)
+	$AudioStreamPlayer.playing = true
 
 func _on_TextureButton_mouse_entered():
 	change_state('hover')

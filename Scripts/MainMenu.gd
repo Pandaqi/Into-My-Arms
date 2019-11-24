@@ -34,6 +34,7 @@ func _ready():
 	var soundfx_slider_node = $Settings/Control/CenterContainer/VBoxContainer/SoundFX/SoundFXSlider
 	
 	if soundfx_slider_val != null:
+		Global.set_soundfx_level(soundfx_slider_val)
 		soundfx_slider_node.set_value(soundfx_slider_val)
 	
 	var fullscreen_val = configFile.get_value("Settings", "Fullscreen")
@@ -65,11 +66,14 @@ func _ready():
 			# modulate buttons randomly, just for fun
 			var rand_col = Color.from_hsv(rand_range(0, 360), rand_range(0.25, 0.75), rand_range(0.85, 0.95))
 			new_button.modulate = rand_col
+			
 			new_button.get_node("Label").set('custom_colors/font_color', rand_col.darkened(0.6))
 			
 			if i > cur_level:
 				new_button.disabled = true
 				new_button.modulate.a = 0.25
+			else:
+				new_button.base_modulate = rand_col
 
 			
 			level_select_grid.add_child(new_button)
@@ -144,6 +148,8 @@ func _on_AmbientSlider_value_changed(value):
 func _on_SoundFXSlider_value_changed(value):
 	# Add values to file 
 	configFile.set_value("Settings","SoundSlider", value) 
+	
+	Global.set_soundfx_level(value)
 	
 	# Save file 
 	configFile.save(config_file_path)

@@ -16,8 +16,10 @@ _global_script_class_icons={
 [application]
 
 config/name="Into My Arms"
+config/description="A 1-2 player relaxing puzzle game about love, faith, and a witch who might be the hero of the story."
 run/main_scene="res://MainMenu.tscn"
-config/icon="res://icon.png"
+config/icon="res://Deliverables/Into My Arms Cover.png"
+config/windows_native_icon="res://Deliverables/Into My Arms Cover.ico"
 
 [autoload]
 

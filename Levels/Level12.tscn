@@ -31,10 +31,10 @@ PLAYER_NUM = 1
 [node name="Instructions-Rule1" type="RichTextLabel" parent="." index="13" groups=[
 "InstructionLabels",
 ]]
-margin_left = -482.212
-margin_top = -166.995
-margin_right = -141.212
-margin_bottom = -31.9945
+margin_left = -522.266
+margin_top = -139.18
+margin_right = -181.266
+margin_bottom = -4.1792
 custom_fonts/normal_font = ExtResource( 3 )
 text = "I tried to forget you, but ...
 you're everywhere I go,

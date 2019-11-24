@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Levels/LevelSkeleton.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Fonts/BasicFont32.tres" type="DynamicFont" id=3]
 
 [node name="Node2D" index="0" instance=ExtResource( 1 )]
 cur_level = 6
@@ -24,5 +25,16 @@ position = Vector2( 61.0851, 1.65305 )
 position = Vector2( 192.627, 189.426 )
 PLAYER_NUM = 1
 
-[node name="Control" parent="PauseScreen" index="2"]
-visible = false
+[node name="Instructions-Rule1" type="RichTextLabel" parent="." index="13" groups=[
+"InstructionLabels",
+]]
+margin_left = 132.817
+margin_top = -185.888
+margin_right = 520.817
+margin_bottom = -50.8885
+custom_fonts/normal_font = ExtResource( 3 )
+bbcode_enabled = true
+text = "A platform will always try to complete its movement; if it doesn't move, something is blocking it"
+__meta__ = {
+"_edit_use_anchors_": false
+}

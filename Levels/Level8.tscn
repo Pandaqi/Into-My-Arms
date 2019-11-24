@@ -28,10 +28,10 @@ PLAYER_NUM = 1
 [node name="Instructions-Rule1" type="RichTextLabel" parent="." index="13" groups=[
 "InstructionLabels",
 ]]
-margin_left = -440.0
-margin_top = -192.0
-margin_right = -77.0
-margin_bottom = -98.0
+margin_left = 86.8677
+margin_top = -193.298
+margin_right = 449.868
+margin_bottom = -99.2977
 custom_fonts/normal_font = ExtResource( 3 )
 text = "Sometimes a single touch ... can cause many things to happen"
 __meta__ = {
