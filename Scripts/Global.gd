@@ -85,5 +85,5 @@ func is_retry():
 	return is_retry
 
 func get_device():
-	return "Android"
-	#return OS.get_name()
+	#return "Android"
+	return OS.get_name()

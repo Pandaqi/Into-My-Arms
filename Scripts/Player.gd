@@ -551,10 +551,10 @@ func _on_Tween_tween_completed(object, key):
 					obj.activate()
 
 func play_sound(path, wav = false):
-	# don't play if something is already playing
-	# (mainly to prevent duplicate sounds)
-	if $AudioStreamPlayer2D.playing:
-		return
+#	# don't play if something is already playing
+#	# (mainly to prevent duplicate sounds)
+#	if $AudioStreamPlayer2D.playing:
+#		return
 	
 	$AudioStreamPlayer2D.volume_db = Global.get_soundfx_level()
 
