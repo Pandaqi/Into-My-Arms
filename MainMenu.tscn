@@ -1,0 +1,389 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://Shaders/BackgroundGradient.shader" type="Shader" id=1]
+[ext_resource path="res://Fonts/BasicFont48.tres" type="DynamicFont" id=3]
+[ext_resource path="res://Scripts/MainMenu.gd" type="Script" id=4]
+[ext_resource path="res://Fonts/BasicFont32.tres" type="DynamicFont" id=5]
+[ext_resource path="res://Fonts/BasicFont16.tres" type="DynamicFont" id=6]
+[ext_resource path="res://ScaleManager.tscn" type="PackedScene" id=7]
+[ext_resource path="res://Textures/slider_grabber.png" type="Texture" id=8]
+[ext_resource path="res://TextureButton.tscn" type="PackedScene" id=9]
+
+[sub_resource type="ShaderMaterial" id=1]
+shader = ExtResource( 1 )
+shader_param/grad_bottom = Vector3( 0.2, 0.2, 1 )
+shader_param/grad_top = Vector3( 0, 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=2]
+content_margin_top = 15.0
+content_margin_bottom = 15.0
+bg_color = Color( 0.4, 0.337255, 0.282353, 1 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+shadow_size = 2
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 1, 0.27451, 0.27451, 1 )
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource( 4 )
+
+[node name="ScaleManager" parent="." instance=ExtResource( 7 )]
+in_level = false
+
+[node name="Background" type="CanvasLayer" parent="."]
+layer = -5
+
+[node name="Control" type="Control" parent="Background"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="Background/Control"]
+material = SubResource( 1 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Play" type="CanvasLayer" parent="."]
+layer = 0
+
+[node name="Control" type="Control" parent="Play"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Play/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Play/Control/VBoxContainer" groups=[
+"Font48",
+"ResizableNodes",
+]]
+margin_top = 10.0
+margin_right = 512.0
+margin_bottom = 73.0
+size_flags_vertical = 6
+custom_fonts/font = ExtResource( 3 )
+custom_colors/font_color = Color( 0.27451, 0.027451, 0.262745, 1 )
+text = "Into My Arms"
+align = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="Play/Control/VBoxContainer"]
+margin_top = 88.0
+margin_right = 512.0
+margin_bottom = 200.0
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Play" parent="Play/Control/VBoxContainer/CenterContainer" instance=ExtResource( 9 )]
+margin_right = 312.0
+margin_bottom = 112.0
+rect_min_size = Vector2( 112, 112 )
+scale = Vector2( 112, 112 )
+frame = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Play/Control/VBoxContainer"]
+margin_top = 204.0
+margin_right = 512.0
+margin_bottom = 288.0
+size_flags_vertical = 3
+
+[node name="CenterContainer" type="CenterContainer" parent="Play/Control/VBoxContainer/HBoxContainer"]
+margin_right = 126.0
+margin_bottom = 84.0
+size_flags_horizontal = 3
+
+[node name="Settings" parent="Play/Control/VBoxContainer/HBoxContainer/CenterContainer" instance=ExtResource( 9 )]
+margin_left = 35.0
+margin_top = 14.0
+margin_right = 91.0
+margin_bottom = 70.0
+frame = 9
+
+[node name="CenterContainer3" type="CenterContainer" parent="Play/Control/VBoxContainer/HBoxContainer"]
+margin_left = 130.0
+margin_right = 382.0
+margin_bottom = 84.0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="LevelSelect" parent="Play/Control/VBoxContainer/HBoxContainer/CenterContainer3" instance=ExtResource( 9 )]
+margin_left = 98.0
+margin_top = 14.0
+margin_right = 154.0
+margin_bottom = 70.0
+frame = 7
+
+[node name="CenterContainer2" type="CenterContainer" parent="Play/Control/VBoxContainer/HBoxContainer"]
+margin_left = 386.0
+margin_right = 512.0
+margin_bottom = 84.0
+size_flags_horizontal = 3
+
+[node name="Quit" parent="Play/Control/VBoxContainer/HBoxContainer/CenterContainer2" instance=ExtResource( 9 )]
+margin_left = 35.0
+margin_top = 14.0
+margin_right = 91.0
+margin_bottom = 70.0
+frame = 10
+
+[node name="Settings" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="Settings"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CenterContainer" type="CenterContainer" parent="Settings/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Settings/Control/CenterContainer"]
+margin_left = 93.0
+margin_top = 11.0
+margin_right = 418.0
+margin_bottom = 277.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Settings/Control/CenterContainer/VBoxContainer" groups=[
+"Font32",
+"ResizableNodes",
+]]
+margin_right = 325.0
+margin_bottom = 42.0
+custom_fonts/font = ExtResource( 5 )
+custom_colors/font_color = Color( 0.054902, 0.211765, 0.419608, 1 )
+text = "Settings"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AmbientSound" type="HBoxContainer" parent="Settings/Control/CenterContainer/VBoxContainer"]
+margin_top = 46.0
+margin_right = 325.0
+margin_bottom = 110.0
+custom_constants/separation = 30
+
+[node name="Label2" type="Label" parent="Settings/Control/CenterContainer/VBoxContainer/AmbientSound" groups=[
+"ResizableNodes",
+]]
+margin_top = 21.0
+margin_right = 92.0
+margin_bottom = 42.0
+custom_fonts/font = ExtResource( 6 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Ambient Volume"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AmbientSlider" type="HSlider" parent="Settings/Control/CenterContainer/VBoxContainer/AmbientSound"]
+margin_left = 122.0
+margin_right = 325.0
+margin_bottom = 64.0
+rect_min_size = Vector2( 200, 0 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_icons/grabber_highlight = ExtResource( 8 )
+custom_icons/grabber = ExtResource( 8 )
+custom_styles/slider = SubResource( 2 )
+custom_styles/grabber_area = SubResource( 3 )
+min_value = -36.0
+max_value = 0.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SoundFX" type="HBoxContainer" parent="Settings/Control/CenterContainer/VBoxContainer"]
+margin_top = 114.0
+margin_right = 325.0
+margin_bottom = 178.0
+custom_constants/separation = 30
+
+[node name="Label2" type="Label" parent="Settings/Control/CenterContainer/VBoxContainer/SoundFX" groups=[
+"ResizableNodes",
+]]
+margin_top = 21.0
+margin_right = 95.0
+margin_bottom = 42.0
+custom_fonts/font = ExtResource( 6 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Sound FX Volume"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SoundFXSlider" type="HSlider" parent="Settings/Control/CenterContainer/VBoxContainer/SoundFX"]
+margin_left = 125.0
+margin_right = 325.0
+margin_bottom = 64.0
+rect_min_size = Vector2( 200, 0 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_icons/grabber_highlight = ExtResource( 8 )
+custom_icons/grabber = ExtResource( 8 )
+custom_styles/slider = SubResource( 2 )
+custom_styles/grabber_area = SubResource( 3 )
+min_value = -36.0
+max_value = 0.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Fullscreen" type="HBoxContainer" parent="Settings/Control/CenterContainer/VBoxContainer"]
+margin_top = 182.0
+margin_right = 325.0
+margin_bottom = 206.0
+custom_constants/separation = 30
+
+[node name="Label3" type="Label" parent="Settings/Control/CenterContainer/VBoxContainer/Fullscreen" groups=[
+"ResizableNodes",
+]]
+margin_top = 1.0
+margin_right = 55.0
+margin_bottom = 22.0
+custom_fonts/font = ExtResource( 6 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Fullscreen"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="Settings/Control/CenterContainer/VBoxContainer/Fullscreen"]
+margin_left = 85.0
+margin_right = 260.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 5.0
+
+[node name="Fullscreen" type="CheckBox" parent="Settings/Control/CenterContainer/VBoxContainer/Fullscreen"]
+margin_left = 290.0
+margin_right = 325.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+pressed = true
+
+[node name="CenterContainer" type="CenterContainer" parent="Settings/Control/CenterContainer/VBoxContainer"]
+margin_top = 210.0
+margin_right = 325.0
+margin_bottom = 266.0
+
+[node name="CloseSettings" parent="Settings/Control/CenterContainer/VBoxContainer/CenterContainer" instance=ExtResource( 9 )]
+margin_left = 134.0
+margin_right = 190.0
+frame = 10
+
+[node name="LevelSelect" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="LevelSelect"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LevelSelect/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LevelSelect" type="Label" parent="LevelSelect/Control/VBoxContainer" groups=[
+"Font32",
+"ResizableNodes",
+]]
+margin_right = 512.0
+margin_bottom = 42.0
+custom_fonts/font = ExtResource( 5 )
+custom_colors/font_color = Color( 0.054902, 0.211765, 0.419608, 1 )
+text = "Level Select"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="LevelSelect/Control/VBoxContainer"]
+margin_top = 46.0
+margin_right = 512.0
+margin_bottom = 204.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/margin_right = 25
+custom_constants/margin_top = 25
+custom_constants/margin_left = 25
+custom_constants/margin_bottom = 25
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ScrollContainer" type="ScrollContainer" parent="LevelSelect/Control/VBoxContainer/MarginContainer"]
+margin_left = 256.0
+margin_top = 25.0
+margin_right = 256.0
+margin_bottom = 133.0
+size_flags_horizontal = 4
+size_flags_vertical = 3
+scroll_horizontal_enabled = false
+
+[node name="GridContainer" type="GridContainer" parent="LevelSelect/Control/VBoxContainer/MarginContainer/ScrollContainer"]
+margin_bottom = 108.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 8
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CenterContainer2" type="CenterContainer" parent="LevelSelect/Control/VBoxContainer"]
+margin_top = 208.0
+margin_right = 512.0
+margin_bottom = 288.0
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="CloseSettings" parent="LevelSelect/Control/VBoxContainer/CenterContainer2" instance=ExtResource( 9 )]
+margin_left = 228.0
+margin_top = 12.0
+margin_right = 284.0
+margin_bottom = 68.0
+frame = 10
+
+[node name="Tween" type="Tween" parent="."]
+[connection signal="pressed" from="Play/Control/VBoxContainer/CenterContainer/Play" to="." method="_on_Play_pressed"]
+[connection signal="pressed" from="Play/Control/VBoxContainer/HBoxContainer/CenterContainer/Settings" to="." method="_on_Settings_pressed"]
+[connection signal="pressed" from="Play/Control/VBoxContainer/HBoxContainer/CenterContainer3/LevelSelect" to="." method="_on_LevelSelect_pressed"]
+[connection signal="pressed" from="Play/Control/VBoxContainer/HBoxContainer/CenterContainer2/Quit" to="." method="_on_Quit_pressed"]
+[connection signal="value_changed" from="Settings/Control/CenterContainer/VBoxContainer/AmbientSound/AmbientSlider" to="." method="_on_AmbientSlider_value_changed"]
+[connection signal="value_changed" from="Settings/Control/CenterContainer/VBoxContainer/SoundFX/SoundFXSlider" to="." method="_on_SoundFXSlider_value_changed"]
+[connection signal="toggled" from="Settings/Control/CenterContainer/VBoxContainer/Fullscreen/Fullscreen" to="." method="_on_Fullscreen_toggled"]
+[connection signal="pressed" from="Settings/Control/CenterContainer/VBoxContainer/CenterContainer/CloseSettings" to="." method="_on_CloseSettings_pressed"]
+[connection signal="pressed" from="LevelSelect/Control/VBoxContainer/CenterContainer2/CloseSettings" to="." method="_on_CloseSettings_pressed"]
+[connection signal="tween_completed" from="Tween" to="." method="_on_Tween_tween_completed"]

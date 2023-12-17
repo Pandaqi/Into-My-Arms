@@ -1,0 +1,203 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Tiles/TileBasic.tscn" type="PackedScene" id=1]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Ground" parent="." instance=ExtResource( 1 )]
+offset = Vector2( 0, -64 )
+
+[node name="Grass" parent="." instance=ExtResource( 1 )]
+position = Vector2( 153.942, 0 )
+offset = Vector2( 0, -64 )
+frame = 1
+
+[node name="Button1" parent="." instance=ExtResource( 1 )]
+position = Vector2( 324.989, 0 )
+offset = Vector2( 0, -64 )
+frame = 2
+
+[node name="Button2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 485.04, 0 )
+offset = Vector2( 0, -64 )
+frame = 3
+
+[node name="Button3" parent="." instance=ExtResource( 1 )]
+position = Vector2( 642.647, 0 )
+offset = Vector2( 0, -64 )
+frame = 4
+
+[node name="Elevator1" parent="." instance=ExtResource( 1 )]
+position = Vector2( 796.589, 0 )
+offset = Vector2( 0, -64 )
+frame = 5
+
+[node name="Elevator2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 950.531, 0 )
+offset = Vector2( 0, -64 )
+frame = 6
+
+[node name="Elevator3" parent="." instance=ExtResource( 1 )]
+position = Vector2( 1109.7, 0 )
+offset = Vector2( 0, -64 )
+frame = 7
+
+[node name="Mirror1" parent="." instance=ExtResource( 1 )]
+position = Vector2( 0, 158.124 )
+offset = Vector2( 0, -64 )
+frame = 8
+
+[node name="Mirror2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 142.84, 158.124 )
+offset = Vector2( 0, -64 )
+frame = 9
+
+[node name="Mirror3" parent="." instance=ExtResource( 1 )]
+position = Vector2( 326.491, 158.124 )
+offset = Vector2( 0, -64 )
+frame = 10
+
+[node name="Mirror4" parent="." instance=ExtResource( 1 )]
+position = Vector2( 487.695, 158.124 )
+offset = Vector2( 0, -64 )
+frame = 11
+
+[node name="Mirror5" parent="." instance=ExtResource( 1 )]
+position = Vector2( 642.779, 158.124 )
+offset = Vector2( 0, -64 )
+frame = 12
+
+[node name="Mirror6" parent="." instance=ExtResource( 1 )]
+position = Vector2( 795.821, 158.124 )
+offset = Vector2( 0, -64 )
+frame = 13
+
+[node name="Grass2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 965.188, 158.124 )
+offset = Vector2( 0, -64 )
+frame = 14
+
+[node name="Grass3" parent="." instance=ExtResource( 1 )]
+position = Vector2( 1148.84, 158.124 )
+offset = Vector2( 0, -64 )
+frame = 15
+
+[node name="MirrorBlue1" parent="." instance=ExtResource( 1 )]
+position = Vector2( 0, 311.166 )
+offset = Vector2( 0, -64 )
+frame = 16
+
+[node name="MirrorBlue2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 140.799, 311.166 )
+offset = Vector2( 0, -64 )
+frame = 17
+
+[node name="MirrorRed1" parent="." instance=ExtResource( 1 )]
+position = Vector2( 324.45, 311.166 )
+offset = Vector2( 0, -64 )
+frame = 18
+
+[node name="MirrorRed2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 497.898, 311.166 )
+offset = Vector2( 0, -64 )
+frame = 19
+
+[node name="MirrorLightBlue1" parent="." instance=ExtResource( 1 )]
+position = Vector2( 644.819, 311.166 )
+offset = Vector2( 0, -64 )
+frame = 20
+
+[node name="MirrorLightBlue2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 791.74, 311.166 )
+offset = Vector2( 0, -64 )
+frame = 21
+
+[node name="Grass4" parent="." instance=ExtResource( 1 )]
+position = Vector2( 968.74, 311.166 )
+offset = Vector2( 0, -64 )
+frame = 22
+
+[node name="Grass5" parent="." instance=ExtResource( 1 )]
+position = Vector2( 1156.24, 311.166 )
+offset = Vector2( 0, -64 )
+frame = 23
+
+[node name="MirrorUpwards1" parent="." instance=ExtResource( 1 )]
+position = Vector2( 0, 444.666 )
+offset = Vector2( 0, -64 )
+frame = 24
+
+[node name="MirrorUpwards2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 145.5, 444.666 )
+offset = Vector2( 0, -64 )
+frame = 25
+
+[node name="MirrorUpwards3" parent="." instance=ExtResource( 1 )]
+position = Vector2( 313.501, 444.666 )
+offset = Vector2( 0, -64 )
+frame = 26
+
+[node name="MirrorUpwards4" parent="." instance=ExtResource( 1 )]
+position = Vector2( 480.001, 444.666 )
+offset = Vector2( 0, -64 )
+frame = 27
+
+[node name="MirrorDownwards1" parent="." instance=ExtResource( 1 )]
+position = Vector2( 652.502, 444.666 )
+offset = Vector2( 0, -64 )
+frame = 28
+
+[node name="MirrorDownwards2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 805.502, 444.666 )
+offset = Vector2( 0, -64 )
+frame = 29
+
+[node name="MirrorDownwards3" parent="." instance=ExtResource( 1 )]
+position = Vector2( 966.002, 444.666 )
+offset = Vector2( 0, -64 )
+frame = 30
+
+[node name="MirrorDownwards4" parent="." instance=ExtResource( 1 )]
+position = Vector2( 1152, 444.666 )
+offset = Vector2( 0, -64 )
+frame = 31
+
+[node name="MirrorUpwardsStatic" parent="." instance=ExtResource( 1 )]
+position = Vector2( 0, 617.502 )
+offset = Vector2( 0, -64 )
+frame = 32
+
+[node name="MirrorUpwardsStatic2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 160.5, 617.502 )
+offset = Vector2( 0, -64 )
+frame = 33
+
+[node name="MirrorUpwardsStatic3" parent="." instance=ExtResource( 1 )]
+position = Vector2( 316.501, 617.502 )
+offset = Vector2( 0, -64 )
+frame = 34
+
+[node name="MirrorUpwardsStatic4" parent="." instance=ExtResource( 1 )]
+position = Vector2( 483.001, 617.502 )
+offset = Vector2( 0, -64 )
+frame = 35
+
+[node name="MirrorDownwardsStatic1" parent="." instance=ExtResource( 1 )]
+position = Vector2( 655.502, 617.502 )
+offset = Vector2( 0, -64 )
+frame = 36
+
+[node name="MirrorDownwardsStatic2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 810.002, 617.502 )
+offset = Vector2( 0, -64 )
+frame = 37
+
+[node name="MirrorDownwardsStatic3" parent="." instance=ExtResource( 1 )]
+position = Vector2( 982.503, 617.502 )
+offset = Vector2( 0, -64 )
+frame = 38
+
+[node name="MirrorDownwardsStatic4" parent="." instance=ExtResource( 1 )]
+position = Vector2( 1155, 617.502 )
+offset = Vector2( 0, -64 )
+frame = 39

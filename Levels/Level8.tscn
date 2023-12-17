@@ -1,0 +1,39 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Levels/LevelSkeleton.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Fonts/BasicFont32.tres" type="DynamicFont" id=3]
+
+[node name="Node2D" index="0" instance=ExtResource( 1 )]
+cur_level = 8
+button_parameters = [ Vector2( -4, 0 ), Vector2( 0, 1 ), Vector2( 0, 3 ) ]
+elevator_move_axes = [ 1, 2, 1 ]
+
+[node name="Level0" parent="." index="2"]
+tile_data = PoolIntArray( 65537, 0, 0, 131073, 0, 0, 131074, 1, 0, 131077, 0, 0, 131078, 0, 0, 196608, 0, 0, 196609, 0, 0, 196613, 0, 0, 262148, 6, 0, 327682, 0, 0, 327683, 0, 0, 327685, 0, 0, 393221, 0, 0 )
+
+[node name="Level1" parent="." index="3"]
+tile_data = PoolIntArray( -65534, 1, 0, -65533, 2, 0, 0, 0, 0, 1, 6, 0, 3, 5, 0, 65536, 0, 0, 65540, 4, 0, 65541, 3, 0, 196607, 0, 0, 131072, 0, 0, 131076, 1, 0, 196609, 7, 0, 262145, 1, 0, 262146, 1, 0, 262148, 3, 0, 327684, 2, 0 )
+
+[node name="Level2" parent="." index="4"]
+tile_data = PoolIntArray( -2, 4, 0, -1, 1, 0, 65534, 2, 0, 65535, 1, 0, 131070, 3, 0, 131071, 1, 0 )
+
+[node name="Player" parent="Level2" index="0" instance=ExtResource( 2 )]
+position = Vector2( -193.119, 127.019 )
+
+[node name="Player2" parent="Level2" index="1" instance=ExtResource( 2 )]
+position = Vector2( 194.296, 1.32391 )
+PLAYER_NUM = 1
+
+[node name="Instructions-Rule1" type="RichTextLabel" parent="." index="13" groups=[
+"InstructionLabels",
+]]
+margin_left = 86.8677
+margin_top = -193.298
+margin_right = 449.868
+margin_bottom = -99.2977
+custom_fonts/normal_font = ExtResource( 3 )
+text = "Sometimes a single touch ... can cause many things to happen"
+__meta__ = {
+"_edit_use_anchors_": false
+}

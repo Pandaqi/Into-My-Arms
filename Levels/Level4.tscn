@@ -1,0 +1,39 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Levels/LevelSkeleton.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Fonts/BasicFont32.tres" type="DynamicFont" id=3]
+
+[node name="Node2D" index="0" instance=ExtResource( 1 )]
+cur_level = 4
+
+[node name="Level0" parent="." index="2"]
+tile_data = PoolIntArray( 131073, 0, 0, 131074, 5, 0, 131075, 0, 0, 196609, 0, 0, 196610, 1, 0, 196611, 2, 0 )
+
+[node name="Level1" parent="." index="3"]
+tile_data = PoolIntArray( 65535, 1, 0, 0, 1, 0, 1, 0, 0, 2, 6, 0, 131071, 2, 0, 65538, 1, 0, 196607, 1, 0, 131072, 3, 0 )
+
+[node name="Player" parent="Level1" index="0" instance=ExtResource( 2 )]
+position = Vector2( -61.7717, 127.088 )
+
+[node name="Player2" parent="Level1" index="1" instance=ExtResource( 2 )]
+position = Vector2( 4.65733, 92.6002 )
+PLAYER_NUM = 1
+
+[node name="Level2" parent="." index="4"]
+tile_data = PoolIntArray( -65536, 1, 0 )
+
+[node name="Instructions" type="RichTextLabel" parent="." index="13" groups=[
+"InstructionLabels",
+]]
+margin_left = -445.0
+margin_top = -161.0
+margin_right = -57.0
+margin_bottom = -71.0
+custom_fonts/normal_font = ExtResource( 3 )
+bbcode_enabled = true
+bbcode_text = "[color=#FFAAAA]Buttons:[/color] Pushing them might just move something ... or someone"
+text = "Buttons: Pushing them might just move something ... or someone"
+__meta__ = {
+"_edit_use_anchors_": false
+}

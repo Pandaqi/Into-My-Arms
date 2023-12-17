@@ -1,0 +1,7 @@
+*.wav
+*.sample
+private/
+build/
+.import/
+.godot/
+Deliverables/
